@@ -52,8 +52,7 @@ public class SystemListFragment extends ListFragment {
 			mCurPosition = savedInstanceState.getInt(DomoControlApplication.SYSTEM_SELECTION);
 		}
 
-		String systems[] = getResources().getStringArray(R.array.systems_array);
-		setListAdapter(new SystemListAdapter(getActivity(), systems, mCurPosition));
+		setListAdapter(new SystemListAdapter(getActivity(), DomoControlApplication.getSystemsName(), mCurPosition));
 
 		ListView lv = getListView();
 		lv.setCacheColorHint(Color.TRANSPARENT); // Improves scrolling

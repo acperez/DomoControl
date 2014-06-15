@@ -1,6 +1,7 @@
 package es.acperez.domocontrol;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,12 @@ public class ContentFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mContentView = inflater.inflate(R.layout.home, null);
-
+		mContentView = inflater.inflate(R.layout.content_fragment, null);
+		
+		if (savedInstanceState != null) {
+			mCurPosition = savedInstanceState.getInt(DomoControlApplication.SYSTEM_SELECTION);
+		}
+		
 		return mContentView;
 	}
 
@@ -45,9 +50,14 @@ public class ContentFragment extends Fragment {
 		outState.putInt(DomoControlApplication.SYSTEM_SELECTION, mCurPosition);
 	}
 
-	public void updateControlPanel(int position2) {
-		// TODO Auto-generated method stub
-
+	public void updateControlPanel(int position) {
+		mCurPosition = position;
+		loadContent();
 	}
 
+	private void loadContent() {
+		Fragment fragment = DomoControlApplication.getSystemFragment(mCurPosition);
+		FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+		transaction.replace(R.id.content_fragment_container, fragment).commit();
+	}
 }

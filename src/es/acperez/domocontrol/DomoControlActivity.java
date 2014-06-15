@@ -11,11 +11,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ImageView;
-import es.acperez.domocontrol.power.PowerManager;
+import es.acperez.domocontrol.power.controller.PowerManager;
 import es.acperez.domocontrol.settings.Settings;
 
 public class DomoControlActivity extends Activity implements SystemListFragment.OnItemSelectedListener {
-	private DomoControlApplication application;
     
 	static ImageView img[];
 	static boolean plugs[];
@@ -28,7 +27,7 @@ public class DomoControlActivity extends Activity implements SystemListFragment.
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.domo_control);
 		
-		application = (DomoControlApplication)getApplication();
+		getApplication();
 		
         if(savedInstanceState != null) {
             mTitlesHidden = savedInstanceState.getBoolean("devicesHidden");
