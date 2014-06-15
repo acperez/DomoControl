@@ -3,8 +3,8 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<fragment class ="es.acperez.domocontrol.DeviceFragment"
-		android:id="@+id/deviceListFragment"
+	<fragment class ="es.acperez.domocontrol.SystemListFragment"
+		android:id="@+id/system_list_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 

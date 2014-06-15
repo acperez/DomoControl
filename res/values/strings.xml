@@ -14,7 +14,7 @@
     <string name="pref_power_address">power.address</string>
     <string name="pref_power_password">power.password</string>
     
-	<string-array name="devices_array">
+	<string-array name="systems_array">
 		<item>Power</item>
 		<item>Power</item>
 		<item>Power</item>

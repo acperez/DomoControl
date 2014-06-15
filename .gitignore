@@ -2,3 +2,7 @@
 /assets/
 /bin/
 /obj/
+.classpath
+.cproject
+.project
+.settings/

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class DomoControlApplication extends Application {
+	
+    public static final String SYSTEM_SELECTION = "selectes_system";
 	private final String prefName = "settings";
 	static {
 		System.loadLibrary("DomoControl");

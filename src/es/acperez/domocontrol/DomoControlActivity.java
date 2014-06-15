@@ -1,11 +1,7 @@
 package es.acperez.domocontrol;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,14 +9,12 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
 import es.acperez.domocontrol.power.PowerManager;
 import es.acperez.domocontrol.settings.Settings;
 
-public class MainActivity extends Activity implements DeviceFragment.OnItemSelectedListener {
+public class DomoControlActivity extends Activity implements SystemListFragment.OnItemSelectedListener {
 	private DomoControlApplication application;
     
 	static ImageView img[];
@@ -32,7 +26,7 @@ public class MainActivity extends Activity implements DeviceFragment.OnItemSelec
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.domo_control);
 		
 		application = (DomoControlApplication)getApplication();
 		
@@ -40,13 +34,13 @@ public class MainActivity extends Activity implements DeviceFragment.OnItemSelec
             mTitlesHidden = savedInstanceState.getBoolean("devicesHidden");
         }
 
-        ControlFragment frag = (ControlFragment) getFragmentManager()
+        ContentFragment frag = (ContentFragment) getFragmentManager()
                 .findFragmentById(R.id.controlFragment);
         if (frag != null) mDualFragments = true;
         
         if (mTitlesHidden) {
             getFragmentManager().beginTransaction()
-                    .hide(getFragmentManager().findFragmentById(R.id.deviceListFragment)).commit();
+                    .hide(getFragmentManager().findFragmentById(R.id.system_list_fragment)).commit();
         }
 		
 		
@@ -163,7 +157,7 @@ public class MainActivity extends Activity implements DeviceFragment.OnItemSelec
 //            startActivity(intent);
         } else {
             // If showing both fragments, directly update the ContentFragment
-            ControlFragment frag = (ControlFragment) getFragmentManager()
+            ContentFragment frag = (ContentFragment) getFragmentManager()
                     .findFragmentById(R.id.controlFragment);
             frag.updateControlPanel(position);
         }
