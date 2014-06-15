@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+		android:id="@+id/power_monitor_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/power_monitor_title"/>
+	
+	<ImageView
+		android:id="@+id/power_monitor_socket1_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/power_monitor_title"
+		android:contentDescription="@string/power_monitor_socket1_description"/>
+	
+	<TextView
+		android:id="@+id/power_monitor_socket1_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/power_monitor_socket1_img"
+		android:text="@string/power_monitor_socket1_description"/>
+	
+	<ImageView
+		android:id="@+id/power_monitor_socket2_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/power_monitor_socket1_img"
+		android:contentDescription="@string/power_monitor_socket2_description"/>
+	
+	<TextView
+		android:id="@+id/power_monitor_socket2_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/power_monitor_socket2_img"
+		android:text="@string/power_monitor_socket2_description"/>
+	
+	<ImageView
+		android:id="@+id/power_monitor_socket3_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/power_monitor_socket2_img"
+		android:contentDescription="@string/power_monitor_socket3_description"/>
+	
+	<TextView
+		android:id="@+id/power_monitor_socket3_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/power_monitor_socket3_img"
+		android:text="@string/power_monitor_socket3_description"/>
+	
+	<ImageView
+		android:id="@+id/power_monitor_socket4_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/power_monitor_socket3_img"
+		android:contentDescription="@string/power_monitor_socket4_description"/>
+	
+	<TextView
+		android:id="@+id/power_monitor_socket4_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/power_monitor_socket4_img"
+		android:text="@string/power_monitor_socket4_description"/>
+
+</RelativeLayout>

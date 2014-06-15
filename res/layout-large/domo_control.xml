@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/largePanel"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="horizontal"
+	android:baselineAligned="false">
+
+	<fragment class="es.acperez.domocontrol.SystemListFragment"
+		android:id="@+id/system_list_ragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="0.8"/>
+
+	<fragment class="es.acperez.domocontrol.ContentFragment"
+		android:id="@+id/controlFragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_weight="0.2"/>
+
+</LinearLayout>

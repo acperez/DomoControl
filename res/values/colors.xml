@@ -3,6 +3,7 @@
  	<item name="white" type="color">#FFFFFF</item>
  	<item name="black" type="color">#000000</item>
  	<item name="darkblue" type="color">#2B475E</item>
- 	<item name="grey" type="color">#A4A4A4</item>
- 	<item name="dark_grey" type="color">#424242</item>
+ 	<item name="gray_light" type="color">#A4A4A4</item>
+ 	<item name="gray" type="color">#6E6E6E</item>
+ 	<item name="gray_dark" type="color">#424242</item>
 </resources>
