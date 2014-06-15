@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DomoControl</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="settings_title">Settings</string>
+    <string name="power_ip">Host IP</string>
+    <string name="power_ip_desc">HostName or Ip (Ex: 192.168.0.1)</string>
+    <string name="power_password">Password</string>
+    <string name="settings_ok">Save</string>
+    <string name="settings_cancel">Cancel</string>
+    
+    <string name="pref_power_address">power.address</string>
+    <string name="pref_power_password">power.password</string>
+    
+	<string-array name="devices_array">
+		<item>Power</item>
+		<item>Power</item>
+		<item>Power</item>
+		<item>Power</item>
+		<item>Power</item>
+		<item>Power</item>
+		<item>Power</item>
+	</string-array>
+    
+</resources>
