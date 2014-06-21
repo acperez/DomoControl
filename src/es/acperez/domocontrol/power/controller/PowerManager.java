@@ -1,21 +1,35 @@
 package es.acperez.domocontrol.power.controller;
 
 import android.os.Handler;
+import es.acperez.domocontrol.common.ConnectionManager;
+import es.acperez.domocontrol.common.DomoSystem.SystemManager;
 
-public class PowerManager {
+public class PowerManager implements SystemManager {
 	
-	public static final int ERROR_NONE = 0;
-	public static final int ERROR_PASSWORD = 1;
-	public static final int ERROR_NETWORK = 2;
+	public static final int GET_STATUS = 0;
 	
-    public PowerManager() {
-	}
-    
-	public void getStatus(Handler handler) {
-		ConnectionManager.getInstance().push(new PowerManagerTask(handler));
+	private ConnectionManager connectionManager = null;
+
+	public PowerManager() {
+		connectionManager = ConnectionManager.getInstance();
 	}
 	
-	public void setStatus(Handler handler, int plug, boolean value) {
-		ConnectionManager.getInstance().push(new PowerManagerTask(handler, plug, value));
+	// Send request to remote device in order to update the plugs status
+	private void sendRequestGetPlugsStatus(Handler handler) {
+		connectionManager.push(new PowerManagerTask(handler));
+	}
+	
+	// Send request to remote device in order to switch a plug
+	private void sendRequestSwitchPlug(Handler handler, int plug, boolean value) {
+		connectionManager.push(new PowerManagerTask(handler, plug, value));
+	}
+
+	@Override
+	public void sendRequest(Handler handler, int request) {
+		switch (request) {
+			case GET_STATUS:
+				sendRequestGetPlugsStatus(handler);
+				break;
+		}
 	}
 }

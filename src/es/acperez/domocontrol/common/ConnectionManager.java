@@ -1,6 +1,8 @@
-package es.acperez.domocontrol.power.controller;
+package es.acperez.domocontrol.common;
 
 import java.util.ArrayList;
+
+import es.acperez.domocontrol.power.controller.PowerManagerTask;
 
 public class ConnectionManager {
     
@@ -8,19 +10,27 @@ public class ConnectionManager {
 
     private ArrayList<Thread> active = new ArrayList<Thread>();
     private ArrayList<Thread> queue = new ArrayList<Thread>();
-
+    
     private static ConnectionManager instance;
+    
+    public interface TaskListener {
+        void onTaskCompleted(final Thread thread);
+    }
 
+    private ConnectionManager() {
+    	
+    }
+    
     public static ConnectionManager getInstance() {
          if (instance == null)
               instance = new ConnectionManager();
          return instance;
     }
     
-    public void push(Thread thread) {
-         queue.add(thread);
-         if (active.size() < MAX_CONNECTIONS)
-              startNext();
+    public void push(PowerManagerTask task) {
+    	queue.add(task);
+    	if (active.size() < MAX_CONNECTIONS)
+    		startNext();
     }
 
     private void startNext() {
@@ -33,8 +43,8 @@ public class ConnectionManager {
          }
     }
 
-    public void didComplete(Thread runnable) {
-         active.remove(runnable);
-         startNext();
-    }
+    public void didComplete(Thread task) {
+        active.remove(task);
+        startNext();
+	}
 }

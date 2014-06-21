@@ -3,17 +3,79 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<TextView
-		android:id="@+id/power_monitor_title"
+    <LinearLayout
+        android:id="@+id/power_loading_panel"
+        android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone">
+    
+    	<ProgressBar
+        	android:layout_width="wrap_content"
+        	android:layout_height="match_parent"
+        	android:indeterminate="true"/>
+    	
+        <TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/connecting_message"/>
+    </LinearLayout>
+    
+        <LinearLayout
+        android:id="@+id/power_offline_panel"
+        android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:visibility="gone">
+    
+        <TextView
+			android:id="@+id/power_monitor_error_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+		
+    </LinearLayout>
+    
+   	<LinearLayout
+        android:id="@+id/power_online_panel"
+        android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:visibility="gone">
+    
+        <TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Connected"/>
+		
+    </LinearLayout>
+	<!-- <TextView
+		android:id="@+id/power_monitor_status_text"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/power_monitor_title"/>
+		android:text="@string/power_monitor_status_text"/>
 	
 	<ImageView
+		android:id="@+id/power_monitor_status_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/power_monitor_status_text"
+		android:layout_alignTop="@id/power_monitor_status_text"
+		android:layout_alignBottom="@id/power_monitor_status_text"
+		android:contentDescription="@string/power_monitor_status_description"
+		android:src="@drawable/status_online"/>
+	
+	<TextView
+		android:id="@+id/power_monitor_status_description"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/power_monitor_status_img"
+		android:text="@string/power_monitor_status_description"/>	 -->
+	
+<!-- 	<ImageView
 		android:id="@+id/power_monitor_socket1_img"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_title"
+		android:layout_below="@id/power_monitor_status_text"
 		android:contentDescription="@string/power_monitor_socket1_description"/>
 	
 	<TextView
@@ -63,6 +125,6 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/power_monitor_socket4_img"
-		android:text="@string/power_monitor_socket4_description"/>
+		android:text="@string/power_monitor_socket4_description"/> -->
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package es.acperez.domocontrol;
 
+import es.acperez.domocontrol.common.DomoSystem.DomoSystemStatusListener;
 import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
@@ -9,7 +10,7 @@ public class DomoControlApplication extends Application {
 	
     public static final String SYSTEM_SELECTION = "selectes_system";
 	private final String prefName = "settings";
-	private static SystemsDataModel mSystemsData = null;
+	private static DomoSystems mSystemsData = null;
 	
 	static {
 		System.loadLibrary("DomoControl");
@@ -17,13 +18,12 @@ public class DomoControlApplication extends Application {
     
 	public static native byte[] EncryptData(byte[] data);
     public static native byte[] DecryptData(byte[] data);
- 
     
     @Override
 	public void onCreate() {
 		super.onCreate();
 		try {
-			mSystemsData = new SystemsDataModel(this);
+			mSystemsData = new DomoSystems(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -37,11 +37,24 @@ public class DomoControlApplication extends Application {
 		editor.commit();
 	}
 	
+	// Systems related methods
+	public static void addSystemListener(int systemType, DomoSystemStatusListener listener) {
+		mSystemsData.addSystemListener(systemType, listener);
+	}
+	
+	public static void sendSystemRequest(int systemType, int request) {
+		mSystemsData.sendRequest(systemType, request);
+	}
+	
 	public static Fragment getSystemFragment(int position) {
 		return mSystemsData.getFragment(position);
 	}
 	
 	public static String[] getSystemsName() {
 		return mSystemsData.getSystemsName();
+	}
+	
+	public static int getSystemStatus(int type) {
+		return mSystemsData.getStatus(type);
 	}
 }

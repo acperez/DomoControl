@@ -4,48 +4,39 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
-import android.widget.ImageView;
+import es.acperez.domocontrol.SystemListFragment.OnItemSelectedListener;
+import es.acperez.domocontrol.common.DomoSystem;
+import es.acperez.domocontrol.common.DomoSystem.DomoSystemStatusListener;
 import es.acperez.domocontrol.power.controller.PowerManager;
 import es.acperez.domocontrol.settings.Settings;
 
-public class DomoControlActivity extends Activity implements SystemListFragment.OnItemSelectedListener {
+public class DomoControlActivity extends Activity implements OnItemSelectedListener, DomoSystemStatusListener {
     
-	static ImageView img[];
-	static boolean plugs[];
-	PowerManager powerManager;
     private boolean mDualFragments = false;
-    private boolean mTitlesHidden = false;
-    	
+    private boolean mSystemsHidden = false;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.domo_control);
 		
-		getApplication();
-		
         if(savedInstanceState != null) {
-            mTitlesHidden = savedInstanceState.getBoolean("devicesHidden");
+            mSystemsHidden = savedInstanceState.getBoolean("devicesHidden");
         }
 
         ContentFragment frag = (ContentFragment) getFragmentManager()
                 .findFragmentById(R.id.controlFragment);
         if (frag != null) mDualFragments = true;
         
-        if (mTitlesHidden) {
+        if (mSystemsHidden) {
             getFragmentManager().beginTransaction()
                     .hide(getFragmentManager().findFragmentById(R.id.system_list_fragment)).commit();
         }
-		
-		
-		
-		
-		img = new ImageView[4];
+        
 //		img[0] = (ImageView) findViewById(R.id.img1);
 //		img[0].setOnClickListener(new View.OnClickListener() {
 //			@Override
@@ -78,38 +69,9 @@ public class DomoControlActivity extends Activity implements SystemListFragment.
 //			}
 //		});
 		
-		plugs = new boolean[4];
-		
-		powerManager = new PowerManager();
-    	powerManager.getStatus(powerManagerHandler);
+        InitializeSystemsStatus();
 	}
-		
-	static Handler powerManagerHandler = new Handler() {
-		@Override
-		public void handleMessage(Message m) {
-			switch (m.what) {
-				case PowerManager.ERROR_NETWORK:
-					break;
-				case PowerManager.ERROR_PASSWORD:
-					break;
-				case PowerManager.ERROR_NONE:
-					UpdateUI((boolean[]) m.obj);
-					break;
-			}
-		}
-		
-		private void UpdateUI(boolean[] status) {
-			for (int i = 0; i < status.length; i++) {
-				plugs[i] = status[i];
-				
-				if (status[i] == true)
-					img[i].setImageResource(R.drawable.on);
-				else
-					img[i].setImageResource(R.drawable.off);
-			}
-		}
-	};
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	  MenuInflater inflater = getMenuInflater();
@@ -161,5 +123,16 @@ public class DomoControlActivity extends Activity implements SystemListFragment.
             frag.updateControlPanel(position);
         }
 	}
-	
+
+	private void InitializeSystemsStatus() {
+        DomoControlApplication.addSystemListener(DomoSystem.TYPE_POWER, this);
+        DomoControlApplication.sendSystemRequest(DomoSystem.TYPE_POWER, PowerManager.GET_STATUS);
+	}
+
+	@Override
+	public void onSystemStatusChange(int systemType, int status) {
+		// Update status in list item
+        SystemListFragment fragment = (SystemListFragment)getFragmentManager().findFragmentById(R.id.system_list_fragment);
+        fragment.updateStatus(systemType, status);
+	}
 }
