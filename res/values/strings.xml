@@ -4,41 +4,49 @@
     <string name="app_name">DomoControl</string>
     <string name="action_settings">Settings</string>
     
-    <string name="power_monitor_title">Status</string>
-    <string name="power_monitor_socket1_description">Socket 1</string>
-    <string name="power_monitor_socket2_description">Socket 2</string>
-    <string name="power_monitor_socket3_description">Socket 3</string>
-    <string name="power_monitor_socket4_description">Socket 4</string>
+    <string name="system_list_item_status_description">Status</string>
     
+	<string name="image_error_description">Error</string>
+	<string name="connecting_message">Please wait while connecting</string>
+	<string name="network_unknown_error">Unknown connection error, please check settings and try again</string>
+	
+    <string name="power_loging_error">Authentication error, please check your credentials and try to connect again</string>
+    <string name="power_network_error">Remote host not found, please check your settings and try to connect again</string>
+    
+    <string name="power_apply_settings_btn">Connect</string>
+    <string name="power_cancel_settings_btn">Cancel</string>
+    
+    <string name="power_socket_header_desc">Plug sockets name</string>
+    <string name="power_socket1_name_desc">Socket 1</string>
+    <string name="power_socket2_name_desc">Socket 2</string>
+    <string name="power_socket3_name_desc">Socket 3</string>
+    <string name="power_socket4_name_desc">Socket 4</string>
+    
+    <string name="settings_desc">Settings</string>
     <string name="settings_title">Settings</string>
     <string name="power_ip">Host IP</string>
     <string name="power_ip_desc">HostName or Ip (Ex: 192.168.0.1)</string>
+    <string name="power_port">Port</string>
+    <string name="power_port_desc">Port</string>
     <string name="power_password">Password</string>
+    <string name="power_password_desc"></string>
     <string name="settings_ok">Save</string>
     <string name="settings_cancel">Cancel</string>
-    
-    <string name="pref_power_address">power.address</string>
-    <string name="pref_power_password">power.password</string>
     
 	<string-array name="systems_array">
 		<item>Power</item>
 		<item>Test</item>
-		<item>Test</item>
-		<item>Test</item>
-		<item>Test</item>
-		<item>Test</item>
-		<item>Test</item>
 	</string-array>
 	
 	<string-array name="system_fragments_array">
-		<item>es.acperez.domocontrol.power.PowerFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
-		<item>es.acperez.domocontrol.UnderConstructionFragment</item>
+		<item>es.acperez.domocontrol.systems.power.PowerFragment</item>
+		<item>es.acperez.domocontrol.systems.empty.UnderConstructionFragment</item>
 	</string-array>
+
+ 	<integer-array name="system_types_array">
+	    <item>0</item>
+	    <item>1</item>
+	</integer-array>
     
 	<string name="under_construction">Under construction</string>
 	

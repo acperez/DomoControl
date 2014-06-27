@@ -1,4 +1,4 @@
-package es.acperez.domocontrol.power.controller;
+package es.acperez.domocontrol.systems.power.controller;
 
 public class PowerDevice {
 	private byte key[];

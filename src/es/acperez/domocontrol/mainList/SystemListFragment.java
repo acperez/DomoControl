@@ -1,5 +1,8 @@
-package es.acperez.domocontrol;
+package es.acperez.domocontrol.mainList;
 
+import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.graphics.Color;
@@ -7,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 public class SystemListFragment extends ListFragment {
@@ -86,7 +90,40 @@ public class SystemListFragment extends ListFragment {
 
 		mListener.onItemSelected(position);
 	}
+	
+	public void updateStatus(int position, int status) {
+		View item = getListView().getChildAt(position);
+		updateSatusView(status, item);
+	}
 
+	static void updateSatusView(int status, View item) {
+		if (item == null)
+			return;
+		
+		View loading = item.findViewById(R.id.system_list_item_loading);
+		ImageView image = (ImageView) item.findViewById(R.id.system_list_item_status);
+		image.setVisibility(View.VISIBLE);
+		
+		switch (status) {
+		case DomoSystem.STATUS_LOADING:
+			loading.setVisibility(View.VISIBLE);
+			image.setVisibility(View.GONE);
+			break;
+			
+		case DomoSystem.STATUS_ONLINE:
+			loading.setVisibility(View.GONE);
+			image.setImageResource(R.drawable.status_online);
+			image.setVisibility(View.VISIBLE);
+			break;
+			
+		case DomoSystem.STATUS_OFFLINE:
+			loading.setVisibility(View.GONE);
+			image.setImageResource(R.drawable.status_offline);
+			image.setVisibility(View.VISIBLE);
+			break;
+		}		
+	}
+	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

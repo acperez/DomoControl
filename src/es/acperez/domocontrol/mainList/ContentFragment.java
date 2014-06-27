@@ -1,5 +1,7 @@
-package es.acperez.domocontrol;
+package es.acperez.domocontrol.mainList;
 
+import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;

@@ -1,10 +1,14 @@
-package es.acperez.domocontrol;
+package es.acperez.domocontrol.mainList;
 
+import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class SystemListAdapter extends BaseAdapter {
@@ -36,6 +40,8 @@ public class SystemListAdapter extends BaseAdapter {
 
 	static class ViewHolder {
 		TextView text;
+		ProgressBar loading;
+		ImageView status;
 	}
 
 	@Override
@@ -52,14 +58,19 @@ public class SystemListAdapter extends BaseAdapter {
 			}
 
 			holder = new ViewHolder();
-			holder.text = (TextView) view
-					.findViewById(R.id.system_list_item_title);
+			holder.text = (TextView) view.findViewById(R.id.system_list_item_title);
+			holder.loading = (ProgressBar) view.findViewById(R.id.system_list_item_loading);
+			holder.status = (ImageView) view.findViewById(R.id.system_list_item_status);
+
 			view.setTag(holder);
 
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
 
+		int status = DomoControlApplication.getSystemStatus(position);
+		SystemListFragment.updateSatusView(status, view);
+		
 		holder.text.setText(mData[position]);
 
 		return view;
