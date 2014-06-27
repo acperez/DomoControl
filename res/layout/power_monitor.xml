@@ -4,127 +4,363 @@
 	android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/power_loading_panel"
-        android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical"
-		android:visibility="gone">
-    
-    	<ProgressBar
-        	android:layout_width="wrap_content"
-        	android:layout_height="match_parent"
-        	android:indeterminate="true"/>
-    	
-        <TextView
-			android:layout_width="wrap_content"
+   	        android:id="@+id/power_monitor_panel"
+	        android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+			
+	    <LinearLayout
+	        android:id="@+id/power_loading_panel"
+	        android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:visibility="gone"
+			android:gravity="center">
+	    
+	    	<ProgressBar
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:indeterminate="true"/>
+	    	
+	        <TextView
+	            android:id="@+id/power_loading_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/connecting_message"/>
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:id="@+id/power_offline_panel"
+	        android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/connecting_message"/>
-    </LinearLayout>
-    
-        <LinearLayout
-        android:id="@+id/power_offline_panel"
-        android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:visibility="gone">
-    
-        <TextView
-			android:id="@+id/power_monitor_error_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-		
-    </LinearLayout>
-    
-   	<LinearLayout
-        android:id="@+id/power_online_panel"
-        android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:visibility="gone">
-    
-        <TextView
-			android:layout_width="wrap_content"
+			android:orientation="horizontal"
+			android:visibility="gone">
+	    
+	        <TextView
+				android:id="@+id/power_monitor_error_text"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal"/>
+			
+	    </LinearLayout>
+	    
+	   	<LinearLayout
+	        android:id="@+id/power_online_panel"
+	        android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="Connected"/>
-		
-    </LinearLayout>
-	<!-- <TextView
-		android:id="@+id/power_monitor_status_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/power_monitor_status_text"/>
+			android:visibility="gone"
+			android:orientation="horizontal"
+			android:weightSum="4"
+			android:baselineAligned="false">
+			
+	   	    <RelativeLayout
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:layout_weight="1"
+	        	android:padding="4dp">
+	    
+			 	<es.acperez.domocontrol.common.customviews.SquareImageView
+			 	    xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+					android:id="@+id/power_monitor_socket1_img"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:contentDescription="@string/power_socket1_name_desc"
+					android:src="@drawable/on"
+					custom:stretchVertical="true"/>
+						 	
+			 	<TextView
+					android:id="@+id/power_monitor_socket1_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignLeft="@id/power_monitor_socket1_img"
+					android:layout_alignRight="@id/power_monitor_socket1_img"
+					android:layout_below="@id/power_monitor_socket1_img"
+					android:gravity="center"
+					android:text="@string/power_socket1_name_desc"/>
+			</RelativeLayout>
 	
-	<ImageView
-		android:id="@+id/power_monitor_status_img"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/power_monitor_status_text"
-		android:layout_alignTop="@id/power_monitor_status_text"
-		android:layout_alignBottom="@id/power_monitor_status_text"
-		android:contentDescription="@string/power_monitor_status_description"
-		android:src="@drawable/status_online"/>
+			<RelativeLayout
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:orientation="vertical"
+	        	android:layout_weight="1"
+	        	android:padding="4dp">
 	
-	<TextView
-		android:id="@+id/power_monitor_status_description"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/power_monitor_status_img"
-		android:text="@string/power_monitor_status_description"/>	 -->
+		 		<es.acperez.domocontrol.common.customviews.SquareImageView
+		 		    xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+					android:id="@+id/power_monitor_socket2_img"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:contentDescription="@string/power_socket2_name_desc"
+					android:src="@drawable/on"
+					custom:stretchVertical="true"/>
+			    
+			    <TextView
+					android:id="@+id/power_monitor_socket2_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignLeft="@id/power_monitor_socket2_img"
+					android:layout_alignRight="@id/power_monitor_socket2_img"
+					android:layout_below="@id/power_monitor_socket2_img"
+					android:gravity="center"
+					android:text="@string/power_socket2_name_desc"/>
+			    
+			</RelativeLayout>
+			 	
+	   	    <RelativeLayout
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:orientation="vertical"
+	        	android:layout_weight="1"
+	        	android:padding="4dp">
 	
-<!-- 	<ImageView
-		android:id="@+id/power_monitor_socket1_img"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_status_text"
-		android:contentDescription="@string/power_monitor_socket1_description"/>
+	   	        <es.acperez.domocontrol.common.customviews.SquareImageView
+	   	            xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+					android:id="@+id/power_monitor_socket3_img"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:contentDescription="@string/power_socket3_name_desc"
+					android:src="@drawable/on"
+					custom:stretchVertical="true"/>
 	
-	<TextView
-		android:id="@+id/power_monitor_socket1_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_socket1_img"
-		android:text="@string/power_monitor_socket1_description"/>
+	   	        <TextView
+					android:id="@+id/power_monitor_socket3_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignLeft="@id/power_monitor_socket3_img"
+					android:layout_alignRight="@id/power_monitor_socket3_img"
+					android:layout_below="@id/power_monitor_socket3_img"
+					android:gravity="center"
+					android:text="@string/power_socket3_name_desc"/>
+	   	        
+	        </RelativeLayout>
+	        	
+			<RelativeLayout
+				android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:orientation="vertical"
+	        	android:layout_weight="1"
+	        	android:padding="4dp">
+	        	
+			 	<es.acperez.domocontrol.common.customviews.SquareImageView
+			 	    xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+					android:id="@+id/power_monitor_socket4_img"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:contentDescription="@string/power_socket4_name_desc"
+					android:src="@drawable/on"
+					custom:stretchVertical="true"/>
+				
+				<TextView
+					android:id="@+id/power_monitor_socket4_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignLeft="@id/power_monitor_socket4_img"
+					android:layout_alignRight="@id/power_monitor_socket4_img"
+					android:layout_below="@id/power_monitor_socket4_img"
+					android:gravity="center"
+					android:text="@string/power_socket4_name_desc"/>
+				
+			</RelativeLayout>	
+			
+	    </LinearLayout>
+	        
+	    <RelativeLayout
+	        android:id="@+id/power_settings_access"
+	    	android:layout_width="match_parent"
+	    	android:layout_height="wrap_content">
+	        
+			<View
+			    android:id="@+id/power_separator"
+				android:layout_height="1dp"
+				android:layout_width="match_parent"
+				android:background="@color/black"/>
 	
-	<ImageView
-		android:id="@+id/power_monitor_socket2_img"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/power_monitor_socket1_img"
-		android:contentDescription="@string/power_monitor_socket2_description"/>
-	
-	<TextView
-		android:id="@+id/power_monitor_socket2_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_socket2_img"
-		android:text="@string/power_monitor_socket2_description"/>
-	
-	<ImageView
-		android:id="@+id/power_monitor_socket3_img"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/power_monitor_socket2_img"
-		android:contentDescription="@string/power_monitor_socket3_description"/>
-	
-	<TextView
-		android:id="@+id/power_monitor_socket3_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_socket3_img"
-		android:text="@string/power_monitor_socket3_description"/>
-	
-	<ImageView
-		android:id="@+id/power_monitor_socket4_img"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/power_monitor_socket3_img"
-		android:contentDescription="@string/power_monitor_socket4_description"/>
-	
-	<TextView
-		android:id="@+id/power_monitor_socket4_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/power_monitor_socket4_img"
-		android:text="@string/power_monitor_socket4_description"/> -->
-
+			<Button
+	        	android:id="@+id/power_reference_button"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:layout_below="@id/power_separator"
+	        	android:visibility="invisible"/>
+			
+			<ImageButton
+	        	android:id="@+id/power_settings_button"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:layout_below="@id/power_separator"
+	        	android:layout_alignTop="@id/power_reference_button"
+	        	android:layout_alignBottom="@id/power_reference_button"
+	        	android:layout_alignRight="@id/power_reference_button"
+	        	android:layout_alignLeft="@id/power_reference_button"
+	        	android:src="@drawable/sett"
+	        	android:scaleType="fitCenter"
+	        	android:contentDescription="@string/settings_desc"/>
+		</RelativeLayout>
+	</LinearLayout>
+	<TableLayout
+	    android:id="@+id/power_settings_panel"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:visibility="gone"
+	    android:stretchColumns="1"
+	    android:background="@color/gray_light">
+	    
+	    <TableRow android:weightSum="2">
+		    <TextView 
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_ip"
+		        android:layout_weight="1"/>
+		    
+	   	    <TextView 
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_port"
+		        android:layout_weight="1"/>
+	    </TableRow>
+	    <TableRow android:weightSum="2">
+		    <EditText 
+		        android:id="@+id/power_address"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:hint="@string/power_ip_desc"
+		        android:textSize="20sp"
+		        android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+		    
+		    <EditText 
+		        android:id="@+id/power_address_port"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:hint="@string/power_port_desc"
+		        android:textSize="20sp"
+		        android:maxLength="30"
+		        android:inputType="number"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+	    <TableRow android:weightSum="2">
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_password"
+		        android:layout_weight="1"/>
+	    </TableRow>
+   	    <TableRow android:weightSum="2">
+		    <EditText
+		        android:id="@+id/power_password"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+				android:inputType="textPassword"
+				android:hint="@string/power_password_desc"
+				android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+	    <TableRow>
+	       	<TextView
+	       	    android:layout_span="2"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text=""/>
+	    </TableRow>
+   	    <TableRow>
+	       	<TextView
+	       	    android:layout_span="2"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_socket_header_desc"/>
+	    </TableRow>
+   	    <TableRow android:weightSum="2">
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_socket1_name_desc"
+   		        android:layout_weight="1"/>
+		    <EditText
+		        android:id="@+id/power_settings_socket1"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+				android:hint="@string/power_socket1_name_desc"
+				android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+   	    <TableRow android:weightSum="2">
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_socket2_name_desc"
+		        android:layout_weight="1"/>
+		    <EditText
+		        android:id="@+id/power_settings_socket2"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+				android:hint="@string/power_socket2_name_desc"
+				android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+   	    <TableRow android:weightSum="2">
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_socket3_name_desc"
+		        android:layout_weight="1"/>
+		    <EditText
+		        android:id="@+id/power_settings_socket3"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+				android:hint="@string/power_socket3_name_desc"
+				android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+	   	<TableRow android:weightSum="2">
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+		        android:text="@string/power_socket4_name_desc"
+		        android:layout_weight="1"/>
+		    <EditText
+		        android:id="@+id/power_settings_socket4"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:textSize="20sp"
+				android:hint="@string/power_socket4_name_desc"
+				android:maxLength="30"
+		        android:singleLine="true"
+		        android:layout_weight="1"/>
+	    </TableRow>
+	    <TableRow android:weightSum="2">
+		    <Button
+		        android:id="@+id/power_apply_settings"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:text="@string/power_apply_settings_btn"
+		        android:layout_weight="1"/>
+		    
+		    <Button
+		        android:id="@+id/power_cancel_settings"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:text="@string/power_cancel_settings_btn"
+		        android:layout_weight="1"/>
+	    </TableRow>
+    </TableLayout>
+	        
 </RelativeLayout>

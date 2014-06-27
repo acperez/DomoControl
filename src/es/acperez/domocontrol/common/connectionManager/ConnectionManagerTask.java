@@ -1,8 +1,8 @@
-package es.acperez.domocontrol.common;
+package es.acperez.domocontrol.common.connectionManager;
 
 import java.util.ArrayList;
 
-import es.acperez.domocontrol.common.ConnectionManager.TaskListener;
+import es.acperez.domocontrol.common.connectionManager.ConnectionManager.TaskListener;
 
 public abstract class ConnectionManagerTask extends Thread {
 	
@@ -25,9 +25,11 @@ public abstract class ConnectionManagerTask extends Thread {
 	@Override
 	public final void run() {
 		try {
-			doRun();
+			doRun(); 
 		} finally {
+			ConnectionManager.getInstance().didComplete(this);
 			notifyListeners();
+			
 		}
 	}
 	

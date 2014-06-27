@@ -1,23 +1,20 @@
-package es.acperez.domocontrol.common;
+package es.acperez.domocontrol.systems.base;
 
 import java.lang.ref.WeakReference;
 
-import es.acperez.domocontrol.ContentFragment;
-import es.acperez.domocontrol.EmptyManager;
-import es.acperez.domocontrol.power.PowerData;
-import es.acperez.domocontrol.power.SystemFragment;
-import es.acperez.domocontrol.power.controller.PowerManager;
-import android.app.Fragment;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import es.acperez.domocontrol.mainList.ContentFragment;
+import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 
-public class DomoSystem {
+public abstract class DomoSystem implements DomoSystemStatusListener {
 	public String name;
 	private String fragmentClass;
-	private SystemFragment mFragment;
 	public int type;
-	public SystemManager mManager;
-	public SystemData mSystemData;
+	
+	protected SystemFragment mFragment;
+	protected SystemManager mManager;
 	
 	final public static int TYPE_POWER = 0;
 	final public static int TYPE_EMPTY = 1;
@@ -30,38 +27,20 @@ public class DomoSystem {
 	public static final int ERROR_PASSWORD = 1;
 	public static final int ERROR_NETWORK = 2;
 	
-	public interface DomoSystemStatusListener {
-	    public void onSystemStatusChange(int systemType, int status);
-	}
-	
-	public interface SystemManager {
-		void sendRequest(Handler handler, int request);
-	}
-	
-	public DomoSystem(String name, String fragmentClass, int type) throws Exception {
-		switch (type) {
-			case TYPE_POWER:
-				this.mManager = new PowerManager();
-				this.mSystemData = new PowerData();
-				break;
-			case TYPE_EMPTY:
-				this.mManager = new EmptyManager();
-				this.mSystemData = new EmptyData();
-				break;
-			default:
-				throw new Exception("Invalid system type");
-		}
+	final public static String POWER_SETTINGS_NAME = "power_settings";
 		
+	public DomoSystem(String name, String fragmentClass, int type) {
 		this.name = name;
 		this.fragmentClass = fragmentClass;
 		this.type = type;
 	}
 	
-	public Fragment getFragment() {
+	public SystemFragment getFragment() {
 		if (mFragment == null) {
 			try {
 				Class<?> claz = ContentFragment.class.getClassLoader().loadClass(fragmentClass);
 				mFragment = (SystemFragment)claz.newInstance();
+				mFragment.setSystem(this);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
@@ -70,22 +49,18 @@ public class DomoSystem {
 		
 		return mFragment;
 	}
-	
-	public int getStatus() {
-		return mSystemData.getStatus();
-	}
 
 	public void addSystemListener(DomoSystemStatusListener listener) {
-		mSystemData.addSystemListener(listener);
+		if (mManager != null)
+			mManager.addSystemListener(listener);
 	}
 	
 	public void removeSystemListener(DomoSystemStatusListener listener) {
-		mSystemData.removeSystemListener(listener);
+		mManager.removeSystemListener(listener);
 	}
 
-	public void sendRequest(int request) {
-		mSystemData.setStatus(DomoSystem.STATUS_LOADING);
-		mManager.sendRequest(managerHandler, request);
+	public void sendRequest(int request, Bundle params, boolean showLoading) {
+		mManager.sendRequest(managerHandler, request, params, showLoading);
 	}
 	
 	private static class WeakRefHandler extends Handler {
@@ -98,13 +73,29 @@ public class DomoSystem {
 		@Override
 		public void handleMessage(Message msg) {
 			DomoSystem system = ref.get();
-			system.mSystemData.setError(msg.what);
+			system.mManager.setError(msg.what);
 			int status = msg.what == DomoSystem.ERROR_NONE ? DomoSystem.STATUS_ONLINE : DomoSystem.STATUS_OFFLINE;
-			system.mSystemData.setStatus(status);
-
-			system.mFragment.updateStatus(status, msg.what);
+			system.mManager.setStatus(status);
+			system.requestResponse(msg);
 		}
 	};
 
 	private WeakRefHandler managerHandler = new WeakRefHandler(this);
+
+	@Override
+	public void onSystemStatusChange(int systemType, int status) {
+		this.getFragment().updateStatus();		
+	}
+
+	public abstract void settingsUpdate();
+	public abstract Bundle getSettings();
+	public abstract void requestResponse(Message msg);
+
+	public int getStatus() {
+		return mManager.getStatus();
+	}
+	
+	public int getError() {
+		return mManager.getError();
+	}
 }

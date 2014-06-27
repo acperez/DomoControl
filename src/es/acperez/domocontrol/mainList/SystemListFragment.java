@@ -1,6 +1,8 @@
-package es.acperez.domocontrol;
+package es.acperez.domocontrol.mainList;
 
-import es.acperez.domocontrol.common.DomoSystem;
+import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.graphics.Color;

@@ -1,8 +1,9 @@
-package es.acperez.domocontrol.common;
+package es.acperez.domocontrol.common.connectionManager;
 
 import java.util.ArrayList;
 
-import es.acperez.domocontrol.power.controller.PowerManagerTask;
+import es.acperez.domocontrol.systems.power.controller.PowerManagerTask;
+
 
 public class ConnectionManager {
     

@@ -1,4 +1,4 @@
-package es.acperez.domocontrol.customviews;
+package es.acperez.domocontrol.common.customviews;
 
 import android.content.Context;
 import android.util.AttributeSet;

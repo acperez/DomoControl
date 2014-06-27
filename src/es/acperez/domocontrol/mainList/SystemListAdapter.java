@@ -1,5 +1,7 @@
-package es.acperez.domocontrol;
+package es.acperez.domocontrol.mainList;
 
+import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

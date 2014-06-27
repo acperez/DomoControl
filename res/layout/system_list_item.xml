@@ -7,14 +7,15 @@
 	android:background="@drawable/list_shadow">
 
     
-    	<es.acperez.domocontrol.customviews.SquareProgressBar
+    <es.acperez.domocontrol.common.customviews.SquareProgressBar
         android:id="@+id/system_list_item_loading"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:indeterminate="true"
 		android:adjustViewBounds="true"
 		android:padding="4dp"/>
-	<es.acperez.domocontrol.customviews.SquareImageView
+    
+	<es.acperez.domocontrol.common.customviews.SquareImageView
 		android:id="@+id/system_list_item_status"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
@@ -23,8 +24,6 @@
 		android:src="@drawable/status_offline"
 		android:padding="8dp"/>
 
-
-		
 	<TextView
 		android:id="@+id/system_list_item_title"
 		android:layout_width="wrap_content"

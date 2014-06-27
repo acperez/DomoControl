@@ -1,16 +1,19 @@
 package es.acperez.domocontrol;
 
-import es.acperez.domocontrol.common.DomoSystem.DomoSystemStatusListener;
+import java.util.Map;
+
+import es.acperez.domocontrol.systems.DomoSystems;
+import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 
 public class DomoControlApplication extends Application {
 	
-    public static final String SYSTEM_SELECTION = "selectes_system";
-	private final String prefName = "settings";
-	private static DomoSystems mSystemsData = null;
+    public static final String SYSTEM_SELECTION = "selected_system";
+    private static DomoSystems mSystemsData = null;
 	
 	static {
 		System.loadLibrary("DomoControl");
@@ -29,21 +32,31 @@ public class DomoControlApplication extends Application {
 		}
 	}
     
-	public void savePreferences(String address, String password) {
-		SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(prefName, Context.MODE_PRIVATE);
+	public static void savePreferences(Context context, Bundle settings, String prefName) {
+		SharedPreferences sharedPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(getString(R.string.pref_power_address), address);
-		editor.putString(getString(R.string.pref_power_password), new String(EncryptData(password.getBytes())));
+		
+		for (String key : settings.keySet()) {
+			editor.putString(key, settings.getString(key));
+		}
+
 		editor.commit();
 	}
 	
-	// Systems related methods
-	public static void addSystemListener(int systemType, DomoSystemStatusListener listener) {
-		mSystemsData.addSystemListener(systemType, listener);
+	public static Bundle restorePreferences(Context context, String prefName) {
+		Bundle settings = new Bundle();
+		SharedPreferences sharedPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+		Map<String, ?> preferences = sharedPref.getAll();
+		for (String key : preferences.keySet()) {
+			settings.putString(key, (String)preferences.get(key));
+		}
+		
+		return settings;
 	}
 	
-	public static void sendSystemRequest(int systemType, int request) {
-		mSystemsData.sendRequest(systemType, request);
+	// Systems related methods
+	public static void addSystemListener(DomoSystemStatusListener listener) {
+		mSystemsData.addSystemListener(listener);
 	}
 	
 	public static Fragment getSystemFragment(int position) {
@@ -56,5 +69,22 @@ public class DomoControlApplication extends Application {
 	
 	public static int getSystemStatus(int type) {
 		return mSystemsData.getStatus(type);
+	}
+	
+	public static String byteArrayToHexString(byte[] bytes) {
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < bytes.length; i++) {
+			buffer.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+		}
+		return buffer.toString();
+	}
+	
+	public static byte[] hexStringToByteArray(String string) {
+		byte[] bytes = new byte[string.length() / 2];
+		for (int i = 0; i < bytes.length; i++) {
+			int charPos = i * 2;
+			bytes[i] = Integer.decode("0x" + string.substring(charPos, charPos + 2)).byteValue();
+		}
+		return bytes;
 	}
 }
