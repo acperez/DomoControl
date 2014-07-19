@@ -1,9 +1,6 @@
 package es.acperez.domocontrol.systems.power;
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +27,7 @@ public class PowerFragment extends SystemFragment {
 	private View mOnlineView;
 	private PowerData mData;
 	private PowerSystem mSystem;
+	private AnimatorSet animation = null;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,7 +37,7 @@ public class PowerFragment extends SystemFragment {
         mOfflineView = mView.findViewById(R.id.power_offline_panel);
         mOnlineView = mView.findViewById(R.id.power_online_panel);
         
-		if (mData.mServer.length() > 0)
+		if (mData.mServer != null && mData.mServer.length() > 0)
 			((EditText) mView.findViewById(R.id.power_address)).setText(mData.mServer);
 		
 		if (mData.mPort != 0)
@@ -63,7 +61,7 @@ public class PowerFragment extends SystemFragment {
         ((Button) mView.findViewById(R.id.power_cancel_settings)).setOnClickListener(mSettingsCancelListener);
         
         TextView loadingText = (TextView) mLoadingView.findViewById(R.id.power_loading_text);
-        setAnimation(loadingText);
+		animation = DomoControlApplication.setAnimation(loadingText);
         
         SquareImageView socket = (SquareImageView) mView.findViewById(R.id.power_monitor_socket1_img);
         updatePlugStatus(0, socket);
@@ -123,14 +121,19 @@ public class PowerFragment extends SystemFragment {
 				mOfflineView.setVisibility(View.GONE);
 				mOnlineView.setVisibility(View.GONE);
 				mLoadingView.setVisibility(View.VISIBLE);
+				if (!animation.isRunning()) {
+					animation.start();
+				}
 				break;
 			case DomoSystem.STATUS_OFFLINE:
+				animation.cancel();
 				mOnlineView.setVisibility(View.GONE);
 				mLoadingView.setVisibility(View.GONE);
 				updateOfflineMessage(mSystem.getError());
 				mOfflineView.setVisibility(View.VISIBLE);
 				break;
 			case DomoSystem.STATUS_ONLINE:
+				animation.cancel();
 				mLoadingView.setVisibility(View.GONE);
 				mOfflineView.setVisibility(View.GONE);
 				mOnlineView.setVisibility(View.VISIBLE);
@@ -218,37 +221,9 @@ public class PowerFragment extends SystemFragment {
 			mSystem.settingsUpdate();
 			
 			Bundle settings = mSystem.getSettings();
-			DomoControlApplication.savePreferences(getActivity(), settings, DomoSystem.POWER_SETTINGS_NAME);
+			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
 		}
 	};
-	
-	private void setAnimation(View v) {
-		ObjectAnimator fadeOut = ObjectAnimator.ofFloat(v, "alpha", 1f, 0f);
-		fadeOut.setDuration(500);
-		
-		ObjectAnimator fadeIn = ObjectAnimator.ofFloat(v, "alpha", 0f, 1f);
-		fadeIn.setDuration(1500);
-		AnimatorSet animatorSet = new AnimatorSet();
-
-		animatorSet.playSequentially(fadeOut, fadeIn);
-		animatorSet.addListener(new AnimatorListener() {
-			
-			@Override
-			public void onAnimationEnd(Animator animation) {
-			    animation.start();				
-			}
-
-			@Override
-			public void onAnimationStart(Animator animation) {}
-
-			@Override
-			public void onAnimationCancel(Animator animation) {}
-
-			@Override
-			public void onAnimationRepeat(Animator animation) {}
-		});
-		animatorSet.start();
-	}
 
 	@Override
 	public void setSystem(DomoSystem system) {

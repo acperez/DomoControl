@@ -33,19 +33,28 @@
     <string name="settings_ok">Save</string>
     <string name="settings_cancel">Cancel</string>
     
+    <string name="light_press_link">Press the link button on the bridge</string>
+    <string name="light_link_description">Link auth required</string>
+    <string name="light_network_error">Remote bridge not found, please check your settings and try to find bridge again or configure its address</string>
+    <string name="light_connect_address_settings_btn">Connect to bridge</string>
+    <string name="light_find_settings_btn">Find bridge</string>
+    
 	<string-array name="systems_array">
 		<item>Power</item>
+		<item>Light</item>
 		<item>Test</item>
 	</string-array>
 	
 	<string-array name="system_fragments_array">
 		<item>es.acperez.domocontrol.systems.power.PowerFragment</item>
+		<item>es.acperez.domocontrol.systems.light.LightFragment</item>
 		<item>es.acperez.domocontrol.systems.empty.UnderConstructionFragment</item>
 	</string-array>
 
  	<integer-array name="system_types_array">
 	    <item>0</item>
 	    <item>1</item>
+	    <item>2</item>
 	</integer-array>
     
 	<string name="under_construction">Under construction</string>

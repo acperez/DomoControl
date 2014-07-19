@@ -4,16 +4,22 @@ import java.util.Map;
 
 import es.acperez.domocontrol.systems.DomoSystems;
 import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.Animator.AnimatorListener;
 import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 public class DomoControlApplication extends Application {
 	
     public static final String SYSTEM_SELECTION = "selected_system";
     private static DomoSystems mSystemsData = null;
+    private static Context mContext = null;
 	
 	static {
 		System.loadLibrary("DomoControl");
@@ -26,14 +32,15 @@ public class DomoControlApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		try {
+			mContext = this;
 			mSystemsData = new DomoSystems(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
     
-	public static void savePreferences(Context context, Bundle settings, String prefName) {
-		SharedPreferences sharedPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+	public static void savePreferences(Bundle settings, String prefName) {
+		SharedPreferences sharedPref = mContext.getSharedPreferences(prefName, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		
 		for (String key : settings.keySet()) {
@@ -43,9 +50,9 @@ public class DomoControlApplication extends Application {
 		editor.commit();
 	}
 	
-	public static Bundle restorePreferences(Context context, String prefName) {
+	public static Bundle restorePreferences(String prefName) {
 		Bundle settings = new Bundle();
-		SharedPreferences sharedPref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = mContext.getSharedPreferences(prefName, Context.MODE_PRIVATE);
 		Map<String, ?> preferences = sharedPref.getAll();
 		for (String key : preferences.keySet()) {
 			settings.putString(key, (String)preferences.get(key));
@@ -86,5 +93,37 @@ public class DomoControlApplication extends Application {
 			bytes[i] = Integer.decode("0x" + string.substring(charPos, charPos + 2)).byteValue();
 		}
 		return bytes;
+	}
+	
+	public static AnimatorSet setAnimation(View v) {
+		ObjectAnimator fadeOut = ObjectAnimator.ofFloat(v, "alpha", 1f, 0f);
+		fadeOut.setDuration(500);
+		
+		ObjectAnimator fadeIn = ObjectAnimator.ofFloat(v, "alpha", 0f, 1f);
+		fadeIn.setDuration(1500);
+		AnimatorSet animatorSet = new AnimatorSet();
+
+		animatorSet.playSequentially(fadeOut, fadeIn);
+		animatorSet.addListener(new AnimatorListener() {
+			private boolean mCancel = false;
+			
+			@Override
+			public void onAnimationEnd(Animator animation) {
+			    if (!mCancel)
+					animation.start();
+			}
+
+			@Override
+			public void onAnimationStart(Animator animation) {}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				mCancel = true;
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {}
+		});
+		return animatorSet;
 	}
 }

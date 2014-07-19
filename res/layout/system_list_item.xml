@@ -23,6 +23,15 @@
 		android:adjustViewBounds="true"
 		android:src="@drawable/status_offline"
 		android:padding="8dp"/>
+	
+	<es.acperez.domocontrol.common.customviews.SquareImageView
+		android:id="@+id/system_list_item_warning"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:contentDescription="@string/system_list_item_status_description"
+		android:adjustViewBounds="true"
+		android:src="@drawable/status_warning"
+		android:padding="6dp"/>
 
 	<TextView
 		android:id="@+id/system_list_item_title"

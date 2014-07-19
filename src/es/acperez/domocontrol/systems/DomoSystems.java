@@ -5,6 +5,7 @@ import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 import es.acperez.domocontrol.systems.empty.EmptySystem;
+import es.acperez.domocontrol.systems.light.LightSystem;
 import es.acperez.domocontrol.systems.power.PowerSystem;
 import android.app.Fragment;
 import android.content.Context;
@@ -27,8 +28,12 @@ public class DomoSystems {
 		for (int i = 0; i < items; i++) {
 			switch (systemTypes[i]) {
 				case DomoSystem.TYPE_POWER:
-					Bundle settings = DomoControlApplication.restorePreferences(context, DomoSystem.POWER_SETTINGS_NAME);
-					domoSystems[systemTypes[i]] = new PowerSystem(names[i], fragmentClasses[i], settings);
+					Bundle powerSettings = DomoControlApplication.restorePreferences(DomoSystem.POWER_SETTINGS_NAME);
+					domoSystems[systemTypes[i]] = new PowerSystem(names[i], fragmentClasses[i], powerSettings);
+					break;
+				case DomoSystem.TYPE_LIGHT:
+					Bundle lightSettings = DomoControlApplication.restorePreferences(DomoSystem.LIGHT_SETTINGS_NAME);
+					domoSystems[systemTypes[i]] = new LightSystem(names[i], fragmentClasses[i], lightSettings);
 					break;
 				case DomoSystem.TYPE_EMPTY:
 					domoSystems[systemTypes[i]] = new EmptySystem(names[i], fragmentClasses[i]);
