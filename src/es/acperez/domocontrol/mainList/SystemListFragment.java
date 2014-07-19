@@ -1,8 +1,11 @@
 package es.acperez.domocontrol.mainList;
 
+import java.util.HashMap;
+
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.graphics.Color;
@@ -18,6 +21,8 @@ public class SystemListFragment extends ListFragment {
 	private OnItemSelectedListener mListener;
 	private boolean mDualFragments = false;
 	private int mCurPosition = 0;
+    private static HashMap<View, AnimatorSet> mAnimations = new HashMap<View, AnimatorSet>();
+
 
 	public interface OnItemSelectedListener {
 		public void onItemSelected(int position);
@@ -56,7 +61,7 @@ public class SystemListFragment extends ListFragment {
 			mCurPosition = savedInstanceState.getInt(DomoControlApplication.SYSTEM_SELECTION);
 		}
 
-		setListAdapter(new SystemListAdapter(getActivity(), DomoControlApplication.getSystemsName(), mCurPosition));
+		setListAdapter(new SystemListAdapter(getActivity(), DomoControlApplication.getSystemsName(), mCurPosition, this));
 
 		ListView lv = getListView();
 		lv.setCacheColorHint(Color.TRANSPARENT); // Improves scrolling
@@ -93,34 +98,66 @@ public class SystemListFragment extends ListFragment {
 	
 	public void updateStatus(int position, int status) {
 		View item = getListView().getChildAt(position);
-		updateSatusView(status, item);
+		updateStatusView(status, item);
 	}
 
-	static void updateSatusView(int status, View item) {
+	private void updateStatusView(int status, View item) {
 		if (item == null)
 			return;
 		
 		View loading = item.findViewById(R.id.system_list_item_loading);
 		ImageView image = (ImageView) item.findViewById(R.id.system_list_item_status);
-		image.setVisibility(View.VISIBLE);
+		ImageView warning = (ImageView) item.findViewById(R.id.system_list_item_warning);
+		
 		
 		switch (status) {
-		case DomoSystem.STATUS_LOADING:
-			loading.setVisibility(View.VISIBLE);
-			image.setVisibility(View.GONE);
-			break;
-			
-		case DomoSystem.STATUS_ONLINE:
-			loading.setVisibility(View.GONE);
-			image.setImageResource(R.drawable.status_online);
-			image.setVisibility(View.VISIBLE);
-			break;
-			
-		case DomoSystem.STATUS_OFFLINE:
-			loading.setVisibility(View.GONE);
-			image.setImageResource(R.drawable.status_offline);
-			image.setVisibility(View.VISIBLE);
-			break;
+			case DomoSystem.STATUS_LOADING:
+				loading.setVisibility(View.VISIBLE);
+				image.setVisibility(View.GONE);
+				warning.setVisibility(View.GONE);
+				
+				if (mAnimations.containsKey(warning)) { 
+					mAnimations.get(warning).cancel();
+				}
+				break;
+				
+			case DomoSystem.STATUS_ONLINE:
+				loading.setVisibility(View.GONE);
+				image.setImageResource(R.drawable.status_online);
+				image.setVisibility(View.VISIBLE);
+				warning.setVisibility(View.GONE);
+				
+				if (mAnimations.containsKey(warning)) { 
+					mAnimations.get(warning).cancel();
+				}
+				break;
+				
+			case DomoSystem.STATUS_OFFLINE:
+				loading.setVisibility(View.GONE);
+				image.setImageResource(R.drawable.status_offline);
+				image.setVisibility(View.VISIBLE);
+				warning.setVisibility(View.GONE);
+
+				if (mAnimations.containsKey(warning)) { 
+					mAnimations.get(warning).cancel();
+				}
+				break;
+				
+			case DomoSystem.STATUS_WARNING:
+				loading.setVisibility(View.GONE);
+				image.setVisibility(View.GONE);
+				warning.setVisibility(View.VISIBLE);
+				
+				AnimatorSet animation = mAnimations.get(warning);
+				if (animation == null) {
+					animation = DomoControlApplication.setAnimation(warning);
+					mAnimations.put(warning, animation);
+				}
+				
+				if (!animation.isRunning()) {
+					mAnimations.get(warning).start();
+				}
+				break;
 		}		
 	}
 	

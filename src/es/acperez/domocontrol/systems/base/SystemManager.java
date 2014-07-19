@@ -11,6 +11,7 @@ public abstract class SystemManager {
 	private int status = DomoSystem.STATUS_OFFLINE;
 	private int error;
 	private ArrayList<DomoSystemStatusListener> statusListeners;
+	protected int systemType;
 
 	public interface DomoSystemStatusListener {
 	    public void onSystemStatusChange(int systemType, int status);
@@ -36,7 +37,7 @@ public abstract class SystemManager {
 		if (notify) {
 			Iterator<DomoSystemStatusListener> iterator = statusListeners.iterator();
 			while (iterator.hasNext()) {
-				iterator.next().onSystemStatusChange(DomoSystem.TYPE_POWER, this.status);
+				iterator.next().onSystemStatusChange(this.systemType, this.status);
 			}
 		}
 	}

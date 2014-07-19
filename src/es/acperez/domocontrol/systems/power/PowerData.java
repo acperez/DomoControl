@@ -18,7 +18,7 @@ public class PowerData {
 
 	public void importSettings(Bundle settings) {
 		mServer = settings.getString(PowerManager.SERVER);
-		mPort = Integer.valueOf(settings.getString(PowerManager.SERVER_PORT));
+		mPort = Integer.valueOf(settings.getString(PowerManager.SERVER_PORT, "5000"));
 		
 		mPassword = new String();
 		String password = settings.getString(PowerManager.PASSWORD);
@@ -44,10 +44,10 @@ public class PowerData {
 		if (name != null && name.length() > 0)
 			mSocketNanes[3] = name;
 		
-		mSockets[0] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_1));
-		mSockets[1] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_2));
-		mSockets[2] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_3));
-		mSockets[3] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_4));
+		mSockets[0] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_1, "false"));
+		mSockets[1] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_2, "false"));
+		mSockets[2] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_3, "false"));
+		mSockets[3] = Boolean.valueOf(settings.getString(PowerManager.SOCKET_STATUS_4, "false"));
 	}
 	
 	public Bundle exportSettings() {

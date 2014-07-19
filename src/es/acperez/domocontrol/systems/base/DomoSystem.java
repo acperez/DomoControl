@@ -17,17 +17,21 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 	protected SystemManager mManager;
 	
 	final public static int TYPE_POWER = 0;
-	final public static int TYPE_EMPTY = 1;
+	final public static int TYPE_LIGHT = 1;
+	final public static int TYPE_EMPTY = 2;
 	
 	final public static int STATUS_ONLINE = 0;
 	final public static int STATUS_OFFLINE = 1;
 	final public static int STATUS_LOADING = 2;
+	final public static int STATUS_WARNING = 3;
 	
 	public static final int ERROR_NONE = 0;
 	public static final int ERROR_PASSWORD = 1;
 	public static final int ERROR_NETWORK = 2;
+	public static final int ERROR_NOTIFY = 3;
 	
 	final public static String POWER_SETTINGS_NAME = "power_settings";
+	final public static String LIGHT_SETTINGS_NAME = "light_settings";
 		
 	public DomoSystem(String name, String fragmentClass, int type) {
 		this.name = name;
@@ -74,7 +78,14 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 		public void handleMessage(Message msg) {
 			DomoSystem system = ref.get();
 			system.mManager.setError(msg.what);
-			int status = msg.what == DomoSystem.ERROR_NONE ? DomoSystem.STATUS_ONLINE : DomoSystem.STATUS_OFFLINE;
+			
+			int status = DomoSystem.STATUS_OFFLINE;
+			if (msg.what == DomoSystem.ERROR_NONE) {
+				status = DomoSystem.STATUS_ONLINE;
+			} else if (msg.what == DomoSystem.ERROR_NOTIFY) {
+				status = DomoSystem.STATUS_WARNING;
+			}
+
 			system.mManager.setStatus(status);
 			system.requestResponse(msg);
 		}

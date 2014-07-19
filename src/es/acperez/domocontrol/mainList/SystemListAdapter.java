@@ -16,11 +16,13 @@ public class SystemListAdapter extends BaseAdapter {
 	private String[] mData;
 	private LayoutInflater mInflater;
 	private int mSelection = 0;
+	private SystemListFragment list = null;
 
-	public SystemListAdapter(Context context, String[] data, int selection) {
+	public SystemListAdapter(Context context, String[] data, int selection, SystemListFragment list) {
 		this.mData = data;
 		this.mSelection = selection;
 		mInflater = LayoutInflater.from(context);
+		this.list = list;
 	}
 
 	@Override
@@ -42,6 +44,7 @@ public class SystemListAdapter extends BaseAdapter {
 		TextView text;
 		ProgressBar loading;
 		ImageView status;
+		ImageView warning;
 	}
 
 	@Override
@@ -61,7 +64,8 @@ public class SystemListAdapter extends BaseAdapter {
 			holder.text = (TextView) view.findViewById(R.id.system_list_item_title);
 			holder.loading = (ProgressBar) view.findViewById(R.id.system_list_item_loading);
 			holder.status = (ImageView) view.findViewById(R.id.system_list_item_status);
-
+			holder.warning = (ImageView) view.findViewById(R.id.system_list_item_warning);			
+			
 			view.setTag(holder);
 
 		} else {
@@ -69,7 +73,8 @@ public class SystemListAdapter extends BaseAdapter {
 		}
 
 		int status = DomoControlApplication.getSystemStatus(position);
-		SystemListFragment.updateSatusView(status, view);
+
+		list.updateStatus(position, status);
 		
 		holder.text.setText(mData[position]);
 

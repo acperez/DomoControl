@@ -41,7 +41,8 @@ public class PowerSystem extends DomoSystem {
 	@Override
 	public void requestResponse(Message msg) {
 		boolean[] plugStatus = (boolean[])msg.obj;
-		mData.mSockets = plugStatus;
+		if (plugStatus != null)
+			mData.mSockets = plugStatus;
 		
 		mFragment.updateContent();
 	}

@@ -3,6 +3,7 @@ package es.acperez.domocontrol.systems.power.controller;
 import android.os.Bundle;
 import android.os.Handler;
 import es.acperez.domocontrol.common.connectionManager.ConnectionManager;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager;
 import es.acperez.domocontrol.systems.power.PowerData;
 
@@ -29,6 +30,8 @@ public class PowerManager extends SystemManager {
 	private PowerData mData;
 
 	public PowerManager(PowerData data) {
+		this.systemType = DomoSystem.TYPE_POWER;
+		
 		connectionManager = ConnectionManager.getInstance();
 		mData = data;
 	}
