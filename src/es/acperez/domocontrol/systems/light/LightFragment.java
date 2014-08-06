@@ -1,5 +1,9 @@
 package es.acperez.domocontrol.systems.light;
 
+import com.philips.lighting.model.PHGroup;
+import com.philips.lighting.model.PHLight;
+import com.philips.lighting.model.PHScene;
+
 import android.animation.AnimatorSet;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,16 +12,24 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
+import es.acperez.domocontrol.systems.light.ColorPicker.ColorPickerInitListener;
 import es.acperez.domocontrol.systems.light.controller.LightDevice;
 
 public class LightFragment extends SystemFragment {
@@ -29,6 +41,13 @@ public class LightFragment extends SystemFragment {
 	private LightSystem mSystem;
 	private LightDevice mDevice;
 	private AnimatorSet animation;
+	private ArrayAdapter<String> lightAdapter;
+	private ArrayAdapter<String> groupAdapter;
+	private ArrayAdapter<String> sceneAdapter;
+	private LinearLayout mColorPanel;
+	private ColorPicker mSaturationSelector;
+	private ColorPicker mHueSelector;
+	private ColorPicker mValueSelector;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,20 +71,34 @@ public class LightFragment extends SystemFragment {
         TextView loadingText = (TextView) mLoadingView.findViewById(R.id.light_loading_text);
         animation = DomoControlApplication.setAnimation(loadingText);
         
-		((Button) mView.findViewById(R.id.light_test_button)).setOnClickListener(mTestListener);
+        ListView lightList = (ListView) mView.findViewById(R.id.light_list_lights);
+		lightAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+		ListView groupList = (ListView) mView.findViewById(R.id.light_list_groups);
+		groupAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+		ListView sceneList = (ListView) mView.findViewById(R.id.light_list_scenes);
+		sceneAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+		updateContent();
+		lightList.setAdapter(lightAdapter);
+		lightList.setOnItemClickListener(mLightSelected);
+		groupList.setAdapter(groupAdapter);
+		groupList.setOnItemClickListener(mGroupSelected);
+		sceneList.setAdapter(sceneAdapter);
+		sceneList.setOnItemClickListener(mSceneSelected);
+        
+		mColorPanel = (LinearLayout) mView.findViewById(R.id.light_color_panel);
+		
+		mHueSelector = (ColorPicker) mView.findViewById(R.id.light_color_selector);
+		mHueSelector.setInitListener(mHueInitListener);
+		mHueSelector.setOnSeekBarChangeListener(mHueListener);
+		
+		mSaturationSelector = (ColorPicker) mView.findViewById(R.id.light_hue_selector);
+		mSaturationSelector.setOnSeekBarChangeListener(mSaturationListener);
 
-        updateStatus();
+		mValueSelector = (ColorPicker) mView.findViewById(R.id.light_value_selector);
+		mValueSelector.setOnSeekBarChangeListener(mValueListener);
 		
         return mView;
     }
-	
-	private OnClickListener mTestListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			mSystem.test_connect();
-		}
-	};
 
 	@Override
 	public void updateStatus() {
@@ -136,6 +169,26 @@ public class LightFragment extends SystemFragment {
 
 	@Override
 	public void updateContent() {
+		if (lightAdapter == null || mDevice == null)
+			return;
+		
+		if (mDevice.lights != null) {
+			for (PHLight light : mDevice.lights) {
+				lightAdapter.add(light.getName());
+			}
+		}
+		
+		if (mDevice.lights != null) {
+			for (PHGroup group : mDevice.groups) {
+				groupAdapter.add(group.getName());
+			}
+		}
+		
+		if (mDevice.lights != null) {
+			for (PHScene scene : mDevice.scenes) {
+				sceneAdapter.add(scene.getName());
+			}
+		}
 	}
 	
 	private OnClickListener mSettingsOpenListener = new OnClickListener() {
@@ -192,6 +245,92 @@ private OnClickListener mSettingsApplyListener = new OnClickListener() {
 			mSettingsCancelListener.onClick(v);
 			mDevice.mServer = null;
 			mSystem.settingsUpdate();
+		}
+	};
+	
+	private OnItemClickListener mLightSelected = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			System.out.println("click on item " + position);
+		}
+	};
+	
+	private OnItemClickListener mGroupSelected = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			System.out.println("click on item " + position);
+		}
+	};
+	
+	private OnItemClickListener mSceneSelected = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			System.out.println("click on item " + position);
+		}
+	};
+	
+	private ColorPickerInitListener mHueInitListener = new ColorPickerInitListener() {
+		
+		@Override
+		public void onColorViewInit(int color) {
+			mColorPanel.setBackgroundColor(color);
+			mSaturationSelector.setColor(color);
+			mValueSelector.setColor(color);
+		}
+	};
+	
+	private OnSeekBarChangeListener mHueListener = new OnSeekBarChangeListener() {
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			int color = ((ColorPicker) seekBar).getColor();
+			mColorPanel.setBackgroundColor(color);
+			mSaturationSelector.setColor(color);
+			mValueSelector.setColor(color);
+			mValueSelector.setColor(color);
+		}
+	};
+	
+	private OnSeekBarChangeListener mSaturationListener = new OnSeekBarChangeListener() {
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			int color = ((ColorPicker) seekBar).getColor();
+			mColorPanel.setBackgroundColor(color);
+			mHueSelector.setColor(color);
+			mValueSelector.setColor(color);
+		}
+	};
+	
+	private OnSeekBarChangeListener mValueListener = new OnSeekBarChangeListener() {
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			int color = ((ColorPicker) seekBar).getColor();
+			mColorPanel.setBackgroundColor(color);
+			mHueSelector.setColor(color);
+			mSaturationSelector.setColor(color);
 		}
 	};
 }

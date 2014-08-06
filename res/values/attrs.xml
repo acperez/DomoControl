@@ -3,4 +3,8 @@
     <declare-styleable name="SquareImageView">
         <attr name="stretchVertical" format="boolean"/>
     </declare-styleable>
+    
+    <declare-styleable name="ColorPicker">
+        <attr name="type" format="string"/>
+    </declare-styleable>
 </resources>

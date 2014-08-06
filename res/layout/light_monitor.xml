@@ -4,10 +4,10 @@
 	android:layout_height="match_parent">
 
     <LinearLayout
-   	        android:id="@+id/light_monitor_panel"
-	        android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical">
+        android:id="@+id/light_monitor_panel"
+	    android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 			
 	    <LinearLayout
 	        android:id="@+id/light_loading_panel"
@@ -61,16 +61,105 @@
 			android:orientation="horizontal"
 			android:weightSum="4"
 			android:baselineAligned="false">
+	        
+    	   	<LinearLayout
+		        android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:layout_weight="3"
+				android:baselineAligned="false">
 			
-	   	    <Button
-	        	android:id="@+id/light_test_button"
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:text="TEST LIGHT"/>
+		   	    <TextView 
+		   	        android:layout_width="wrap_content"
+		   	        android:layout_height="wrap_content"
+		   	        android:text="@string/light_lights_title"/>
+		   	    <ListView
+		   	        android:id="@+id/light_list_lights"
+		   	        android:layout_width="wrap_content"
+		   	        android:layout_height="wrap_content"/>
+		   	    
+		   	    <TextView 
+		   	        android:layout_width="wrap_content"
+		   	        android:layout_height="wrap_content"
+		   	        android:text="@string/light_groups_title"/>
+		   	    <ListView
+		   	        android:id="@+id/light_list_groups"
+		   	        android:layout_width="fill_parent"
+		   	        android:layout_height="wrap_content"/>
+		   	    
+		   	    <TextView 
+		   	        android:layout_width="wrap_content"
+		   	        android:layout_height="wrap_content"
+		   	        android:text="@string/light_scenes_title"/>
+		   	    <ListView
+		   	        android:id="@+id/light_list_scenes"
+		   	        android:layout_width="fill_parent"
+		   	        android:layout_height="wrap_content"/>
+	   	    </LinearLayout>
+		
+   		    <LinearLayout
+   		        android:id="@+id/light_color_panel"
+		        android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="horizontal"
+				android:layout_weight="1"
+				android:baselineAligned="false">
 
-			
+				<LinearLayout
+			        android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:baselineAligned="false"
+					android:gravity="center">
+   		        	
+	           		<es.acperez.domocontrol.systems.light.ColorPicker
+	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+	   		   	        android:id="@+id/light_color_selector"
+	   		   	        android:layout_width="30dip"
+						android:layout_height="match_parent"
+						android:layout_margin="30dp"
+						android:max="99"
+						android:progressDrawable="@android:color/transparent"
+						custom:type="hue"/>
+           		</LinearLayout>
+				<LinearLayout
+			        android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:baselineAligned="false"
+					android:gravity="center">
+
+				    <es.acperez.domocontrol.systems.light.ColorPicker
+	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+	   		   	        android:id="@+id/light_hue_selector"
+	   		   	        android:layout_width="30dip"
+						android:layout_height="match_parent"
+						android:layout_margin="30dp"
+						android:max="99"
+						android:progressDrawable="@android:color/transparent"
+						custom:type="saturation"/>
+			    </LinearLayout>
+   				<LinearLayout
+			        android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:baselineAligned="false"
+					android:gravity="center">
+				    
+	   		   	    <es.acperez.domocontrol.systems.light.ColorPicker
+	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+	   		   	        android:id="@+id/light_value_selector"
+	   		   	        android:layout_width="30dip"
+						android:layout_height="match_parent"
+						android:layout_margin="30dp"
+						android:max="99"
+						android:progressDrawable="@android:color/transparent"
+						custom:type="value"/>
+   		   	    </LinearLayout>    
+
+	   	   	</LinearLayout>	
 	    </LinearLayout>
-
+	    
 	    <RelativeLayout
 	        android:id="@+id/light_settings_access"
 	    	android:layout_width="match_parent"

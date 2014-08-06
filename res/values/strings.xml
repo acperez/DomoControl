@@ -39,6 +39,10 @@
     <string name="light_connect_address_settings_btn">Connect to bridge</string>
     <string name="light_find_settings_btn">Find bridge</string>
     
+    <string name="light_lights_title">Lights</string>
+    <string name="light_groups_title">Groups</string>
+    <string name="light_scenes_title">Scenes</string>
+    
 	<string-array name="systems_array">
 		<item>Power</item>
 		<item>Light</item>
