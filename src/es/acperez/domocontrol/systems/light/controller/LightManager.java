@@ -59,7 +59,7 @@ public class LightManager extends SystemManager {
 				connect();
 				break;
 			case GET_CONFIG:
-				requestConfig();
+				getConfig();
 				break;
 		}
 	}
@@ -82,14 +82,13 @@ public class LightManager extends SystemManager {
 		}
 	}
 	
-	private void requestConfig() {
-		List<PHLight> lights = mBridge.getResourceCache().getAllLights();
-		List<PHGroup> groups = mBridge.getResourceCache().getAllGroups();
-		List<PHScene> scenes = mBridge.getResourceCache().getAllScenes();
+	private void getConfig() {
+		mDevice.lights = mBridge.getResourceCache().getAllLights();
+		mDevice.groups = mBridge.getResourceCache().getAllGroups();
+		mDevice.scenes = mBridge.getResourceCache().getAllScenes();
 		
-		System.out.println("sadsad");
-//		phHueSDK.getGroupNames(groups);
-//		phHueSDK.getLightNames(lights);
+		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE);
+		handler.sendMessage(message);
 	}
 	
 	public void close() {

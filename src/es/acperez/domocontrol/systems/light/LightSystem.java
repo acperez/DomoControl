@@ -11,6 +11,7 @@ public class LightSystem extends DomoSystem {
 	
 	private static final int DISCONNECTIED = 0;
 	private static final int CONNECTED = 1;
+	private static final int READY = 2;
 	
 	public LightDevice mDevice;
 	private int mState = DISCONNECTIED;
@@ -39,11 +40,14 @@ public class LightSystem extends DomoSystem {
 
 	@Override
 	public void requestResponse(Message msg) {
-		mFragment.updateContent();
-		
 		if (mState == DISCONNECTIED && msg.what == DomoSystem.ERROR_NONE) {
 			mState = CONNECTED;
 			sendRequest(LightManager.GET_CONFIG, null, false);
+		}
+		
+		if (mState == CONNECTED && msg.what == DomoSystem.ERROR_NONE) {
+			mState = READY;
+			mFragment.updateContent();
 		}
 	}
 	

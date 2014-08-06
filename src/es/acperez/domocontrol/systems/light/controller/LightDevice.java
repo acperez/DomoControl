@@ -1,5 +1,11 @@
 package es.acperez.domocontrol.systems.light.controller;
 
+import java.util.List;
+
+import com.philips.lighting.model.PHGroup;
+import com.philips.lighting.model.PHLight;
+import com.philips.lighting.model.PHScene;
+
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import android.os.Bundle;
@@ -7,6 +13,10 @@ import android.os.Bundle;
 public class LightDevice {
 	public String mServer;
 	public String mUsername;
+	
+	public List<PHLight> lights;
+	public List<PHGroup> groups;
+	public List<PHScene> scenes;
 
 	public LightDevice() {
 	}
