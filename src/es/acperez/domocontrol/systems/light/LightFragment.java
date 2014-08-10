@@ -17,6 +17,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,6 +33,7 @@ import es.acperez.domocontrol.common.customviews.ColorPicker.ColorPickerInitList
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
 import es.acperez.domocontrol.systems.light.controller.LightDevice;
+import es.acperez.domocontrol.systems.light.controller.Scene;
 
 public class LightFragment extends SystemFragment {
 
@@ -43,8 +45,6 @@ public class LightFragment extends SystemFragment {
 	private LightDevice mDevice;
 	private AnimatorSet animation;
 	private ArrayAdapter<String> lightAdapter;
-	private ArrayAdapter<String> groupAdapter;
-	private ArrayAdapter<String> sceneAdapter;
 	private LinearLayout mColorPanel;
 	private ColorPicker mSaturationSelector;
 	private ColorPicker mHueSelector;
@@ -83,18 +83,11 @@ public class LightFragment extends SystemFragment {
         
         ListView lightList = (ListView) mView.findViewById(R.id.light_list_lights);
 		lightAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
-		ListView groupList = (ListView) mView.findViewById(R.id.light_list_groups);
-		groupAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
-		ListView sceneList = (ListView) mView.findViewById(R.id.light_list_scenes);
-		sceneAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1);
+		
 		updateContent();
 		lightList.setAdapter(lightAdapter);
 		lightList.setOnItemClickListener(mLightSelected);
-		groupList.setAdapter(groupAdapter);
-		groupList.setOnItemClickListener(mGroupSelected);
-		sceneList.setAdapter(sceneAdapter);
-		sceneList.setOnItemClickListener(mSceneSelected);
-        
+		
 		mColorPanel = (LinearLayout) mView.findViewById(R.id.light_color_panel);
 		
 		mHueSelector = (ColorPicker) mView.findViewById(R.id.light_color_selector);
@@ -106,6 +99,10 @@ public class LightFragment extends SystemFragment {
 
 		mValueSelector = (ColorPicker) mView.findViewById(R.id.light_value_selector);
 		mValueSelector.setOnSeekBarChangeListener(mValueListener);
+		
+		Scene[] scenes = DomoControlApplication.getScenes();
+		GridView sceneView = (GridView)mView.findViewById(R.id.light_tab_scenes_content);
+		sceneView.setAdapter(new SceneAdapter(getActivity(), scenes));
 		
         return mView;
     }
@@ -185,18 +182,6 @@ public class LightFragment extends SystemFragment {
 		if (mDevice.lights != null) {
 			for (PHLight light : mDevice.lights) {
 				lightAdapter.add(light.getName());
-			}
-		}
-		
-		if (mDevice.lights != null) {
-			for (PHGroup group : mDevice.groups) {
-				groupAdapter.add(group.getName());
-			}
-		}
-		
-		if (mDevice.lights != null) {
-			for (PHScene scene : mDevice.scenes) {
-				sceneAdapter.add(scene.getName());
 			}
 		}
 	}
@@ -301,22 +286,6 @@ public class LightFragment extends SystemFragment {
 	};
 	
 	private OnItemClickListener mLightSelected = new OnItemClickListener() {
-
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			System.out.println("click on item " + position);
-		}
-	};
-	
-	private OnItemClickListener mGroupSelected = new OnItemClickListener() {
-
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			System.out.println("click on item " + position);
-		}
-	};
-	
-	private OnItemClickListener mSceneSelected = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
