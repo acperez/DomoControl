@@ -5,7 +5,6 @@
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
 	android:background="@drawable/list_shadow">
-
     
     <es.acperez.domocontrol.common.customviews.SquareProgressBar
         android:id="@+id/system_list_item_loading"
@@ -37,6 +36,7 @@
 		android:id="@+id/system_list_item_title"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:textColor="@color/white"/>
+		android:textColor="@color/white"
+		android:textSize="@dimen/list_text_size_big"/>
 		    	
 </LinearLayout>

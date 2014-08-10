@@ -1,4 +1,4 @@
-package es.acperez.domocontrol.systems.light;
+package es.acperez.domocontrol.common.customviews;
 
 import java.util.Arrays;
 
@@ -89,14 +89,11 @@ public class ColorPicker extends SeekBar {
     }
 
     @Override
-    protected void onDraw(Canvas c) {
-		c.drawBitmap(mBitmap, 0, 0, null);
-		
-		c.drawRect(0, 0, getWidth() - 1, getHeight() - 1, mPaint);
-		
-        c.rotate(-90);
+    protected void onDraw(Canvas c) {;
+    	c.drawBitmap(mBitmap, 0, 0, null);
+    	c.drawRect(1, 1, getWidth(), getHeight(), mPaint);
+    	c.rotate(-90);
         c.translate(-getHeight(), -1);
-        
         super.onDraw(c);
     }
 
@@ -244,6 +241,7 @@ public class ColorPicker extends SeekBar {
 				mBitmap.recycle();
 				mBitmap = init(getWidth(), getHeight());
 			}
+			invalidate();
 			return;
 		}
 		
@@ -254,6 +252,7 @@ public class ColorPicker extends SeekBar {
 				mBitmap.recycle();
 				mBitmap = init(getWidth(), getHeight());
 			}
+			invalidate();
 			return;
 		}
 	}

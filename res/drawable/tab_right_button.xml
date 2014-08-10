@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" >
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/tab_border"/>
+            		<corners
+                		android:topRightRadius="@dimen/tab_corner_radius"
+                		android:bottomRightRadius="@dimen/tab_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/tab_border" android:bottom="@dimen/tab_border" android:right="@dimen/tab_border">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/gray_light"
+                		android:startColor="@color/gray"
+                		android:angle="270" />
+       				<corners
+                		android:topRightRadius="@dimen/tab_corner_radius"
+                		android:bottomRightRadius="@dimen/tab_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/tab_border" android:bottom="@dimen/tab_border" android:right="@dimen/tab_border">
+        		<shape>
+        		    <solid
+                		android:color="@color/blue_selection" />
+        			<corners
+                		android:topRightRadius="@dimen/tab_corner_radius"
+                		android:bottomRightRadius="@dimen/tab_corner_radius" />
+                    <padding
+                		android:left="@dimen/tab_padding"
+                		android:top="@dimen/tab_padding"
+                		android:right="@dimen/tab_padding_corner"
+                		android:bottom="@dimen/tab_padding" />
+        		</shape>
+    		</item>
+		</layer-list>
+    </item>
+
+    <item>
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/tab_border"/>
+            		<corners
+                		android:topRightRadius="@dimen/tab_corner_radius"
+                		android:bottomRightRadius="@dimen/tab_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/tab_border" android:bottom="@dimen/tab_border" android:right="@dimen/tab_border">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/tab_unselected_end"
+                		android:startColor="@color/tab_unselected_start"
+                		android:angle="90" />
+        			<corners
+                		android:topRightRadius="@dimen/tab_corner_radius"
+                		android:bottomRightRadius="@dimen/tab_corner_radius" />
+                    <padding
+                		android:left="@dimen/tab_padding"
+                		android:top="@dimen/tab_padding"
+                		android:right="@dimen/tab_padding_corner"
+                		android:bottom="@dimen/tab_padding" />
+        		</shape>
+    		</item>
+		</layer-list>
+    </item>
+
+</selector>

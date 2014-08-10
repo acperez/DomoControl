@@ -5,5 +5,11 @@
  	<item name="darkblue" type="color">#2B475E</item>
  	<item name="gray_light" type="color">#A4A4A4</item>
  	<item name="gray" type="color">#6E6E6E</item>
- 	<item name="gray_dark" type="color">#424242</item>
+ 	<item name="gray_dark" type="color">#424242</item>	
+ 	<item name="blue_selection" type="color">#80009cff</item>
+ 	
+ 	<item name="tab_unselected_end" type="color">#ffffff</item>
+ 	<item name="tab_unselected_start" type="color">#aaaaaa</item>
+ 	<item name="tab_border" type="color">#888888</item>
+ 	
 </resources>

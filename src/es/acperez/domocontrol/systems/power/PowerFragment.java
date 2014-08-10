@@ -233,6 +233,9 @@ public class PowerFragment extends SystemFragment {
 
 	@Override
 	public void updateContent() {
+		if (mView == null)
+			return;
+		
 		SquareImageView socket = (SquareImageView) mView.findViewById(R.id.power_monitor_socket1_img);
         updatePlugStatus(0, socket);
 
