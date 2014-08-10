@@ -1,338 +1,378 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/light_monitor_panel"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+		
     <LinearLayout
-        android:id="@+id/light_monitor_panel"
-	    android:layout_width="match_parent"
+        android:id="@+id/light_loading_panel"
+        android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:orientation="vertical">
-			
-	    <LinearLayout
-	        android:id="@+id/light_loading_panel"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:gravity="center">
+
+  	    	<ImageView 
+    	    android:id="@+id/light_link_image"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:contentDescription="@string/light_link_description"
+    	    android:src="@drawable/link_auth"
+    	    android:visibility="gone"/>
+        	    		    
+    	<ProgressBar
+    	    android:id="@+id/light_loading"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:indeterminate="true"/>
+
+        <TextView
+            android:id="@+id/light_loading_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/connecting_message"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/light_offline_panel"
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:visibility="gone">
+    
+        <TextView
+			android:id="@+id/light_monitor_error_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"/>
+		
+    </LinearLayout>
+	<LinearLayout
+        android:id="@+id/light_online_panel"
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:visibility="visible">
+
+	    <RadioGroup
+	        android:id="@+id/light_tab"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:orientation="horizontal"
+	        android:layout_weight="5"
+	        android:checkedButton="@+id/light_tab_scenes" >
+	        
+            <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	        
+	        <RadioButton
+	            android:id="@id/light_tab_scenes"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/light_tab_scenes"
+	            android:background="@drawable/tab_left_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        <RadioButton
+	            android:id="@+id/light_tab_lights"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+				android:layout_weight="1"
+	            android:text="@string/light_tab_lights"
+	            android:background="@drawable/tab_middle_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        <RadioButton
+	            android:id="@+id/light_tab_setup"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/light_tab_config"
+	            android:background="@drawable/tab_right_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	    </RadioGroup>
+
+    	<FrameLayout
 	        android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:orientation="vertical"
-			android:visibility="gone"
-			android:gravity="center">
-
-   	    	<ImageView 
-	    	    android:id="@+id/light_link_image"
-	    	    android:layout_width="wrap_content"
-	    	    android:layout_height="wrap_content"
-	    	    android:contentDescription="@string/light_link_description"
-	    	    android:src="@drawable/link_auth"
-	    	    android:visibility="gone"/>
-	        	    		    
-	    	<ProgressBar
-	    	    android:id="@+id/light_loading"
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:indeterminate="true"/>
-
-	        <TextView
-	            android:id="@+id/light_loading_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/connecting_message"/>
-	    </LinearLayout>
-	    
-	    <LinearLayout
-	        android:id="@+id/light_offline_panel"
-	        android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:visibility="gone">
-	    
-	        <TextView
-				android:id="@+id/light_monitor_error_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"/>
-			
-	    </LinearLayout>
-	    
-	   	<LinearLayout
-	        android:id="@+id/light_online_panel"
-	        android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:visibility="visible"
-			android:orientation="horizontal"
-			android:weightSum="4"
-			android:baselineAligned="false">
+			android:orientation="horizontal">
 	        
-    	   	<LinearLayout
+		   	<LinearLayout
+		   	    android:id="@+id/light_tab_scenes_content"
 		        android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				android:layout_weight="3"
-				android:baselineAligned="false">
-			
-		   	    <TextView 
-		   	        android:layout_width="wrap_content"
-		   	        android:layout_height="wrap_content"
-		   	        android:text="@string/light_lights_title"/>
-		   	    <ListView
-		   	        android:id="@+id/light_list_lights"
-		   	        android:layout_width="wrap_content"
-		   	        android:layout_height="wrap_content"/>
-		   	    
-		   	    <TextView 
-		   	        android:layout_width="wrap_content"
-		   	        android:layout_height="wrap_content"
-		   	        android:text="@string/light_groups_title"/>
-		   	    <ListView
-		   	        android:id="@+id/light_list_groups"
-		   	        android:layout_width="fill_parent"
-		   	        android:layout_height="wrap_content"/>
-		   	    
-		   	    <TextView 
-		   	        android:layout_width="wrap_content"
-		   	        android:layout_height="wrap_content"
-		   	        android:text="@string/light_scenes_title"/>
-		   	    <ListView
-		   	        android:id="@+id/light_list_scenes"
-		   	        android:layout_width="fill_parent"
-		   	        android:layout_height="wrap_content"/>
-	   	    </LinearLayout>
-		
-   		    <LinearLayout
-   		        android:id="@+id/light_color_panel"
-		        android:layout_width="match_parent"
-				android:layout_height="match_parent"
 				android:orientation="horizontal"
-				android:layout_weight="1"
+				android:weightSum="4"
 				android:baselineAligned="false">
+			</LinearLayout>
 
-				<LinearLayout
-			        android:layout_width="0dp"
-					android:layout_height="match_parent"
-					android:layout_weight="1"
-					android:baselineAligned="false"
-					android:gravity="center">
-   		        	
-	           		<es.acperez.domocontrol.systems.light.ColorPicker
-	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
-	   		   	        android:id="@+id/light_color_selector"
-	   		   	        android:layout_width="30dip"
-						android:layout_height="match_parent"
-						android:layout_margin="30dp"
-						android:max="99"
-						android:progressDrawable="@android:color/transparent"
-						custom:type="hue"/>
-           		</LinearLayout>
-				<LinearLayout
-			        android:layout_width="0dp"
-					android:layout_height="match_parent"
-					android:layout_weight="1"
-					android:baselineAligned="false"
-					android:gravity="center">
-
-				    <es.acperez.domocontrol.systems.light.ColorPicker
-	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
-	   		   	        android:id="@+id/light_hue_selector"
-	   		   	        android:layout_width="30dip"
-						android:layout_height="match_parent"
-						android:layout_margin="30dp"
-						android:max="99"
-						android:progressDrawable="@android:color/transparent"
-						custom:type="saturation"/>
-			    </LinearLayout>
-   				<LinearLayout
-			        android:layout_width="0dp"
-					android:layout_height="match_parent"
-					android:layout_weight="1"
-					android:baselineAligned="false"
-					android:gravity="center">
-				    
-	   		   	    <es.acperez.domocontrol.systems.light.ColorPicker
-	   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
-	   		   	        android:id="@+id/light_value_selector"
-	   		   	        android:layout_width="30dip"
-						android:layout_height="match_parent"
-						android:layout_margin="30dp"
-						android:max="99"
-						android:progressDrawable="@android:color/transparent"
-						custom:type="value"/>
-   		   	    </LinearLayout>    
-
-	   	   	</LinearLayout>	
-	    </LinearLayout>
-	    
-	    <RelativeLayout
-	        android:id="@+id/light_settings_access"
-	    	android:layout_width="match_parent"
-	    	android:layout_height="wrap_content">
-	        
-			<View
-			    android:id="@+id/light_separator"
-				android:layout_height="1dp"
-				android:layout_width="match_parent"
-				android:background="@color/black"/>
-	
-			<Button
-	        	android:id="@+id/light_reference_button"
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:layout_below="@id/light_separator"
-	        	android:visibility="invisible"/>
+		   	<LinearLayout
+		   	    android:id="@+id/light_tab_lights_content"
+		        android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:weightSum="4"
+				android:visibility="gone"
+				android:baselineAligned="false">
+		   	    		        
+	    	   	<LinearLayout
+			        android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:layout_weight="3"
+					android:baselineAligned="false">
+				
+			   	    <TextView 
+			   	        android:layout_width="wrap_content"
+			   	        android:layout_height="wrap_content"
+			   	        android:text="@string/light_lights_title"/>
+			   	    <ListView
+			   	        android:id="@+id/light_list_lights"
+			   	        android:layout_width="wrap_content"
+			   	        android:layout_height="wrap_content"/>
+			   	    
+			   	    <TextView 
+			   	        android:layout_width="wrap_content"
+			   	        android:layout_height="wrap_content"
+			   	        android:text="@string/light_groups_title"/>
+			   	    <ListView
+			   	        android:id="@+id/light_list_groups"
+			   	        android:layout_width="fill_parent"
+			   	        android:layout_height="wrap_content"/>
+			   	    
+			   	    <TextView 
+			   	        android:layout_width="wrap_content"
+			   	        android:layout_height="wrap_content"
+			   	        android:text="@string/light_scenes_title"/>
+			   	    <ListView
+			   	        android:id="@+id/light_list_scenes"
+			   	        android:layout_width="fill_parent"
+			   	        android:layout_height="wrap_content"/>
+		   	    </LinearLayout>
 			
-			<ImageButton
-	        	android:id="@+id/light_settings_button"
-	        	android:layout_width="wrap_content"
-	        	android:layout_height="wrap_content"
-	        	android:layout_below="@id/light_separator"
-	        	android:layout_alignTop="@id/light_reference_button"
-	        	android:layout_alignBottom="@id/light_reference_button"
-	        	android:layout_alignRight="@id/light_reference_button"
-	        	android:layout_alignLeft="@id/light_reference_button"
-	        	android:src="@drawable/sett"
-	        	android:scaleType="fitCenter"
-	        	android:contentDescription="@string/settings_desc"/>
-		</RelativeLayout>
-	</LinearLayout>
-	<TableLayout
-	    android:id="@+id/light_settings_panel"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:visibility="gone"
-	    android:stretchColumns="1"
-	    android:background="@color/gray_light">
-	    
-	    <TableRow android:weightSum="2">
-		    <TextView 
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_ip"
-		        android:layout_weight="1"/>
+	   		    <LinearLayout
+	   		        android:id="@+id/light_color_panel"
+			        android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="horizontal"
+					android:layout_weight="1"
+					android:weightSum="3"
+					android:layout_margin="20dp"
+					android:baselineAligned="false">
+	
+					<LinearLayout
+				        android:layout_width="0dp"
+						android:layout_height="match_parent"
+						android:layout_weight="1"
+						android:baselineAligned="false"
+						android:gravity="center">
+	   		        	
+		           		<es.acperez.domocontrol.common.customviews.ColorPicker
+		   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+		   		   	        android:id="@+id/light_color_selector"
+		   		   	        android:layout_width="30dip"
+							android:layout_height="match_parent"
+							android:layout_margin="30dp"
+							android:max="99"
+							android:progressDrawable="@android:color/transparent"
+							custom:type="hue"/>
+	           		</LinearLayout>
+					<LinearLayout
+				        android:layout_width="0dp"
+						android:layout_height="match_parent"
+						android:layout_weight="1"
+						android:baselineAligned="false"
+						android:gravity="center">
+	
+					    <es.acperez.domocontrol.common.customviews.ColorPicker
+		   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+		   		   	        android:id="@+id/light_hue_selector"
+		   		   	        android:layout_width="30dip"
+							android:layout_height="match_parent"
+							android:layout_margin="30dp"
+							android:max="99"
+							android:progressDrawable="@android:color/transparent"
+							custom:type="saturation"/>
+				    </LinearLayout>
+	   				<LinearLayout
+				        android:layout_width="0dp"
+						android:layout_height="match_parent"
+						android:layout_weight="1"
+						android:baselineAligned="false"
+						android:gravity="center">
+					    
+		   		   	    <es.acperez.domocontrol.common.customviews.ColorPicker
+		   		   	        xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+		   		   	        android:id="@+id/light_value_selector"
+		   		   	        android:layout_width="30dip"
+							android:layout_height="match_parent"
+							android:layout_margin="30dp"
+							android:max="99"
+							android:progressDrawable="@android:color/transparent"
+							custom:type="value"/>
+	   		   	    </LinearLayout>    
+	
+		   	   	</LinearLayout>	
+		    </LinearLayout>
 		    
-	    </TableRow>
-	    <TableRow android:weightSum="2">
-		    <EditText 
-		        android:id="@+id/light_address"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:hint="@string/power_ip_desc"
-		        android:textSize="20sp"
-		        android:maxLength="30"
-		        android:singleLine="true"
-		        android:layout_weight="1"/>
-	    </TableRow>
-	    <TableRow android:weightSum="2">
-   		    <Button
-		        android:id="@+id/light_connect_with_address"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:text="@string/light_connect_address_settings_btn"
-		        android:layout_weight="1"/>
-   		    <Button
-		        android:id="@+id/light_find"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:text="@string/light_find_settings_btn"
-		        android:layout_weight="1"/>
-	    </TableRow>
-	    <TableRow>
-	       	<TextView
-	       	    android:layout_span="2"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text=""/>
-	    </TableRow>
-   	    <!-- <TableRow>
-	       	<TextView
-	       	    android:layout_span="2"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_socket_header_desc"/>
-	    </TableRow>
-   	    <TableRow android:weightSum="2">
-		    <TextView
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_socket1_name_desc"
-   		        android:layout_weight="1"/>
-		    <EditText
-		        android:id="@+id/power_settings_socket1"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-				android:hint="@string/power_socket1_name_desc"
-				android:maxLength="30"
-		        android:singleLine="true"
-		        android:layout_weight="1"/>
-	    </TableRow>
-   	    <TableRow android:weightSum="2">
-		    <TextView
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_socket2_name_desc"
-		        android:layout_weight="1"/>
-		    <EditText
-		        android:id="@+id/power_settings_socket2"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-				android:hint="@string/power_socket2_name_desc"
-				android:maxLength="30"
-		        android:singleLine="true"
-		        android:layout_weight="1"/>
-	    </TableRow>
-   	    <TableRow android:weightSum="2">
-		    <TextView
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_socket3_name_desc"
-		        android:layout_weight="1"/>
-		    <EditText
-		        android:id="@+id/power_settings_socket3"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-				android:hint="@string/power_socket3_name_desc"
-				android:maxLength="30"
-		        android:singleLine="true"
-		        android:layout_weight="1"/>
-	    </TableRow>
-	   	<TableRow android:weightSum="2">
-		    <TextView
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-		        android:text="@string/power_socket4_name_desc"
-		        android:layout_weight="1"/>
-		    <EditText
-		        android:id="@+id/power_settings_socket4"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:textSize="20sp"
-				android:hint="@string/power_socket4_name_desc"
-				android:maxLength="30"
-		        android:singleLine="true"
-		        android:layout_weight="1"/>
-	    </TableRow>-->
-	    <TableRow android:weightSum="2">
-		    <Button
-		        android:id="@+id/light_apply_settings"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:text="@string/power_apply_settings_btn"
-		        android:layout_weight="1"/>
-		    
-		    <Button
-		        android:id="@+id/light_cancel_settings"
-		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
-		        android:text="@string/power_cancel_settings_btn"
-		        android:layout_weight="1"/>
-	    </TableRow>
-    </TableLayout> 
-	        
-</RelativeLayout>
+	   		<TableLayout
+	   		    android:id="@+id/light_tab_settings_content"
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
+			    android:visibility="gone"
+			    android:stretchColumns="1">
+			    
+			    <TableRow android:weightSum="2">
+				    <TextView 
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_ip"
+				        android:layout_weight="1"/>
+				    
+			    </TableRow>
+			    <TableRow android:weightSum="2">
+				    <EditText 
+				        android:id="@+id/light_address"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:hint="@string/power_ip_desc"
+				        android:textSize="20sp"
+				        android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			    <TableRow android:weightSum="2">
+			  		    <Button
+				        android:id="@+id/light_connect_with_address"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/light_connect_address_settings_btn"
+				        android:layout_weight="1"/>
+			  		    <Button
+				        android:id="@+id/light_find"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/light_find_settings_btn"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			    <TableRow>
+			       	<TextView
+			       	    android:layout_span="2"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text=""/>
+			    </TableRow>
+			  	    <TableRow>
+			       	<TextView
+			       	    android:layout_span="2"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_socket_header_desc"/>
+			    </TableRow>
+			  	    <TableRow android:weightSum="2">
+				    <TextView
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_socket1_name_desc"
+			  		        android:layout_weight="1"/>
+				    <EditText
+				        android:id="@+id/power_settings_socket1"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:hint="@string/power_socket1_name_desc"
+						android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			  	    <TableRow android:weightSum="2">
+				    <TextView
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_socket2_name_desc"
+				        android:layout_weight="1"/>
+				    <EditText
+				        android:id="@+id/power_settings_socket2"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:hint="@string/power_socket2_name_desc"
+						android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			  	    <TableRow android:weightSum="2">
+				    <TextView
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_socket3_name_desc"
+				        android:layout_weight="1"/>
+				    <EditText
+				        android:id="@+id/power_settings_socket3"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:hint="@string/power_socket3_name_desc"
+						android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			   	<TableRow android:weightSum="2">
+				    <TextView
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_socket4_name_desc"
+				        android:layout_weight="1"/>
+				    <EditText
+				        android:id="@+id/power_settings_socket4"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:hint="@string/power_socket4_name_desc"
+						android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			    <TableRow android:weightSum="2">
+				    <Button
+				        android:id="@+id/light_apply_settings"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/power_apply_settings_btn"
+				        android:layout_weight="1"/>
+				    
+				    <Button
+				        android:id="@+id/light_cancel_settings"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/power_cancel_settings_btn"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			</TableLayout>
+		</FrameLayout>
+    </LinearLayout>
+</LinearLayout>

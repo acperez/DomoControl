@@ -5,7 +5,7 @@
         <item name="android:actionBarStyle">@style/DomoActionBar</item>
    		<item name="android:listViewStyle">@style/DomoListView</item>
    		<item name="android:textAppearance">@android:style/TextAppearance.Large</item>
-   		<item name="android:textSize">25sp</item>
+   		<item name="android:textSize">20sp</item>
    		<item name="android:textColor">@color/black</item>
    	</style>
    	

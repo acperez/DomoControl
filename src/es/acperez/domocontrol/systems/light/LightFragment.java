@@ -17,19 +17,20 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
+import es.acperez.domocontrol.common.customviews.ColorPicker;
+import es.acperez.domocontrol.common.customviews.ColorPicker.ColorPickerInitListener;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
-import es.acperez.domocontrol.systems.light.ColorPicker.ColorPickerInitListener;
 import es.acperez.domocontrol.systems.light.controller.LightDevice;
 
 public class LightFragment extends SystemFragment {
@@ -48,6 +49,10 @@ public class LightFragment extends SystemFragment {
 	private ColorPicker mSaturationSelector;
 	private ColorPicker mHueSelector;
 	private ColorPicker mValueSelector;
+	private View mScenesContent;
+	private View mSettingsContent;
+	private View mLightsContent;
+	private View mSelectedTab;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,11 +61,16 @@ public class LightFragment extends SystemFragment {
         mLoadingView = mView.findViewById(R.id.light_loading_panel);
         mOfflineView = mView.findViewById(R.id.light_offline_panel);
         mOnlineView = mView.findViewById(R.id.light_online_panel);
+        mScenesContent = mView.findViewById(R.id.light_tab_scenes_content);
+        mLightsContent = mView.findViewById(R.id.light_tab_lights_content);
+		mSettingsContent = mView.findViewById(R.id.light_tab_settings_content);
         
+        RadioGroup tab = (RadioGroup)mView.findViewById(R.id.light_tab);
+        tab.setOnCheckedChangeListener(mTabListener);
+        mSelectedTab = mScenesContent;
+        		
 		if (mDevice.mServer != null && mDevice.mServer.length() > 0)
 			((EditText) mView.findViewById(R.id.light_address)).setText(mDevice.mServer);
-
-		((ImageButton) mView.findViewById(R.id.light_settings_button)).setOnClickListener(mSettingsOpenListener);
 		
 		((Button) mView.findViewById(R.id.light_connect_with_address)).setOnClickListener(mSettingsConnectListener);
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
@@ -190,25 +200,68 @@ public class LightFragment extends SystemFragment {
 			}
 		}
 	}
-	
-	private OnClickListener mSettingsOpenListener = new OnClickListener() {
+
+    private OnCheckedChangeListener mTabListener = new OnCheckedChangeListener() {
 		
 		@Override
-		public void onClick(View v) {
-			TableLayout settings = (TableLayout) mView.findViewById(R.id.light_settings_panel);
-			settings.setVisibility(View.VISIBLE);
-			
-			Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.left_to_right);
-		    settings.startAnimation(anim);
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			switch (checkedId) {
+				case R.id.light_tab_scenes:
+					transition(mScenesContent, mSelectedTab, false);
+					mSelectedTab = mScenesContent;
+					break;
+				case R.id.light_tab_lights:
+					if (mSelectedTab == mScenesContent)
+						transition(mLightsContent, mSelectedTab, true);
+					else
+						transition(mLightsContent, mSelectedTab, false);
+					mSelectedTab = mLightsContent;
+					break;
+				case R.id.light_tab_setup:
+					transition(mSettingsContent, mSelectedTab, true);
+					mSelectedTab = mSettingsContent;
+					break;
+			}
 		}
 	};
 	
-private OnClickListener mSettingsApplyListener = new OnClickListener() {
+	private void transition(View in, View out, Boolean leftToRight) {
+		Animation animIn, animOut;
+		
+		if (leftToRight) {
+			animIn = AnimationUtils.loadAnimation(getActivity(), R.anim.left_to_right);
+			animOut = AnimationUtils.loadAnimation(getActivity(), R.anim.center_to_right);
+		} else {
+			animIn = AnimationUtils.loadAnimation(getActivity(), R.anim.right_to_left);
+			animOut = AnimationUtils.loadAnimation(getActivity(), R.anim.center_to_left);
+		}
+		
+		final View outView = out;
+		
+		animOut.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				outView.setVisibility(View.GONE);
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {}
+		});
+		
+		in.setVisibility(View.VISIBLE);
+		in.startAnimation(animIn);
+		out.startAnimation(animOut);
+	}
+	
+	private OnClickListener mSettingsApplyListener = new OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			mSettingsCancelListener.onClick(v);
-			
+//			mSettingsCancelListener.onClick(v);
+//			
 //			mSystem.settingsUpdate();
 //			
 //			Bundle settings = mSystem.getSettings();
@@ -220,11 +273,10 @@ private OnClickListener mSettingsApplyListener = new OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			TableLayout settings = (TableLayout) mView.findViewById(R.id.light_settings_panel);
-			settings.setVisibility(View.GONE);
+			mSettingsContent.setVisibility(View.GONE);
 			
 			Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.right_to_left);
-		    settings.startAnimation(anim);
+		    mSettingsContent.startAnimation(anim);
 		}
 	};
 	
