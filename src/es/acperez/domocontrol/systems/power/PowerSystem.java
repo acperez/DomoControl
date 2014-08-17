@@ -44,6 +44,6 @@ public class PowerSystem extends DomoSystem {
 		if (plugStatus != null)
 			mData.mSockets = plugStatus;
 		
-		mFragment.updateContent();
+		mFragment.updateContent(0);
 	}
 }

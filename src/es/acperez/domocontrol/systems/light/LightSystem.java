@@ -43,15 +43,33 @@ public class LightSystem extends DomoSystem {
 		if (mState == DISCONNECTIED && msg.what == DomoSystem.ERROR_NONE) {
 			mState = CONNECTED;
 			sendRequest(LightManager.GET_CONFIG, null, false);
+			return;
 		}
 		
 		if (mState == CONNECTED && msg.what == DomoSystem.ERROR_NONE) {
 			mState = READY;
-			mFragment.updateContent();
+			mFragment.updateContent(LightDevice.UPDATE_BRIDGE);
+			return;
+		}
+		
+		if (mState == READY && msg.what == DomoSystem.ERROR_NONE) {
+			mFragment.updateContent(LightDevice.UPDATE_LIGHTS);
 		}
 	}
-	
-	public void test_connect() {
-//		mDevice.setLigths(255, 0, 0);
+
+	public void setLightsColor(boolean[] lights, float[] color) {
+		Bundle params = new Bundle();
+		params.putBooleanArray("lights", lights);
+		params.putFloatArray("color", color);
+		
+		sendRequest(LightManager.SET_COLORS, params, false);
+	}
+
+	public void switchLights(boolean[] lights, boolean state) {
+		Bundle params = new Bundle();
+		params.putBooleanArray("lights", lights);
+		params.putBoolean("state", state);
+		
+		sendRequest(LightManager.SWITCH_LIGHTS, params, false);		
 	}
 }

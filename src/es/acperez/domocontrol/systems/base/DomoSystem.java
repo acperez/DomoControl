@@ -29,6 +29,7 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 	public static final int ERROR_PASSWORD = 1;
 	public static final int ERROR_NETWORK = 2;
 	public static final int ERROR_NOTIFY = 3;
+	public static final int ERROR_PARAMS = 4;
 	
 	final public static String POWER_SETTINGS_NAME = "power_settings";
 	final public static String LIGHT_SETTINGS_NAME = "light_settings";
