@@ -8,6 +8,6 @@ public abstract class SystemFragment extends Fragment {
 
 	abstract public void updateStatus();
 	
-	abstract public void updateContent();
+	abstract public void updateContent(int what);
 	
 }

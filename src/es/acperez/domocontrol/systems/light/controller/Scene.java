@@ -24,8 +24,14 @@ public class Scene {
 		image = drawable;
 	}
 	
-	public static String[] defNames = {"Blue", "Orange", "Red", "Green", "Sea", "Peach", "Fire", "Forest"};
+	public static String[] defNames = {"Blue", "Orange", "Red", "Green", "Sea", "Peach", "Fire", "Forest",
+										"Blue", "Orange", "Red", "Green", "Sea", "Peach", "Fire", "Forest"};
 	public static int[][] defColours = {{0xFF0000FF}, {0xFFFF9600}, {0xFFFF0000}, {0xFF00FF00},
+			                     {0xFF0030FF, 0xFF009CFF, 0xFF0FF1FF},
+			                     {0xFFFFA800, 0xFFFF9600, 0xFFFFC600},
+			                     {0xFFFF0000, 0xFFFF4545, 0xFFFF1E00},
+			                     {0xFF1B8F00, 0xFF30FF00, 0xFF86FF6A},
+			                     {0xFF0000FF}, {0xFFFF9600}, {0xFFFF0000}, {0xFF00FF00},
 			                     {0xFF0030FF, 0xFF009CFF, 0xFF0FF1FF},
 			                     {0xFFFFA800, 0xFFFF9600, 0xFFFFC600},
 			                     {0xFFFF0000, 0xFFFF4545, 0xFFFF1E00},

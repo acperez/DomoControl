@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item  android:state_pressed="true">
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/arrow_border"/>
+        		    <corners
+                		android:radius="@dimen/arrow_corner_radius"/>
+	    		</shape>
+    		</item>
+    		<item android:top="@dimen/arrow_border" android:bottom="@dimen/arrow_border" android:left="@dimen/arrow_border" android:right="@dimen/arrow_border">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/gray_light"
+                		android:startColor="@color/gray"
+                		android:angle="90" />
+       				<corners
+                		android:radius="@dimen/arrow_corner_radius"/>
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/arrow_border" android:bottom="@dimen/arrow_border" android:left="@dimen/arrow_border" android:right="@dimen/arrow_border">
+        		<shape>
+        			<solid
+                		android:color="@color/blue_selection"/>
+        			<corners
+                		android:radius="@dimen/arrow_corner_radius"/>
+        		</shape>
+    		</item>
+    	</layer-list>
+    </item>
+    
+    <item>
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/arrow_border"/>
+        		    <corners
+                		android:radius="@dimen/arrow_corner_radius"/>
+	    		</shape>
+    		</item>
+    		<item android:top="@dimen/arrow_border" android:bottom="@dimen/arrow_border" android:left="@dimen/arrow_border" android:right="@dimen/arrow_border">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/arrow_unselected_end"
+                		android:startColor="@color/arrow_unselected_start"
+                		android:angle="270"/>
+        			<corners
+                		android:radius="@dimen/arrow_corner_radius"/>
+        		</shape>
+    		</item>
+    	</layer-list>
+    </item>
+
+</selector>

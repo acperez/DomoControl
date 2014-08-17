@@ -25,6 +25,6 @@ public class UnderConstructionFragment extends SystemFragment {
 	}
 
 	@Override
-	public void updateContent() {		
+	public void updateContent(int what) {		
 	}
 }

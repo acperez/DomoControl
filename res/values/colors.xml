@@ -8,8 +8,14 @@
  	<item name="gray_dark" type="color">#424242</item>	
  	<item name="blue_selection" type="color">#80009cff</item>
  	
- 	<item name="tab_unselected_end" type="color">#ffffff</item>
  	<item name="tab_unselected_start" type="color">#aaaaaa</item>
+ 	<item name="tab_unselected_end" type="color">#ffffff</item>
  	<item name="tab_border" type="color">#888888</item>
  	
+ 	<item name="light_on_text_color" type="color">#00ff00</item>
+ 	<item name="light_off_text_color" type="color">#ff0000</item>
+ 	
+ 	<item name="arrow_unselected_start" type="color">#999999</item>
+ 	<item name="arrow_unselected_end" type="color">#eeeeee</item>
+ 	<item name="arrow_border" type="color">#777777</item>
 </resources>
