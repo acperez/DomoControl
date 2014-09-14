@@ -59,8 +59,16 @@
     <string name="light_apply_settings_btn">Apply</string>
     <string name="light_clear_settings_btn">Clear</string>
     
+    <string name="light_scene_save_title">Save scene</string>
+    <string name="light_scene_save_message">Enter a name for your scene</string>
+    
+    <string name="light_scene_delete_title">Delete scene</string>
+    <string name="light_scene_delete_message">Are you sure you want to delete this scene?</string>
+    
     <string name="arrow_up">Up</string>
     <string name="arrow_down">Down</string>
+    
+    <string name="delete">Delete</string>
     
 	<string-array name="systems_array">
 		<item>Power</item>

@@ -1,6 +1,13 @@
 package es.acperez.domocontrol.systems.light;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.philips.lighting.model.PHLight;
+
 import android.animation.AnimatorSet;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +17,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -26,8 +33,11 @@ import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.OnColor
 //import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.ColorPickerInitListener;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
-import es.acperez.domocontrol.systems.light.controller.LightDevice;
+import es.acperez.domocontrol.systems.light.LightAdapter.LightView;
+import es.acperez.domocontrol.systems.light.controller.LightRequest;
+import es.acperez.domocontrol.systems.light.controller.LightUtils;
 import es.acperez.domocontrol.systems.light.controller.Scene;
+import es.acperez.domocontrol.systems.light.controller.SceneRequest;
 
 public class LightFragment extends SystemFragment {
 
@@ -36,7 +46,6 @@ public class LightFragment extends SystemFragment {
 	private View mOfflineView;
 	private View mOnlineView;
 	private LightSystem mSystem;
-	private LightDevice mDevice;
 	private AnimatorSet animation;
 	private LightAdapter lightAdapter;
 	private ColorPicker mColorPanel;
@@ -44,7 +53,9 @@ public class LightFragment extends SystemFragment {
 	private View mSettingsContent;
 	private View mLightsContent;
 	private View mSelectedTab;
-	private boolean[] mLightsToEdit;
+	private ArrayList<String> mLightIdList;
+	private SceneAdapter mSceneAdapter;
+	private GridView mSceneGrid;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,14 +78,20 @@ public class LightFragment extends SystemFragment {
         mSelectedTab = mScenesContent;
         
         // Scenes Tab
-		Scene[] scenes = DomoControlApplication.getScenes();
-		((GridView)mScenesContent).setAdapter(new SceneAdapter(getActivity(), scenes));
+        mSceneAdapter = new SceneAdapter(getActivity(), mSystem.getScenes());
+        mSceneGrid = (GridView) mView.findViewById(R.id.light_tab_scenes_grid);
+        mSceneGrid.setAdapter(mSceneAdapter);
+        mSceneGrid.setOnItemClickListener(mSceneSetListener);
+        mSceneGrid.setOnItemLongClickListener(mSceneEditListener);
+        
+        ((Button) mView.findViewById(R.id.light_scenes_switch_on)).setOnClickListener(mSwitchAllListener);
+        ((Button) mView.findViewById(R.id.light_scenes_switch_off)).setOnClickListener(mSwitchAllListener);
 		
-	     ((Button) mView.findViewById(R.id.light_save_scene)).setOnClickListener(mSaveSceneListener);
+	    ((Button) mView.findViewById(R.id.light_save_scene)).setOnClickListener(mSaveSceneListener);
              
         // Settings Tab
-		if (mDevice.mServer != null && mDevice.mServer.length() > 0)
-			((EditText) mView.findViewById(R.id.light_address)).setText(mDevice.mServer);
+		if (((LightSystem)mSystem).mServer != null && ((LightSystem)mSystem).mServer.length() > 0)
+			((EditText) mView.findViewById(R.id.light_address)).setText(((LightSystem)mSystem).mServer);
 		
 		((Button) mView.findViewById(R.id.light_connect_with_address)).setOnClickListener(mSettingsConnectListener);
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
@@ -85,9 +102,9 @@ public class LightFragment extends SystemFragment {
         ListView lightList = (ListView) mView.findViewById(R.id.light_list_lights);
         lightAdapter = new LightAdapter(getActivity());
 		
-		updateContent(LightDevice.UPDATE_BRIDGE);
+		updateContent(LightSystem.UPDATE_BRIDGE);
 		lightList.setAdapter(lightAdapter);
-		mLightsToEdit = new boolean[lightAdapter.getCount()];
+		mLightIdList = new ArrayList<String>();
 		lightList.setOnItemClickListener(mLightSelected);
 		
 		mColorPanel = (ColorPicker)mView.findViewById(R.id.light_color_panel);
@@ -163,21 +180,21 @@ public class LightFragment extends SystemFragment {
 	@Override
 	public void setSystem(DomoSystem system) {
 		this.mSystem = (LightSystem)system;
-		this.mDevice = mSystem.mDevice;
 	}
 
 	@Override
 	public void updateContent(int what) {
-		if (lightAdapter == null || mDevice == null)
+		List<PHLight> lights = mSystem.getLights();
+		if (lightAdapter == null || lights == null)
 			return;
 		
-		if (what == LightDevice.UPDATE_BRIDGE) {
+		if (what == LightSystem.UPDATE_BRIDGE) {
 //			ViewGroup v = (ViewGroup)mView.findViewById(R.id.light_settings_names);
 				
-			lightAdapter.setData(mDevice.getLights());
+			lightAdapter.setData(lights);
 //				addSetupLight(v, light.getName());
-		} else if (what == LightDevice.UPDATE_LIGHTS) {
-			lightAdapter.setData(mDevice.getLights());
+		} else if (what == LightSystem.UPDATE_LIGHTS) {
+			lightAdapter.setData(lights);
 			lightAdapter.notifyDataSetChanged();
 		}
 	}
@@ -266,7 +283,7 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			mDevice.mServer = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
+			((LightSystem)mSystem).mServer = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
 			mSystem.settingsUpdate();
 		}
 	};
@@ -275,7 +292,7 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			mDevice.mServer = null;
+			((LightSystem)mSystem).mServer = null;
 			mSystem.settingsUpdate();
 		}
 	};
@@ -283,22 +300,20 @@ public class LightFragment extends SystemFragment {
 	private OnItemClickListener mLightSelected = new OnItemClickListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			System.out.println("click on item " + position);
+		public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
+			LightView itemView = (LightView) view;
 			
-			CheckBox edit = (CheckBox)view.findViewById(R.id.light_list_edit);
-			boolean isChecked = !edit.isChecked();
+			boolean edit = itemView.switchEdit();
+			String id = itemView.getLightId();
 			
-			edit.setChecked(isChecked);
-			mLightsToEdit[position] = isChecked;
-		}
-	};
-	
-	private OnClickListener mSaveSceneListener = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-//			((LightSystem)mSystem).setLightsConfig(mLightsToEdit);
+			if (edit && !mLightIdList.contains(id)) {
+				mLightIdList.add(id);
+				return;
+			}
+			
+			if (!edit && mLightIdList.contains(id)) {
+				mLightIdList.remove(id);
+			}
 		}
 	};
 	
@@ -306,7 +321,10 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onColorChange(float[] color) {
-			((LightSystem)mSystem).setLightsColor(mLightsToEdit, color);
+			if (mLightIdList.size() == 0)
+				return;
+			
+			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, color));
 		}
 	};
 	
@@ -314,7 +332,7 @@ public class LightFragment extends SystemFragment {
 
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).switchLights(mLightsToEdit, true);
+			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, true));
 		}
 	};
 	
@@ -322,7 +340,116 @@ public class LightFragment extends SystemFragment {
 
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).switchLights(mLightsToEdit, false);
+			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, false));
+		}
+	};
+	
+	private OnClickListener mSwitchAllListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			boolean state = false;
+			if (v.getId() == R.id.light_scenes_switch_on) {
+				state = true;
+			}
+			
+			int size = lightAdapter.getCount();
+			ArrayList<String> lights = new ArrayList<String>(size);
+			for (int i = 0; i < size; i++) {
+				lights.add((String)lightAdapter.getItem(i));
+			}
+			
+			((LightSystem)mSystem).updateLights(new LightRequest(lights, state));
+		}
+	};
+	
+	private OnClickListener mSaveSceneListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			showSaveSceneDialog();
+		}
+	};
+	
+	private void showSaveSceneDialog() {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+		dialog.setTitle(R.string.light_scene_save_title);
+	
+		LayoutInflater li = LayoutInflater.from(getActivity());
+		View view = li.inflate(R.layout.dialog_scene_save, null);
+
+		dialog.setView(view);
+
+		final EditText input = (EditText) view.findViewById(R.id.scene_save_name);
+
+		dialog.setPositiveButton(getText(R.string.settings_ok), new DialogInterface.OnClickListener() { 
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        saveScene(input.getText().toString());
+		    }
+		});
+		dialog.setNegativeButton(getText(R.string.settings_cancel), new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        dialog.cancel();
+		    }
+		});
+	
+		dialog.show();
+	}
+	
+	private void saveScene(String name) {
+		List<PHLight> lights = ((LightSystem)mSystem).getLights();
+		int[] colors = new int[lights.size()];
+		for (int i = 0; i < lights.size(); i++) {
+			colors[i] = LightUtils.getColor(lights.get(i));
+		}
+		
+		Scene scene = new Scene(name, colors);
+		mSystem.saveScene(scene);
+		mSceneAdapter.addScene(scene);
+	}
+	
+	private OnItemClickListener mSceneSetListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,	long id) {
+			Scene scene = (Scene)mSceneGrid.getItemAtPosition(position);
+			((LightSystem)mSystem).updateLights(new SceneRequest(scene));
+		}
+	};
+	
+	private OnItemLongClickListener mSceneEditListener = new OnItemLongClickListener() {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+			final Scene scene = (Scene)parent.getItemAtPosition(position);
+			
+			AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+			dialog.setTitle(R.string.light_scene_delete_title);
+		
+			LayoutInflater li = LayoutInflater.from(getActivity());
+			View root = li.inflate(R.layout.dialog_scene_delete, null);
+
+			dialog.setView(root);
+
+			dialog.setPositiveButton(getText(R.string.delete), new DialogInterface.OnClickListener() { 
+			    @Override
+			    public void onClick(DialogInterface dialog, int which) {
+			        mSystem.deleteScene(scene);
+			        mSceneAdapter.deleteScene(scene);
+			    }
+			});
+			dialog.setNegativeButton(getText(R.string.settings_cancel), new DialogInterface.OnClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int which) {
+			        dialog.cancel();
+			    }
+			});
+		
+			dialog.show();
+			
+			return true;
 		}
 	};
 }

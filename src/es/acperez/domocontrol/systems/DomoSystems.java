@@ -33,7 +33,7 @@ public class DomoSystems {
 					break;
 				case DomoSystem.TYPE_LIGHT:
 					Bundle lightSettings = DomoControlApplication.restorePreferences(DomoSystem.LIGHT_SETTINGS_NAME);
-					domoSystems[systemTypes[i]] = new LightSystem(names[i], fragmentClasses[i], lightSettings);
+					domoSystems[systemTypes[i]] = new LightSystem(names[i], fragmentClasses[i], lightSettings, context);
 					break;
 				case DomoSystem.TYPE_EMPTY:
 					domoSystems[systemTypes[i]] = new EmptySystem(names[i], fragmentClasses[i]);

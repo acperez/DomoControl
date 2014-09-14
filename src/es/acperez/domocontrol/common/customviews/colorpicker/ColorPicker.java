@@ -7,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import es.acperez.domocontrol.R;
-import es.acperez.domocontrol.common.customviews.colorpicker.ColorBar.ColorPickerInitListener;
+import es.acperez.domocontrol.common.customviews.colorpicker.ColorBar.ColorBarListener;
 
 public class ColorPicker extends RelativeLayout {
 
@@ -48,18 +46,17 @@ public class ColorPicker extends RelativeLayout {
 	    ((ImageButton) getChildAt(0)).setOnClickListener(mHueIncListener);
 	    ((ImageButton) getChildAt(1)).setOnClickListener(mHueDecListener);
 	    mHueBar = (HueBar) getChildAt(2);
-	    mHueBar.setInitListener(mHueInitListener);
-		mHueBar.setOnSeekBarChangeListener(mHueListener);
+	    mHueBar.setColorBarListener(mHueListener);
 
 	    ((ImageButton) getChildAt(3)).setOnClickListener(mSaturationIncListener);
 	    ((ImageButton) getChildAt(4)).setOnClickListener(mSaturationDecListener);
 	    mSaturationBar = (SaturationBar) getChildAt(5);
-	    mSaturationBar.setOnSeekBarChangeListener(mSaturationListener);
+	    mSaturationBar.setColorBarListener(mSaturationListener);
 	    
 	    ((ImageButton) getChildAt(6)).setOnClickListener(mBrightnessIncListener);
 	    ((ImageButton) getChildAt(7)).setOnClickListener(mBrightnessDecListener);
 	    mBrightnessBar = (BrightnessBar) getChildAt(8);
-	    mBrightnessBar.setOnSeekBarChangeListener(mValueListener);
+	    mBrightnessBar.setColorBarListener(mValueListener);
 	    
 	    mListener = new OnColorChangeListener() {
 			@Override
@@ -71,27 +68,9 @@ public class ColorPicker extends RelativeLayout {
 		mListener = listener;
 	}
 	
-	private ColorPickerInitListener mHueInitListener = new ColorPickerInitListener() {
-	
+	private ColorBarListener mHueListener = new ColorBarListener() {
 		@Override
-		public void onColorViewInit(float[] color) {
-			setBackgroundColor(Color.HSVToColor(color));
-			mSaturationBar.setColor(color);
-			mBrightnessBar.setColor(color);
-		}
-	};
-	
-	private OnSeekBarChangeListener mHueListener = new OnSeekBarChangeListener() {
-		
-		@Override
-		public void onStopTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onStartTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-			float[] color = ((ColorBar) seekBar).getColor();
+		public void onColorBarChange(float[] color) {
 			setBackgroundColor(Color.HSVToColor(color));
 			mSaturationBar.setColor(color);
 			mBrightnessBar.setColor(color);
@@ -101,17 +80,9 @@ public class ColorPicker extends RelativeLayout {
 		}
 	};
 	
-	private OnSeekBarChangeListener mSaturationListener = new OnSeekBarChangeListener() {
-		
+	private ColorBarListener mSaturationListener = new ColorBarListener() {
 		@Override
-		public void onStopTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onStartTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-			float[] color = ((ColorBar) seekBar).getColor();
+		public void onColorBarChange(float[] color) {
 			setBackgroundColor(Color.HSVToColor(color));
 			mHueBar.setColor(color);
 			mBrightnessBar.setColor(color);
@@ -120,17 +91,9 @@ public class ColorPicker extends RelativeLayout {
 		}
 	};
 	
-	private OnSeekBarChangeListener mValueListener = new OnSeekBarChangeListener() {
-		
+	private ColorBarListener mValueListener = new ColorBarListener() {
 		@Override
-		public void onStopTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onStartTrackingTouch(SeekBar seekBar) {}
-		
-		@Override
-		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-			float[] color = ((ColorBar) seekBar).getColor();
+		public void onColorBarChange(float[] color) {
 			setBackgroundColor(Color.HSVToColor(color));
 			mHueBar.setColor(color);
 			mSaturationBar.setColor(color);
@@ -159,7 +122,7 @@ public class ColorPicker extends RelativeLayout {
 		
 		@Override
 		public void onClick(View v) {
-			mHueBar.updateProgress(mSaturationBar.getProgress() + 1);
+			mSaturationBar.updateProgress(mSaturationBar.getProgress() + 1);
 		}
 	};
 	
@@ -167,7 +130,7 @@ public class ColorPicker extends RelativeLayout {
 		
 		@Override
 		public void onClick(View v) {
-			mHueBar.updateProgress(mSaturationBar.getProgress() - 1);
+			mSaturationBar.updateProgress(mSaturationBar.getProgress() - 1);
 		}
 	};
 	
@@ -175,7 +138,7 @@ public class ColorPicker extends RelativeLayout {
 		
 		@Override
 		public void onClick(View v) {
-			mHueBar.updateProgress(mBrightnessBar.getProgress() + 1);
+			mBrightnessBar.updateProgress(mBrightnessBar.getProgress() + 1);
 		}
 	};
 	
@@ -183,7 +146,7 @@ public class ColorPicker extends RelativeLayout {
 		
 		@Override
 		public void onClick(View v) {
-			mHueBar.updateProgress(mBrightnessBar.getProgress() - 1);
+			mBrightnessBar.updateProgress(mBrightnessBar.getProgress() - 1);
 		}
 	};
 }

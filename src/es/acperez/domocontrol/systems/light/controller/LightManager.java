@@ -1,9 +1,11 @@
 package es.acperez.domocontrol.systems.light.controller;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -15,38 +17,47 @@ import com.philips.lighting.hue.sdk.connection.impl.PHBridgeInternal;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHBridgeConfiguration;
 import com.philips.lighting.model.PHHueError;
+import com.philips.lighting.model.PHHueParsingError;
 import com.philips.lighting.model.PHLight;
-import com.philips.lighting.model.PHLightState;
 
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager;
+import es.acperez.domocontrol.systems.light.LightSystem;
 
 public class LightManager extends SystemManager {
 	
 	public static final int CONNECT = 0;
 	public static final int GET_CONFIG = 1;
-	public static final int SET_COLORS = 2;
-	public static final int SWITCH_LIGHTS = 3;
 	
 	public static final String SERVER = "light.host";
 	public static final String USERNAME = "light.username";
 	
 	public static final String hardUsername = "DomoControl";
 	
-	private LightDevice mDevice;
+	private LightSystem mSystem;
 	private PHHueSDK phHueSDK;
 	private PHBridge mBridge;
 	private Handler handler;
 	private boolean mFind = false;
+	private LightManagerListener mListener;
+	
+	public interface LightManagerListener {
+		void onLightRequestDone();
+	}
+	
+	public interface LightManagerRequest {
+		void run(PHBridge bridge, Handler handler);
+	}
 
-	public LightManager(LightDevice device) {
+	public LightManager(LightSystem system) {
 		this.systemType = DomoSystem.TYPE_LIGHT;
 		
 		phHueSDK = PHHueSDK.create();
 		
         phHueSDK.setDeviceName("DomoControl");
 		phHueSDK.getNotificationManager().registerSDKListener(listener);
-		mDevice = device;
+		mSystem = system;
+		mListener = system;
 	}
 
 	@Override
@@ -57,21 +68,14 @@ public class LightManager extends SystemManager {
 			case CONNECT:
 				connect();
 				break;
-			case GET_CONFIG:
-				getConfig();
-				break;
-			case SET_COLORS:
-				updateLights(params);
-			case SWITCH_LIGHTS:
-				switchLights(params);
 		}
 	}
 	
 	public void connect() {
-		if (mDevice.mServer != null && mDevice.mServer.length() > 0) {
+		if (mSystem.mServer != null && mSystem.mServer.length() > 0) {
 			mFind = false;
 			PHAccessPoint accessPoint = new PHAccessPoint();
-	        accessPoint.setIpAddress(mDevice.mServer);
+	        accessPoint.setIpAddress(mSystem.mServer);
 	        accessPoint.setUsername(hardUsername);
 	       
 	        if (!phHueSDK.isAccessPointConnected(accessPoint)) {
@@ -85,15 +89,6 @@ public class LightManager extends SystemManager {
 		}
 	}
 	
-	private void getConfig() {
-//		mDevice.setLights(mBridge.getResourceCache().getAllLights());
-		mDevice.groups = mBridge.getResourceCache().getAllGroups();
-		mDevice.scenes = mBridge.getResourceCache().getAllScenes();
-		
-		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE);
-		handler.sendMessage(message);
-	}
-	
 	public void close() {
         PHBridge bridge = phHueSDK.getSelectedBridge();
         
@@ -105,48 +100,6 @@ public class LightManager extends SystemManager {
             
             phHueSDK.disconnect(bridge);
         }
-	}
-	
-	public void updateLights(Bundle params) {
-		if (!params.containsKey("lights") || !params.containsKey("color")) {
-			Message msg = Message.obtain(handler, DomoSystem.ERROR_PARAMS);
-			handler.sendMessage(msg);
-		}
-		
-		boolean[] lights = params.getBooleanArray("lights");
-		float[] color = params.getFloatArray("color");
-		
-		PHBridge bridge = phHueSDK.getSelectedBridge();
-		
-		for (int i = 0; i < lights.length; i++) {
-			if (lights[i]) {
-				PHLight light = mDevice.getLight(i);
-				
-				PHLightState state = LightUtils.createColorState(color, light);
-				bridge.updateLightState(light, state);
-			}
-		}
-	}
-
-	public void switchLights(Bundle params) {
-		if (!params.containsKey("lights") || !params.containsKey("state")) {
-			Message msg = Message.obtain(handler, DomoSystem.ERROR_PARAMS);
-			handler.sendMessage(msg);
-		}
-		
-		boolean[] lights = params.getBooleanArray("lights");
-		boolean color = params.getBoolean("state");
-		
-		PHBridge bridge = phHueSDK.getSelectedBridge();
-		
-		for (int i = 0; i < lights.length; i++) {
-			if (lights[i]) {
-				PHLight light = mDevice.getLight(i);
-				
-				PHLightState state = LightUtils.createSwitchState(color, light);
-				bridge.updateLightState(light, state);
-			}
-		}
 	}
 	
 	private PHSDKListener listener = new PHSDKListener() {
@@ -181,11 +134,10 @@ public class LightManager extends SystemManager {
             phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
             phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration() .getIpAddress(), System.currentTimeMillis());
             mBridge = b;
-            mDevice.setBridge(mBridge);
             
             if (mFind) {
             	PHBridgeConfiguration config = b.getResourceCache().getBridgeConfiguration();
-            	mDevice.connected(config.getIpAddress(), hardUsername);
+            	mSystem.connected(config.getIpAddress(), hardUsername);
 //            	mDevice.connected(config.getIpAddress(), config.getUsername());
             }
             
@@ -242,22 +194,62 @@ public class LightManager extends SystemManager {
     		handler.sendMessage(msg);
         }
         
-        @Override
-        public void onCacheUpdated(int flags, PHBridge bridge) {
-            System.out.println("On CacheUpdated " + flags);
-            if (flags == PHMessageType.LIGHTS_CACHE_UPDATED) {
-            	Message msg = Message.obtain(handler, DomoSystem.ERROR_NONE, flags);
-        		handler.sendMessage(msg);
-            }
-        }
+		@Override
+		public void onCacheUpdated(List<Integer> arg0, PHBridge bridge) {
+			System.out.println("On CacheUpdated");
+		}
+
+		@Override
+		public void onParsingErrors(List<PHHueParsingError> arg0) {
+			System.out.println("On parsing errors");
+		}
     };
     
     private String getUsername() {
-    	String username = mDevice.mUsername;
+    	String username = mSystem.mUsername;
     	if (username == null || username.length() == 0) {
             username = PHBridgeInternal.generateUniqueKey();
     	}
     	
     	return username;
     }
+    
+    public List<PHLight> getLights() {
+    	try {
+    		return mBridge.getResourceCache().getAllLights();
+    	} catch (Exception e) {
+    		return null;
+    	}
+	}
+    
+	public void updateLights(LightManagerRequest request) {
+		mRequest.set(request);
+		doRequest();
+	}
+    
+    private final AtomicReference<LightManagerRequest> mRequest = new AtomicReference<LightManagerRequest>();
+	private boolean running = false;
+	
+	private void doRequest() {
+		if (running)
+			return;
+		
+		LightManagerRequest request = mRequest.getAndSet(null);
+		if (request == null)
+			return;
+		
+		running = true;
+
+		request.run(mBridge, mLightRequestsHandler);
+	}
+	
+	Handler mLightRequestsHandler = new Handler(Looper.getMainLooper()) {
+
+		@Override
+        public void handleMessage(Message inputMessage) {
+			running = false;
+			doRequest();
+			mListener.onLightRequestDone();
+        }
+    };
 }
