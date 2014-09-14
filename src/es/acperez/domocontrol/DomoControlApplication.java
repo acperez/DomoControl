@@ -2,19 +2,18 @@ package es.acperez.domocontrol;
 
 import java.util.Map;
 
-import es.acperez.domocontrol.systems.DomoSystems;
-import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
-import es.acperez.domocontrol.systems.light.controller.Scene;
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.Animator.AnimatorListener;
 import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import es.acperez.domocontrol.systems.DomoSystems;
+import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 
 public class DomoControlApplication extends Application {
 	
@@ -126,15 +125,5 @@ public class DomoControlApplication extends Application {
 			public void onAnimationRepeat(Animator animation) {}
 		});
 		return animatorSet;
-	}
-	
-	public static Scene[] getScenes() {
-		int elements = Scene.defNames.length;
-		Scene[] scenes = new Scene[elements];
-		for (int i = 0; i < elements; i++) {
-			scenes[i] = new Scene(Scene.defNames[i], Scene.defColours[i]);
-		}
-		
-		return scenes;
 	}
 }

@@ -22,10 +22,10 @@ public class SaturationBar extends ColorBar {
 	protected void init() {
 		setBackgroundColor(Color.HSVToColor(new float[]{mHue, 1, mBrightness}));
 	}
-
+	
 	@Override
 	protected void updateValue(int progress) {
-		mSaturation = progress / 99.0f;
+		mSaturation = progress / 100.0f;
 	}
 
 	@Override

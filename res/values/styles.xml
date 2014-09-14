@@ -1,12 +1,13 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Application theme. -->
-    <style name="DomoControlTheme">
+     <!-- Application theme. -->
+    <style name="DomoControlTheme" parent="@android:style/Theme.Holo">
         <item name="android:actionBarStyle">@style/DomoActionBar</item>
    		<item name="android:listViewStyle">@style/DomoListView</item>
    		<item name="android:textAppearance">@android:style/TextAppearance.Large</item>
    		<item name="android:textSize">20sp</item>
    		<item name="android:textColor">@color/black</item>
+  	    <item name="android:alertDialogTheme">@style/AlertDialog</item>	    
    	</style>
    	
     <!-- Listview styles -->
@@ -30,4 +31,22 @@
            parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/white</item>
     </style>
+    
+<style name="AlertDialog" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+		<item name="android:alertDialogStyle">@style/CustomDialogTheme</item>
+  </style>
+
+ <style name="CustomDialogTheme">
+    <item name="android:fullDark">@drawable/dialog_full</item>
+    <item name="android:topDark">@drawable/dialog_top</item>
+    <item name="android:centerDark">@drawable/dialog_middle</item>
+    <item name="android:bottomDark">@drawable/dialog_bottom</item>
+    <item name="android:fullBright">@drawable/dialog_full</item>
+    <item name="android:topBright">@drawable/dialog_top</item>
+    <item name="android:centerBright">@drawable/dialog_middle</item>
+    <item name="android:bottomBright">@drawable/dialog_bottom</item>
+    <item name="android:bottomMedium">@drawable/dialog_bottom</item>
+    <item name="android:centerMedium">@drawable/dialog_middle</item>   
+</style>
 </resources>

@@ -1,31 +1,42 @@
 package es.acperez.domocontrol.systems.light;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+
+import com.philips.lighting.model.PHLight;
+
+import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.systems.base.DomoSystem;
-import es.acperez.domocontrol.systems.light.controller.LightDevice;
 import es.acperez.domocontrol.systems.light.controller.LightManager;
+import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerListener;
+import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
+import es.acperez.domocontrol.systems.light.controller.Scene;
+import es.acperez.domocontrol.systems.light.controller.ScenesSqlHelper;
 
-public class LightSystem extends DomoSystem {
+public class LightSystem extends DomoSystem implements LightManagerListener{
+	public static final int UPDATE_BRIDGE = 0;
+	public static final int UPDATE_LIGHTS = 1;
 	
+	public String mServer;
+	public String mUsername;
 	
-	private static final int DISCONNECTIED = 0;
-	private static final int CONNECTED = 1;
-	private static final int READY = 2;
-	
-	public LightDevice mDevice;
-	private int mState = DISCONNECTIED;
+	ScenesSqlHelper mDbHelper;
 
-	public LightSystem(String systemName, String fragmentClass, Bundle settings) {
+	public LightSystem(String systemName, String fragmentClass, Bundle settings, Context context) {
 		super(systemName, fragmentClass, DomoSystem.TYPE_POWER);
 
-		mDevice = new LightDevice();
-		mDevice.importSettings(settings);
+		importSettings(settings);
 		
-		this.mManager = new LightManager(mDevice);
+		this.mManager = new LightManager(this);
 		this.mManager.addSystemListener(this);
 		
 		sendRequest(LightManager.CONNECT, null, true);
+		
+		mDbHelper = new ScenesSqlHelper(context);
 	}
 	
 	@Override
@@ -35,41 +46,58 @@ public class LightSystem extends DomoSystem {
 
 	@Override
 	public Bundle getSettings() {
-		return mDevice.exportSettings();
+		return exportSettings();
 	}
 
 	@Override
 	public void requestResponse(Message msg) {
-		if (mState == DISCONNECTIED && msg.what == DomoSystem.ERROR_NONE) {
-			mState = CONNECTED;
-			sendRequest(LightManager.GET_CONFIG, null, false);
-			return;
-		}
-		
-		if (mState == CONNECTED && msg.what == DomoSystem.ERROR_NONE) {
-			mState = READY;
-			mFragment.updateContent(LightDevice.UPDATE_BRIDGE);
-			return;
-		}
-		
-		if (mState == READY && msg.what == DomoSystem.ERROR_NONE) {
-			mFragment.updateContent(LightDevice.UPDATE_LIGHTS);
-		}
+		mFragment.updateContent(UPDATE_BRIDGE);
+	}
+	
+	public void importSettings(Bundle settings) {
+		mServer = settings.getString(LightManager.SERVER);
+	    mUsername = settings.getString(LightManager.USERNAME);
 	}
 
-	public void setLightsColor(boolean[] lights, float[] color) {
-		Bundle params = new Bundle();
-		params.putBooleanArray("lights", lights);
-		params.putFloatArray("color", color);
+	public Bundle exportSettings() {
+		Bundle settings = new Bundle();
+		settings.putString(LightManager.SERVER, mServer);
+		return settings;
+	}
+	
+	public void connected(String server, String username) {
+		if (server == mServer || username == mUsername)
+			return;
 		
-		sendRequest(LightManager.SET_COLORS, params, false);
+		mServer = server;
+		mUsername = username;
+		
+		Bundle settings = exportSettings();
+		DomoControlApplication.savePreferences(settings, DomoSystem.LIGHT_SETTINGS_NAME);
+	}
+	
+	public List<PHLight> getLights() {
+		return ((LightManager)mManager).getLights();
 	}
 
-	public void switchLights(boolean[] lights, boolean state) {
-		Bundle params = new Bundle();
-		params.putBooleanArray("lights", lights);
-		params.putBoolean("state", state);
-		
-		sendRequest(LightManager.SWITCH_LIGHTS, params, false);		
+	public void updateLights(LightManagerRequest request) {
+		((LightManager)mManager).updateLights(request);
+	}
+	
+	@Override
+	public void onLightRequestDone() {
+		mFragment.updateContent(UPDATE_LIGHTS);
+	}
+	
+	public ArrayList<Scene> getScenes() {
+		return mDbHelper.getAllScenes();
+	}
+	
+	public void saveScene(Scene scene) {
+		mDbHelper.insertScene(scene);
+	}
+
+	public void deleteScene(Scene scene) {
+		mDbHelper.deleteScene(scene);
 	}
 }

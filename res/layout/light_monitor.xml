@@ -115,15 +115,44 @@
 			android:orientation="horizontal"
 			android:layout_marginTop="20dp">
 	        
-		   	<GridView
+		   	<RelativeLayout
     			android:id="@+id/light_tab_scenes_content"
 			    android:layout_width="match_parent"
-			    android:layout_height="match_parent"
-    			android:numColumns="auto_fit"
-    			android:columnWidth="100dp"
-    			android:gravity="center"
-			    android:stretchMode="columnWidth" />
+			    android:layout_height="match_parent" >
 
+			   	<GridView
+	    			android:id="@+id/light_tab_scenes_grid"
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent"
+	    			android:numColumns="auto_fit"
+	    			android:columnWidth="100dp"
+	    			android:gravity="center"
+				    android:stretchMode="columnWidth"
+				    android:layout_above="@+id/light_scenes_switch" />		   	
+		   	
+           		<LinearLayout
+           		    android:id="@id/light_scenes_switch" 
+           		    android:layout_width="match_parent"
+				    android:layout_height="wrap_content"
+				    android:orientation="horizontal"
+				    android:layout_alignParentBottom="true"
+				    android:weightSum="4"
+				    android:gravity="center">
+           		    <Button
+           		        android:id="@+id/light_scenes_switch_on"
+           		        android:layout_width="0dp"
+				    	android:layout_height="wrap_content"
+				    	android:text="@string/light_switch_on"
+				    	android:layout_weight="1"/>
+           		    <Button
+          		        android:id="@+id/light_scenes_switch_off"
+           		        android:layout_width="0dp"
+				    	android:layout_height="wrap_content"
+				    	android:text="@string/light_switch_off"
+				    	android:layout_weight="1"/>
+           		</LinearLayout>
+  			</RelativeLayout>
+		   	
 		   	<LinearLayout
 		   	    android:id="@+id/light_tab_lights_content"
 		        android:layout_width="match_parent"
@@ -152,6 +181,7 @@
 					    android:layout_centerInParent="true"
 					    android:text="@string/light_save_scenes_btn"/>
 		   	    </RelativeLayout>
+		   	    
 		   	    <RelativeLayout
 			        android:layout_width="match_parent"
 					android:layout_height="match_parent"

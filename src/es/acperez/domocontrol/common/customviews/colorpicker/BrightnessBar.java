@@ -17,11 +17,6 @@ public class BrightnessBar extends ColorBar {
 	public BrightnessBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-    
-	
-	public void setInitListener(ColorPickerInitListener initListener) {
-		mInitListener = initListener;
-	}
 	
 	@Override
 	protected void init() {
@@ -30,7 +25,7 @@ public class BrightnessBar extends ColorBar {
 
 	@Override
 	protected void updateValue(int progress) {
-		mBrightness = progress / 99.0f;
+		mBrightness = progress / 100.0f;
 	}
 
 	@Override

@@ -5,20 +5,22 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public abstract class ColorBar extends SeekBar {
-	ColorPickerInitListener mInitListener;
+public abstract class ColorBar extends SeekBar implements OnSeekBarChangeListener{
+	ColorBarListener mColorListener;
+	
 	protected float mHue = 0;
 	protected float mSaturation = 1;
 	protected float mBrightness = 1;
-		
-	protected abstract void init();
-	protected abstract void updateValue(int value);
-	public abstract void setColor(float[] color);
 	
-	public interface ColorPickerInitListener {
-		void onColorViewInit(float[] color);
+	public interface ColorBarListener {
+		void onColorBarChange(float[] color);
 	}
+	
+	protected abstract void init();
+	public abstract void setColor(float[] color);
+	protected abstract void updateValue(int value);
 	
 	public ColorBar(Context context) {
 		super(context);
@@ -35,6 +37,7 @@ public abstract class ColorBar extends SeekBar {
 	}
 	
 	private void _init(AttributeSet attrs) {
+		setOnSeekBarChangeListener(this);
         init();
 	}
 
@@ -63,8 +66,6 @@ public abstract class ColorBar extends SeekBar {
         
         int max = getMax();
         int i = max - (int) (max * event.getY() / getHeight());
-        
-    	updateValue(max - i);
         setProgress(i);
         
         onSizeChanged(getWidth(), getHeight(), 0, 0);
@@ -73,18 +74,30 @@ public abstract class ColorBar extends SeekBar {
     }
 	
 	public void updateProgress(int progress) {
-    	updateValue(getMax() - progress);
         setProgress(progress);
         
         onSizeChanged(getWidth(), getHeight(), 0, 0);
 	}
 	
-	public void setInitListener(ColorPickerInitListener initListener) {
-		mInitListener = initListener;
-	}
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		updateValue(getMax() - getProgress());
+		mColorListener.onColorBarChange(getColor());
+	};
 	
 	public float[] getColor() {
 		float[] hsv = {mHue, mSaturation, mBrightness};
 		return hsv;
+	}
+	
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {}
+	
+	public void setColorBarListener(ColorBarListener colorListener) {
+		mColorListener = colorListener;
 	}
 }
