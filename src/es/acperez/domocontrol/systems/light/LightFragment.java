@@ -3,8 +3,6 @@ package es.acperez.domocontrol.systems.light;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.philips.lighting.model.PHLight;
-
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -22,18 +20,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+
+import com.philips.lighting.model.PHLight;
+
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
+import es.acperez.domocontrol.common.customviews.LightList;
+import es.acperez.domocontrol.common.customviews.LightList.OnLightSelectedListener;
 import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker;
 import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.OnColorChangeListener;
-//import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.ColorPickerInitListener;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
-import es.acperez.domocontrol.systems.light.LightAdapter.LightView;
 import es.acperez.domocontrol.systems.light.controller.LightRequest;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
 import es.acperez.domocontrol.systems.light.controller.Scene;
@@ -47,7 +48,6 @@ public class LightFragment extends SystemFragment {
 	private View mOnlineView;
 	private LightSystem mSystem;
 	private AnimatorSet animation;
-	private LightAdapter lightAdapter;
 	private ColorPicker mColorPanel;
 	private View mScenesContent;
 	private View mSettingsContent;
@@ -56,6 +56,7 @@ public class LightFragment extends SystemFragment {
 	private ArrayList<String> mLightIdList;
 	private SceneAdapter mSceneAdapter;
 	private GridView mSceneGrid;
+	private LightList mLightList;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,13 +100,10 @@ public class LightFragment extends SystemFragment {
         ((Button) mView.findViewById(R.id.light_apply_settings)).setOnClickListener(mSettingsApplyListener);
         
         // Lights Tab
-        ListView lightList = (ListView) mView.findViewById(R.id.light_list_lights);
-        lightAdapter = new LightAdapter(getActivity());
-		
-		updateContent(LightSystem.UPDATE_BRIDGE);
-		lightList.setAdapter(lightAdapter);
+        LinearLayout scrollView = (LinearLayout) mView.findViewById(R.id.light_list_lights);		
+		mLightList = new LightList(getActivity(), scrollView, mLightSelected);
+        updateContent(LightSystem.UPDATE_BRIDGE, null);
 		mLightIdList = new ArrayList<String>();
-		lightList.setOnItemClickListener(mLightSelected);
 		
 		mColorPanel = (ColorPicker)mView.findViewById(R.id.light_color_panel);
 		mColorPanel.setOnColorChangeListener(mColorPickerListener);
@@ -183,19 +181,20 @@ public class LightFragment extends SystemFragment {
 	}
 
 	@Override
-	public void updateContent(int what) {
-		List<PHLight> lights = mSystem.getLights();
-		if (lightAdapter == null || lights == null)
+	public void updateContent(int what, Object obj) {
+		
+		if (mLightList == null)
 			return;
 		
 		if (what == LightSystem.UPDATE_BRIDGE) {
 //			ViewGroup v = (ViewGroup)mView.findViewById(R.id.light_settings_names);
-				
-			lightAdapter.setData(lights);
+			List<PHLight> lights = mSystem.getAllLights();
+			if (lights == null)
+				return;
+			mLightList.init(lights);
 //				addSetupLight(v, light.getName());
 		} else if (what == LightSystem.UPDATE_LIGHTS) {
-			lightAdapter.setData(lights);
-			lightAdapter.notifyDataSetChanged();
+			mLightList.update(mSystem.getLights(), (ArrayList<String>)obj);
 		}
 	}
 	
@@ -297,24 +296,20 @@ public class LightFragment extends SystemFragment {
 		}
 	};
 	
-	private OnItemClickListener mLightSelected = new OnItemClickListener() {
+	private OnLightSelectedListener mLightSelected = new OnLightSelectedListener() {
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long rowId) {
-			LightView itemView = (LightView) view;
-			
-			boolean edit = itemView.switchEdit();
-			String id = itemView.getLightId();
-			
-			if (edit && !mLightIdList.contains(id)) {
-				mLightIdList.add(id);
+		public void onLightSelected(boolean edit, String lightId) {
+			if (edit && !mLightIdList.contains(lightId)) {
+				mLightIdList.add(lightId);
 				return;
 			}
 			
-			if (!edit && mLightIdList.contains(id)) {
-				mLightIdList.remove(id);
+			if (!edit && mLightIdList.contains(lightId)) {
+				mLightIdList.remove(lightId);
 			}
 		}
+		
 	};
 	
 	private OnColorChangeListener mColorPickerListener = new OnColorChangeListener() {
@@ -353,10 +348,10 @@ public class LightFragment extends SystemFragment {
 				state = true;
 			}
 			
-			int size = lightAdapter.getCount();
+			int size = mLightList.getCount();
 			ArrayList<String> lights = new ArrayList<String>(size);
 			for (int i = 0; i < size; i++) {
-				lights.add((String)lightAdapter.getItem(i));
+				lights.add(mLightList.getLightId(i));
 			}
 			
 			((LightSystem)mSystem).updateLights(new LightRequest(lights, state));
@@ -399,7 +394,7 @@ public class LightFragment extends SystemFragment {
 	}
 	
 	private void saveScene(String name) {
-		List<PHLight> lights = ((LightSystem)mSystem).getLights();
+		List<PHLight> lights = ((LightSystem)mSystem).getAllLights();
 		int[] colors = new int[lights.size()];
 		for (int i = 0; i < lights.size(); i++) {
 			colors[i] = LightUtils.getColor(lights.get(i));

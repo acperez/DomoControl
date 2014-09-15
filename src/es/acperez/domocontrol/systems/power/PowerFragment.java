@@ -232,7 +232,7 @@ public class PowerFragment extends SystemFragment {
 	}
 
 	@Override
-	public void updateContent(int what) {
+	public void updateContent(int what, Object obj) {
 		if (mView == null)
 			return;
 		

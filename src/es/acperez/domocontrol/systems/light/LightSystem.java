@@ -2,6 +2,7 @@ package es.acperez.domocontrol.systems.light;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 
 	@Override
 	public void requestResponse(Message msg) {
-		mFragment.updateContent(UPDATE_BRIDGE);
+		mFragment.updateContent(UPDATE_BRIDGE, null);
 	}
 	
 	public void importSettings(Bundle settings) {
@@ -76,7 +77,11 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 		DomoControlApplication.savePreferences(settings, DomoSystem.LIGHT_SETTINGS_NAME);
 	}
 	
-	public List<PHLight> getLights() {
+	public List<PHLight> getAllLights() {
+		return ((LightManager)mManager).getAllLights();
+	}
+	
+	public Map<String, PHLight> getLights() {
 		return ((LightManager)mManager).getLights();
 	}
 
@@ -85,8 +90,8 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 	}
 	
 	@Override
-	public void onLightRequestDone() {
-		mFragment.updateContent(UPDATE_LIGHTS);
+	public void onLightRequestDone(ArrayList<String> lightIds) {
+		mFragment.updateContent(UPDATE_LIGHTS, lightIds);
 	}
 	
 	public ArrayList<Scene> getScenes() {
