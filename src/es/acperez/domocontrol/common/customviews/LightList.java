@@ -55,12 +55,16 @@ public class LightList {
 		mIds.clear();
 		
 		for (int i = 0; i < lights.size(); i++) {
-			LightView view = new LightView(mContext, lights.get(i));
-			mViews.add(view);
-			mIds.put(view.mId, i);
-			view.setOnClickListener(mClickListener);
-			mLightList.addView(view);
+			createView(lights.get(i));
 		}
+	}
+	
+	private void createView(PHLight light) {
+		LightView view = new LightView(mContext, light);
+		mViews.add(view);
+		mIds.put(view.mId, mViews.size() - 1);
+		view.setOnClickListener(mClickListener);
+		mLightList.addView(view);
 	}
 	
 	OnClickListener mClickListener = new OnClickListener() {
@@ -81,6 +85,19 @@ public class LightList {
 		}
 	}
 	
+	public void updateAll(List<PHLight> lights) {
+		for (PHLight light : lights) {
+			String id = light.getIdentifier();
+			
+			if (mIds.containsKey(id)) {
+				LightView view = mViews.get(mIds.get(id));
+				view.setName(light.getName(), light.getLastKnownLightState().isOn());
+				view.setThumb(LightUtils.createThumb(light));
+			} else {
+				createView(light);
+			}
+		}
+	}
 	
 	public class LightView extends RelativeLayout {
     	private ImageView mImageThumb;

@@ -21,6 +21,7 @@ import es.acperez.domocontrol.systems.light.controller.ScenesSqlHelper;
 public class LightSystem extends DomoSystem implements LightManagerListener{
 	public static final int UPDATE_BRIDGE = 0;
 	public static final int UPDATE_LIGHTS = 1;
+	public static final int REMOTE_UPDATE_LIGHTS = 2;
 	
 	public String mServer;
 	public String mUsername;
@@ -52,7 +53,7 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 
 	@Override
 	public void requestResponse(Message msg) {
-		mFragment.updateContent(UPDATE_BRIDGE, null);
+		mFragment.updateContent(msg.arg1, null);
 	}
 	
 	public void importSettings(Bundle settings) {

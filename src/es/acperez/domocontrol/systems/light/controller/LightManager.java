@@ -143,7 +143,7 @@ public class LightManager extends SystemManager {
 //            	mDevice.connected(config.getIpAddress(), config.getUsername());
             }
             
-    		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE);
+    		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
     		handler.sendMessage(message);
         }
 
@@ -197,8 +197,12 @@ public class LightManager extends SystemManager {
         }
         
 		@Override
-		public void onCacheUpdated(List<Integer> arg0, PHBridge bridge) {
-			System.out.println("On CacheUpdated");
+		public void onCacheUpdated(List<Integer> flags, PHBridge bridge) {
+			System.out.println("On CacheUpdated " + flags.get(0));
+			if (!running) {
+				Message message = Message.obtain(handler, DomoSystem.STATUS_ONLINE, LightSystem.REMOTE_UPDATE_LIGHTS);
+	    		handler.sendMessage(message);
+			}
 		}
 
 		@Override

@@ -186,15 +186,24 @@ public class LightFragment extends SystemFragment {
 		if (mLightList == null)
 			return;
 		
+		if (what == LightSystem.UPDATE_LIGHTS) {
+			mLightList.update(mSystem.getLights(), (ArrayList<String>)obj);
+			return;
+		}
+		
+		List<PHLight> lights = mSystem.getAllLights();
+		if (lights == null)
+			return;
+		
+		if (what == LightSystem.REMOTE_UPDATE_LIGHTS) {
+			mLightList.updateAll(lights);
+			return;
+		}
+		
 		if (what == LightSystem.UPDATE_BRIDGE) {
 //			ViewGroup v = (ViewGroup)mView.findViewById(R.id.light_settings_names);
-			List<PHLight> lights = mSystem.getAllLights();
-			if (lights == null)
-				return;
 			mLightList.init(lights);
 //				addSetupLight(v, light.getName());
-		} else if (what == LightSystem.UPDATE_LIGHTS) {
-			mLightList.update(mSystem.getLights(), (ArrayList<String>)obj);
 		}
 	}
 	
