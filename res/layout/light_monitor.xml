@@ -167,10 +167,20 @@
 					android:layout_height="match_parent"
 					android:layout_weight="2">
 							        
-			   	    <ListView
-			   	        android:id="@+id/light_list_lights"
+			   	    <ScrollView
 			   	        android:layout_width="match_parent"
-			   	        android:layout_height="wrap_content"/>
+			   	        android:layout_height="match_parent">
+	   	    
+	   	    		   	<LinearLayout
+	   	    		   	    android:id="@+id/light_list_lights"
+					        android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:orientation="vertical"
+							android:baselineAligned="false"
+							android:background="@color/gray"
+							android:showDividers="middle"
+							android:divider="@color/gray_dark"/>
+   	    		   	</ScrollView>
 			   	    
 			   	    <Button 
 					    android:id="@+id/light_save_scene"

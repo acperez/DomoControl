@@ -1,68 +1,88 @@
-package es.acperez.domocontrol.systems.light;
+package es.acperez.domocontrol.common.customviews;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.philips.lighting.model.PHLight;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.philips.lighting.model.PHLight;
+
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
 
-public class LightAdapter extends BaseAdapter {
-	private Context mContext;
-	private List<PHLight> mLights;
+public class LightList {
+	Context mContext;
+	LinearLayout mLightList;
+	OnLightSelectedListener mLightListener;
+	ArrayList<LightView> mViews;
+	HashMap<String, Integer> mIds;
 	
-	public LightAdapter(Context context) {
+	public interface OnLightSelectedListener {
+		void onLightSelected(boolean edit, String lightId);
+	}
+
+	public LightList(Context context, LinearLayout root, OnLightSelectedListener listener) {
 		mContext = context;
-		mLights = new ArrayList<PHLight>();
+		mLightList = root;
+		mLightListener = listener;
+		mViews = new ArrayList<LightList.LightView>();
+		mIds = new HashMap<String, Integer>();
+	}
+
+	public int getCount() {
+		return mViews.size();
 	}
 	
-	@Override
-	public int getCount() {
-		return mLights.size();
+	public String getLightId(int position) {
+		return mViews.get(position).getLightId();
 	}
-
-	@Override
-	public Object getItem(int position) {
-		return mLights.get(position).getIdentifier();
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return 0;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {		 
-		LightView view;
-		PHLight light = mLights.get(position);
+	
+	public void init(List<PHLight> lights) {
+		mLightList.removeAllViews();
 		
-		if (convertView == null) {	
-			view = new LightView(mContext, light);
-		} else {
-			view = (LightView) convertView;
+		mViews.clear();
+		mIds.clear();
+		
+		for (int i = 0; i < lights.size(); i++) {
+			LightView view = new LightView(mContext, lights.get(i));
+			mViews.add(view);
+			mIds.put(view.mId, i);
+			view.setOnClickListener(mClickListener);
+			mLightList.addView(view);
+		}
+	}
+	
+	OnClickListener mClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			LightView view = (LightView) v;
+			mLightListener.onLightSelected(view.switchEdit(), view.getLightId());
+		}
+	};
+	
+	public void update(Map<String, PHLight> lights, ArrayList<String> ids) {
+		for (String id : ids) {
+			LightView view = mViews.get(mIds.get(id));
+			PHLight light = lights.get(id);
+			
 			view.setName(light.getName(), light.getLastKnownLightState().isOn());
 			view.setThumb(LightUtils.createThumb(light));
 		}
-		
-		return view;
-	}
-
-	public void setData(List<PHLight> lights) {
-		mLights = lights;
 	}
 	
-    public class LightView extends RelativeLayout {
+	
+	public class LightView extends RelativeLayout {
     	private ImageView mImageThumb;
     	private TextView mName;
     	private CheckBox mEdit;
@@ -92,17 +112,6 @@ public class LightAdapter extends BaseAdapter {
     		
 			mImageThumb = (ImageView) findViewById(R.id.light_list_color);
 			mImageThumb.setImageDrawable(LightUtils.createThumb(light));
-			mImageThumb.post(new Runnable() {
-
-		        @Override
-		        public void run() {
-		        	RelativeLayout.LayoutParams mParams;
-		            mParams = (RelativeLayout.LayoutParams) mImageThumb.getLayoutParams();
-		            mParams.width = mImageThumb.getHeight();
-		            mImageThumb.setLayoutParams(mParams);
-		            mImageThumb.postInvalidate();
-		        }
-		    });
         }
 
         public void setName(String name, boolean status) {
@@ -128,6 +137,5 @@ public class LightAdapter extends BaseAdapter {
 		public String getLightId() {
 			return mId;
 		}
-    }
-
+	}
 }

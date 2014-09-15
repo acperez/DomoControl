@@ -1,6 +1,8 @@
 package es.acperez.domocontrol.systems.light.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import android.os.Bundle;
@@ -42,7 +44,7 @@ public class LightManager extends SystemManager {
 	private LightManagerListener mListener;
 	
 	public interface LightManagerListener {
-		void onLightRequestDone();
+		void onLightRequestDone(ArrayList<String> lightIds);
 	}
 	
 	public interface LightManagerRequest {
@@ -214,9 +216,17 @@ public class LightManager extends SystemManager {
     	return username;
     }
     
-    public List<PHLight> getLights() {
+    public List<PHLight> getAllLights() {
     	try {
     		return mBridge.getResourceCache().getAllLights();
+    	} catch (Exception e) {
+    		return null;
+    	}
+	}
+    
+    public Map<String, PHLight> getLights() {
+    	try {
+    		return mBridge.getResourceCache().getLights();
     	} catch (Exception e) {
     		return null;
     	}
@@ -245,11 +255,12 @@ public class LightManager extends SystemManager {
 	
 	Handler mLightRequestsHandler = new Handler(Looper.getMainLooper()) {
 
+		@SuppressWarnings("unchecked")
 		@Override
-        public void handleMessage(Message inputMessage) {
+        public void handleMessage(Message msg) {
 			running = false;
 			doRequest();
-			mListener.onLightRequestDone();
+			mListener.onLightRequestDone((ArrayList<String>) msg.obj);
         }
     };
 }
