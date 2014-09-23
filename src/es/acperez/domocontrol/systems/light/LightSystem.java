@@ -16,7 +16,7 @@ import es.acperez.domocontrol.systems.light.controller.LightManager;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerListener;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
 import es.acperez.domocontrol.systems.light.controller.Scene;
-import es.acperez.domocontrol.systems.light.controller.ScenesSqlHelper;
+import es.acperez.domocontrol.systems.light.controller.LightDbHelper;
 
 public class LightSystem extends DomoSystem implements LightManagerListener{
 	public static final int UPDATE_BRIDGE = 0;
@@ -26,7 +26,7 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 	public String mServer;
 	public String mUsername;
 	
-	ScenesSqlHelper mDbHelper;
+	LightDbHelper mDbHelper;
 
 	public LightSystem(String systemName, String fragmentClass, Bundle settings, Context context) {
 		super(systemName, fragmentClass, DomoSystem.TYPE_POWER);
@@ -38,7 +38,7 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 		
 		sendRequest(LightManager.CONNECT, null, true);
 		
-		mDbHelper = new ScenesSqlHelper(context);
+		mDbHelper = new LightDbHelper(context);
 	}
 	
 	@Override

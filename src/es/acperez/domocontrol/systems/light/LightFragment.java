@@ -6,6 +6,7 @@ import java.util.List;
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
@@ -29,22 +31,22 @@ import com.philips.lighting.model.PHLight;
 
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
-import es.acperez.domocontrol.common.customviews.LightList;
-import es.acperez.domocontrol.common.customviews.LightList.OnLightSelectedListener;
 import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker;
 import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.OnColorChangeListener;
+import es.acperez.domocontrol.database.SceneAdapter;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
 import es.acperez.domocontrol.systems.light.controller.LightRequest;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
 import es.acperez.domocontrol.systems.light.controller.Scene;
 import es.acperez.domocontrol.systems.light.controller.SceneRequest;
+import es.acperez.domocontrol.systems.light.customviews.LightList;
+import es.acperez.domocontrol.systems.light.customviews.LightList.OnLightSelectedListener;
 
 public class LightFragment extends SystemFragment {
 
 	private View mView;
 	private View mLoadingView;
-	private View mOfflineView;
 	private View mOnlineView;
 	private LightSystem mSystem;
 	private AnimatorSet animation;
@@ -57,6 +59,9 @@ public class LightFragment extends SystemFragment {
 	private SceneAdapter mSceneAdapter;
 	private GridView mSceneGrid;
 	private LightList mLightList;
+	private ListView mLightNamesList;
+	private LightNamesAdapter mLightNamesAdapter;
+	private RadioGroup mTab;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +69,6 @@ public class LightFragment extends SystemFragment {
 		
         mView = inflater.inflate(R.layout.light_monitor, container, false);
         mLoadingView = mView.findViewById(R.id.light_loading_panel);
-        mOfflineView = mView.findViewById(R.id.light_offline_panel);
         mOnlineView = mView.findViewById(R.id.light_online_panel);
         mScenesContent = mView.findViewById(R.id.light_tab_scenes_content);
         mLightsContent = mView.findViewById(R.id.light_tab_lights_content);
@@ -74,9 +78,17 @@ public class LightFragment extends SystemFragment {
         animation = DomoControlApplication.setAnimation(loadingText);
         
 		// Tab selector
-        RadioGroup tab = (RadioGroup)mView.findViewById(R.id.light_tab);
-        tab.setOnCheckedChangeListener(mTabListener);
-        mSelectedTab = mScenesContent;
+        mTab = (RadioGroup)mView.findViewById(R.id.light_tab);
+        mTab.setOnCheckedChangeListener(mTabListener);
+        mSelectedTab = mSettingsContent;
+        if (mSystem.getStatus() == DomoSystem.STATUS_ONLINE) {
+            mSelectedTab = mScenesContent;
+            ((RadioButton)mView.findViewById(R.id.light_tab_scenes)).setChecked(true);
+            mSettingsContent.setVisibility(View.GONE);
+            mScenesContent.setVisibility(View.VISIBLE);
+			updateOfflineMessage(DomoSystem.ERROR_NONE);
+			((View)mView.findViewById(R.id.light_settings_names_panel)).setVisibility(View.VISIBLE);
+        }
         
         // Scenes Tab
         mSceneAdapter = new SceneAdapter(getActivity(), mSystem.getScenes());
@@ -98,10 +110,13 @@ public class LightFragment extends SystemFragment {
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
 		
         ((Button) mView.findViewById(R.id.light_apply_settings)).setOnClickListener(mSettingsApplyListener);
+        mLightNamesList = (ListView) mView.findViewById(R.id.light_settings_names);
+        mLightNamesAdapter = new LightNamesAdapter(getActivity(), null);
+        mLightNamesList.setAdapter(mLightNamesAdapter);
         
         // Lights Tab
-        LinearLayout scrollView = (LinearLayout) mView.findViewById(R.id.light_list_lights);		
-		mLightList = new LightList(getActivity(), scrollView, mLightSelected);
+        mLightList = (LightList) mView.findViewById(R.id.light_list_lights);
+        mLightList.setListener(mLightSelected);
         updateContent(LightSystem.UPDATE_BRIDGE, null);
 		mLightIdList = new ArrayList<String>();
 		
@@ -117,30 +132,54 @@ public class LightFragment extends SystemFragment {
 	@Override
 	public void updateStatus() {
 		
-		if (mOfflineView == null || mLoadingView == null || mOnlineView == null)
+		if (mLoadingView == null || mOnlineView == null)
 			return;
 		
 		switch(mSystem.getStatus()) {
 			case DomoSystem.STATUS_LOADING:
-				mOfflineView.setVisibility(View.GONE);
-				mOnlineView.setVisibility(View.GONE);
-				if (!animation.isRunning()) {
-					animation.start();
+				{
+					mOnlineView.setVisibility(View.GONE);
+					if (!animation.isRunning()) {
+						animation.start();
+					}
+					
+					TextView t = (TextView)mLoadingView.findViewById(R.id.light_loading_text);
+					t.setText(getString(R.string.connecting_message));
+					
+					ImageView image = (ImageView)mLoadingView.findViewById(R.id.light_link_image);
+					image.setVisibility(View.GONE);
+					
+					mLoadingView.setVisibility(View.VISIBLE);
+					break;
 				}
-				mLoadingView.setVisibility(View.VISIBLE);
-				break;
 			case DomoSystem.STATUS_OFFLINE:
 				animation.cancel();
-				mOnlineView.setVisibility(View.GONE);
 				mLoadingView.setVisibility(View.GONE);
+				mOnlineView.setVisibility(View.VISIBLE);
 				updateOfflineMessage(mSystem.getError());
-				mOfflineView.setVisibility(View.VISIBLE);
+				
+				((View)mView.findViewById(R.id.light_settings_names_panel)).setVisibility(View.GONE);
+				
+				((RadioButton)mView.findViewById(R.id.light_tab_setup)).setChecked(true);
+				for (int i = 0; i < mTab.getChildCount(); i++) {
+					mTab.getChildAt(i).setEnabled(false);
+				}
+				
 				break;
 			case DomoSystem.STATUS_ONLINE:
 				animation.cancel();
 				mLoadingView.setVisibility(View.GONE);
-				mOfflineView.setVisibility(View.GONE);
+				
+				updateOfflineMessage(DomoSystem.ERROR_NONE);
+				
+				for (int i = 0; i < mTab.getChildCount(); i++) {
+					mTab.getChildAt(i).setEnabled(true);
+				}
+				
+				mTab.check(R.id.light_tab_scenes);
+				
 				mOnlineView.setVisibility(View.VISIBLE);
+				((View)mView.findViewById(R.id.light_settings_names_panel)).setVisibility(View.VISIBLE);
 				break;
 			case DomoSystem.STATUS_WARNING:
 				TextView t = (TextView)mLoadingView.findViewById(R.id.light_loading_text);
@@ -150,7 +189,6 @@ public class LightFragment extends SystemFragment {
 				image.setVisibility(View.VISIBLE);
 				
 				mLoadingView.setVisibility(View.VISIBLE);
-				mOfflineView.setVisibility(View.GONE);
 				mOnlineView.setVisibility(View.GONE);
 				break;
 		}
@@ -160,9 +198,15 @@ public class LightFragment extends SystemFragment {
 		if(!isAdded())
 			return;
 		
-		TextView text = (TextView) mOfflineView.findViewById(R.id.light_monitor_error_text);
+		TextView text = (TextView) mOnlineView.findViewById(R.id.light_settings_status);
+		
+		text.setTextColor(Color.RED);
 		
 		switch (error) {
+			case DomoSystem.ERROR_NONE:
+				text.setTextColor(getActivity().getResources().getColor(R.color.gray));
+				text.setText(getString(R.string.light_settings_status_ok));
+				break;
 			case DomoSystem.ERROR_NETWORK:
 				text.setText(getString(R.string.power_network_error));
 				break;
@@ -200,24 +244,11 @@ public class LightFragment extends SystemFragment {
 			return;
 		}
 		
-		if (what == LightSystem.UPDATE_BRIDGE) {
-//			ViewGroup v = (ViewGroup)mView.findViewById(R.id.light_settings_names);
+		if (what == LightSystem.UPDATE_BRIDGE) {	
 			mLightList.init(lights);
-//				addSetupLight(v, light.getName());
+			mLightNamesAdapter.setData(lights);
 		}
 	}
-	
-//	private void addSetupLight(ViewGroup parent, String name) {
-//		EditText editText = new EditText(getActivity());
-//		LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//		editText.setLayoutParams(params);
-//		editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-//		editText.setHint(name);
-//		editText.setSingleLine(true);
-//		editText.setFilters( new InputFilter[] { new InputFilter.LengthFilter(30) } );
-//		
-//		parent.addView(editText);
-//	}	
 	
     private OnCheckedChangeListener mTabListener = new OnCheckedChangeListener() {
 		
@@ -225,10 +256,16 @@ public class LightFragment extends SystemFragment {
 		public void onCheckedChanged(RadioGroup group, int checkedId) {
 			switch (checkedId) {
 				case R.id.light_tab_scenes:
+					if (mSelectedTab == mScenesContent)
+						return;
+					
 					transition(mScenesContent, mSelectedTab, false);
 					mSelectedTab = mScenesContent;
 					break;
 				case R.id.light_tab_lights:
+					if (mSelectedTab == mLightsContent)
+						return;
+					
 					if (mSelectedTab == mScenesContent)
 						transition(mLightsContent, mSelectedTab, true);
 					else
@@ -236,6 +273,9 @@ public class LightFragment extends SystemFragment {
 					mSelectedTab = mLightsContent;
 					break;
 				case R.id.light_tab_setup:
+					if (mSelectedTab == mSettingsContent)
+						return;
+					
 					transition(mSettingsContent, mSelectedTab, true);
 					mSelectedTab = mSettingsContent;
 					break;

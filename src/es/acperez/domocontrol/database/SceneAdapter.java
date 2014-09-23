@@ -1,4 +1,4 @@
-package es.acperez.domocontrol.systems.light;
+package es.acperez.domocontrol.database;
 
 import java.util.ArrayList;
 
