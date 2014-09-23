@@ -4,36 +4,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+import es.acperez.domocontrol.database.SqlHelper;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-public class ScenesSqlHelper extends SQLiteOpenHelper {
-	private static final String SQL_DB_NAME = "domocontrol";
-	private static final String SQL_DB_TABLE = "scenes";
-	private static final int SQL_DB_VERSION = 1;
+public class LightDbHelper extends SqlHelper {
+	public static final String SQL_TABLE_LIGHT_SCENES = "LightScenes";
+	
+	public static final String FIELD_ID = "id";
+	public static final String FIELD_NAME = "name";
+	public static final String FIELD_COLORS = "colors";
     
-	private static final String FIELD_ID = "id";
-    private static final String FIELD_NAME = "name";
-    private static final String FIELD_COLORS = "colors";
-    
-    private static final String SQL_CREATE = 
-    										"CREATE TABLE " + SQL_DB_TABLE + " ( " +
-    										FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    										FIELD_NAME + " TEXT, " +
-    										FIELD_COLORS + " BLOB)";
-    
-	public ScenesSqlHelper(Context context) {
-		super(context, SQL_DB_NAME, null, SQL_DB_VERSION);
-//		context.deleteDatabase(SQL_DB_NAME);
+	public LightDbHelper(Context context) {
+		super(context);
 	}
 
 	@Override
-	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(SQL_CREATE);
-		
+	protected void onDbCreated(SQLiteDatabase db) {
 		int elements = defNames.length;
 		ArrayList<Scene> scenes = new ArrayList<Scene>();
 		for (int i = 0; i < elements; i++) {
@@ -42,13 +31,9 @@ public class ScenesSqlHelper extends SQLiteOpenHelper {
 		
 		insertScenes(db, scenes);
 	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	}
 	
 	public void insertScene(Scene scene) {
-		SQLiteDatabase db = this.getWritableDatabase();
+		SQLiteDatabase db = getWritableDatabase();
 		addScene(db, scene);
 		db.close();
 	}
@@ -70,14 +55,14 @@ public class ScenesSqlHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		values.put(FIELD_NAME, scene.name);
 		values.put(FIELD_COLORS, blob.toByteArray());
-		db.insert(SQL_DB_TABLE, null, values);
+		db.insert(SQL_TABLE_LIGHT_SCENES, null, values);
 	}
 	
 	public ArrayList<Scene> getAllScenes() {
 		ArrayList<Scene> scenes = new ArrayList<Scene>();
 		
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery("select * from " + SQL_DB_TABLE, null);
+		Cursor cursor = db.rawQuery("select * from " + SQL_TABLE_LIGHT_SCENES, null);
 		if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
             	int id = cursor.getInt(cursor.getColumnIndex(FIELD_ID));
@@ -102,7 +87,7 @@ public class ScenesSqlHelper extends SQLiteOpenHelper {
 	
 	public void deleteScene(Scene scene) {
 		SQLiteDatabase db = this.getWritableDatabase();
-		db.delete(SQL_DB_TABLE, FIELD_ID + " = ?", new String[] { String.valueOf(scene.id) });
+		db.delete(SQL_TABLE_LIGHT_SCENES, FIELD_ID + " = ?", new String[] { String.valueOf(scene.id) });
 		db.close();
 	}
 	

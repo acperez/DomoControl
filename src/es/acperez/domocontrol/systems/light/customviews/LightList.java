@@ -1,4 +1,4 @@
-package es.acperez.domocontrol.common.customviews;
+package es.acperez.domocontrol.systems.light.customviews;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,9 @@ import java.util.Map;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,9 +21,7 @@ import com.philips.lighting.model.PHLight;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
 
-public class LightList {
-	Context mContext;
-	LinearLayout mLightList;
+public class LightList extends LinearLayout {
 	OnLightSelectedListener mLightListener;
 	ArrayList<LightView> mViews;
 	HashMap<String, Integer> mIds;
@@ -32,12 +30,28 @@ public class LightList {
 		void onLightSelected(boolean edit, String lightId);
 	}
 
-	public LightList(Context context, LinearLayout root, OnLightSelectedListener listener) {
-		mContext = context;
-		mLightList = root;
-		mLightListener = listener;
+	public LightList(Context context) {
+		super(context);
+		init();
+	}
+
+	public LightList(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init();
+	}
+
+	public LightList(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		init();
+	}
+	
+	public void init() {
 		mViews = new ArrayList<LightList.LightView>();
 		mIds = new HashMap<String, Integer>();
+	}
+	
+	public void setListener(OnLightSelectedListener listener) {
+		mLightListener = listener;
 	}
 
 	public int getCount() {
@@ -49,7 +63,7 @@ public class LightList {
 	}
 	
 	public void init(List<PHLight> lights) {
-		mLightList.removeAllViews();
+		removeAllViews();
 		
 		mViews.clear();
 		mIds.clear();
@@ -60,11 +74,11 @@ public class LightList {
 	}
 	
 	private void createView(PHLight light) {
-		LightView view = new LightView(mContext, light);
+		LightView view = new LightView(getContext(), light);
 		mViews.add(view);
 		mIds.put(view.mId, mViews.size() - 1);
 		view.setOnClickListener(mClickListener);
-		mLightList.addView(view);
+		addView(view);
 	}
 	
 	OnClickListener mClickListener = new OnClickListener() {
@@ -110,11 +124,11 @@ public class LightList {
         public LightView(Context context, PHLight light) {
             super(context);
 
-            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             inflater.inflate(R.layout.light_list_item, this, true);
 			
-            mColorOn = mContext.getResources().getColor(R.color.light_on_text_color);
-            mColorOff = mContext.getResources().getColor(R.color.light_off_text_color);
+            mColorOn = context.getResources().getColor(R.color.light_on_text_color);
+            mColorOff = context.getResources().getColor(R.color.light_off_text_color);
             
     		mName = (TextView) findViewById(R.id.light_list_name);
     		mName.setText(light.getName());

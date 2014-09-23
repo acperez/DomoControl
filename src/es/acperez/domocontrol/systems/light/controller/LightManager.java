@@ -36,6 +36,8 @@ public class LightManager extends SystemManager {
 	
 	public static final String hardUsername = "DomoControl";
 	
+	private boolean mIsConnected = false;
+	
 	private LightSystem mSystem;
 	private PHHueSDK phHueSDK;
 	private PHBridge mBridge;
@@ -143,6 +145,8 @@ public class LightManager extends SystemManager {
 //            	mDevice.connected(config.getIpAddress(), config.getUsername());
             }
             
+            mIsConnected = true;
+            
     		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
     		handler.sendMessage(message);
         }
@@ -166,6 +170,12 @@ public class LightManager extends SystemManager {
                     phHueSDK.getDisconnectedAccessPoint().remove(i);
                 }
             }
+            
+            if (mIsConnected == false) {
+            	mIsConnected = true;
+            	Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
+            	handler.sendMessage(message);
+            }
         }
 
         @Override
@@ -174,6 +184,8 @@ public class LightManager extends SystemManager {
             if (!phHueSDK.getDisconnectedAccessPoint().contains(accessPoint)) {
                 phHueSDK.getDisconnectedAccessPoint().add(accessPoint);
             }
+            
+            mIsConnected = false;
         }
         
         @Override
