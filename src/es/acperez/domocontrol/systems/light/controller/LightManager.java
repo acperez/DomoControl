@@ -46,7 +46,7 @@ public class LightManager extends SystemManager {
 	private LightManagerListener mListener;
 	
 	public interface LightManagerListener {
-		void onLightRequestDone(ArrayList<String> lightIds);
+		void onLightRequestDone(int type, ArrayList<String> lightIds);
 	}
 	
 	public interface LightManagerRequest {
@@ -276,7 +276,7 @@ public class LightManager extends SystemManager {
         public void handleMessage(Message msg) {
 			running = false;
 			doRequest();
-			mListener.onLightRequestDone((ArrayList<String>) msg.obj);
+			mListener.onLightRequestDone(msg.what, (ArrayList<String>) msg.obj);
         }
     };
 }

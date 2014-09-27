@@ -7,9 +7,10 @@ import android.os.Handler;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLightState;
 
+import es.acperez.domocontrol.systems.light.LightSystem;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
 
-public class LightRequest implements LightManagerRequest{
+public class LightRequest implements LightManagerRequest {
 
 	private ArrayList<String> mLights;
 	private PHLightState mState;
@@ -26,7 +27,7 @@ public class LightRequest implements LightManagerRequest{
 	
 	@Override
 	public void run(PHBridge bridge, Handler handler) {
-		LightListener listener = new LightListener(mLights.size(), handler);
+		LightListener listener = new LightListener(mLights.size(), LightSystem.UPDATE_LIGHTS, handler);
 		
 		for (int i = 0; i < mLights.size(); i++) {
 			bridge.updateLightState(mLights.get(i), mState, listener);

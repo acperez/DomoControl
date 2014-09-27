@@ -8,9 +8,10 @@ import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
+import es.acperez.domocontrol.systems.light.LightSystem;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
 
-public class SceneRequest implements LightManagerRequest{
+public class SceneRequest implements LightManagerRequest {
 
 	private Scene mScene;
 	
@@ -29,7 +30,7 @@ public class SceneRequest implements LightManagerRequest{
 			}
 		}
 		
-		LightListener listener = new LightListener(lights.size(), handler);
+		LightListener listener = new LightListener(lights.size(), LightSystem.UPDATE_LIGHTS, handler);
 		
 		for (int i = 0; i < lights.size(); i++) {
 			bridge.updateLightState(lights.get(i), states.get(i), listener);

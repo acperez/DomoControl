@@ -18,7 +18,7 @@ import es.acperez.domocontrol.systems.light.controller.LightManager.LightManager
 import es.acperez.domocontrol.systems.light.controller.Scene;
 import es.acperez.domocontrol.systems.light.controller.LightDbHelper;
 
-public class LightSystem extends DomoSystem implements LightManagerListener{
+public class LightSystem extends DomoSystem implements LightManagerListener {
 	public static final int UPDATE_BRIDGE = 0;
 	public static final int UPDATE_LIGHTS = 1;
 	public static final int REMOTE_UPDATE_LIGHTS = 2;
@@ -91,8 +91,8 @@ public class LightSystem extends DomoSystem implements LightManagerListener{
 	}
 	
 	@Override
-	public void onLightRequestDone(ArrayList<String> lightIds) {
-		mFragment.updateContent(UPDATE_LIGHTS, lightIds);
+	public void onLightRequestDone(int type, ArrayList<String> lightIds) {
+		mFragment.updateContent(type, lightIds);
 	}
 	
 	public ArrayList<Scene> getScenes() {
