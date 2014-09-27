@@ -12,15 +12,17 @@ import com.philips.lighting.model.PHBridgeResource;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHLight;
 
-public class LightListener implements PHLightListener{
+public class LightListener implements PHLightListener {
 	private int mRequests = 0;
 	private Handler mListener;
 	private ArrayList<String> mLightIds;
+	private int mType;
 
-	public LightListener(int requests, Handler handler) {
+	public LightListener(int requests, int type, Handler handler) {
 		mRequests = requests;
 		mListener = handler;
 		mLightIds = new ArrayList<String>();
+		mType = type;
 	}
 	
 	private void onResponse() {
@@ -28,7 +30,7 @@ public class LightListener implements PHLightListener{
 		if (mRequests > 0)
 			return;
 		
-		Message msg = mListener.obtainMessage(0, mLightIds);
+		Message msg = mListener.obtainMessage(mType, mLightIds);
 		mListener.sendMessage(msg);
 	}
 	
@@ -39,7 +41,9 @@ public class LightListener implements PHLightListener{
 	}
 
 	@Override
-	public void onSuccess() {}
+	public void onSuccess() {
+		onResponse();
+	}
 
 	@Override
 	public void onStateUpdate(Map<String, String> lights, List<PHHueError> arg1) {
@@ -49,7 +53,6 @@ public class LightListener implements PHLightListener{
 				mLightIds.add(path[2]);
 			}
 		}
-		onResponse();
 	}
 
 	@Override

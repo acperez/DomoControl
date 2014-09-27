@@ -2,6 +2,7 @@ package es.acperez.domocontrol.systems.light;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
@@ -21,7 +22,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -38,10 +38,12 @@ import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
 import es.acperez.domocontrol.systems.light.controller.LightRequest;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
+import es.acperez.domocontrol.systems.light.controller.NameRequest;
 import es.acperez.domocontrol.systems.light.controller.Scene;
 import es.acperez.domocontrol.systems.light.controller.SceneRequest;
 import es.acperez.domocontrol.systems.light.customviews.LightList;
 import es.acperez.domocontrol.systems.light.customviews.LightList.OnLightSelectedListener;
+import es.acperez.domocontrol.systems.light.customviews.LightNameList;
 
 public class LightFragment extends SystemFragment {
 
@@ -59,8 +61,7 @@ public class LightFragment extends SystemFragment {
 	private SceneAdapter mSceneAdapter;
 	private GridView mSceneGrid;
 	private LightList mLightList;
-	private ListView mLightNamesList;
-	private LightNamesAdapter mLightNamesAdapter;
+	private LightNameList mLightNameList;
 	private RadioGroup mTab;
 	
 	@Override
@@ -109,16 +110,16 @@ public class LightFragment extends SystemFragment {
 		((Button) mView.findViewById(R.id.light_connect_with_address)).setOnClickListener(mSettingsConnectListener);
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
 		
-        ((Button) mView.findViewById(R.id.light_apply_settings)).setOnClickListener(mSettingsApplyListener);
-        mLightNamesList = (ListView) mView.findViewById(R.id.light_settings_names);
-        mLightNamesAdapter = new LightNamesAdapter(getActivity(), null);
-        mLightNamesList.setAdapter(mLightNamesAdapter);
+		((Button) mView.findViewById(R.id.light_apply_settings)).setOnClickListener(mSettingsApplyListener);
+        ((Button) mView.findViewById(R.id.light_clear_settings)).setOnClickListener(mSettingsClearListener);
+        
+        mLightNameList = (LightNameList) mView.findViewById(R.id.light_list_names);
         
         // Lights Tab
         mLightList = (LightList) mView.findViewById(R.id.light_list_lights);
         mLightList.setListener(mLightSelected);
+        mLightIdList = new ArrayList<String>();
         updateContent(LightSystem.UPDATE_BRIDGE, null);
-		mLightIdList = new ArrayList<String>();
 		
 		mColorPanel = (ColorPicker)mView.findViewById(R.id.light_color_panel);
 		mColorPanel.setOnColorChangeListener(mColorPickerListener);
@@ -244,9 +245,9 @@ public class LightFragment extends SystemFragment {
 			return;
 		}
 		
-		if (what == LightSystem.UPDATE_BRIDGE) {	
-			mLightList.init(lights);
-			mLightNamesAdapter.setData(lights);
+		if (what == LightSystem.UPDATE_BRIDGE) {
+			mLightList.init(lights, mLightIdList);
+			mLightNameList.init(lights);
 		}
 	}
 	
@@ -318,12 +319,16 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-//			mSettingsCancelListener.onClick(v);
-//			
-//			mSystem.settingsUpdate();
-//			
-//			Bundle settings = mSystem.getSettings();
-//			DomoControlApplication.savePreferences(getActivity(), settings, DomoSystem.POWER_SETTINGS_NAME);
+			Map<String, String> names = mLightNameList.getNames();
+			((LightSystem)mSystem).updateLights(new NameRequest(names, mSystem.getLights()));
+		}
+	};
+	
+	private OnClickListener mSettingsClearListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			mLightNameList.reset();
 		}
 	};
 	
@@ -376,6 +381,9 @@ public class LightFragment extends SystemFragment {
 
 		@Override
 		public void onClick(View v) {
+			if (mLightIdList.size() == 0)
+				return;
+			
 			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, true));
 		}
 	};
@@ -384,6 +392,9 @@ public class LightFragment extends SystemFragment {
 
 		@Override
 		public void onClick(View v) {
+			if (mLightIdList.size() == 0)
+				return;
+			
 			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, false));
 		}
 	};

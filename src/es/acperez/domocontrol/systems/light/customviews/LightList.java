@@ -45,7 +45,7 @@ public class LightList extends LinearLayout {
 		init();
 	}
 	
-	public void init() {
+	private void init() {
 		mViews = new ArrayList<LightList.LightView>();
 		mIds = new HashMap<String, Integer>();
 	}
@@ -62,7 +62,7 @@ public class LightList extends LinearLayout {
 		return mViews.get(position).getLightId();
 	}
 	
-	public void init(List<PHLight> lights) {
+	public void init(List<PHLight> lights, ArrayList<String> checkedIds) {
 		removeAllViews();
 		
 		mViews.clear();
@@ -70,6 +70,10 @@ public class LightList extends LinearLayout {
 		
 		for (int i = 0; i < lights.size(); i++) {
 			createView(lights.get(i));
+		}
+		
+		for (String id : checkedIds) {
+			mViews.get(mIds.get(id)).switchEdit();
 		}
 	}
 	
