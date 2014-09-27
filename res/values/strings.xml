@@ -13,8 +13,17 @@
     <string name="power_loging_error">Authentication error, please check your credentials and try to connect again</string>
     <string name="power_network_error">Remote host not found, please check your settings and try to connect again</string>
     
-    <string name="power_apply_settings_btn">Connect</string>
+    <string name="power_connect_settings_btn">Connect</string>
     <string name="power_cancel_settings_btn">Cancel</string>
+    <string name="power_apply_settings_btn">Apply</string>
+    <string name="power_clear_settings_btn">Clear</string>
+    
+    <string name="power_tab_control">Monitor</string>
+    <string name="power_tab_config">Setup</string>
+    
+    <string name="power_settings_status">Status</string>
+    <string name="power_settings_status_desc">Disconnected</string>
+    <string name="power_settings_status_ok">Connected</string>
     
     <string name="power_socket_header_desc">Plug sockets name</string>
     <string name="power_socket1_name_desc">Socket 1</string>
