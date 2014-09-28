@@ -15,6 +15,7 @@ import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.light.controller.LightManager;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerListener;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
+import es.acperez.domocontrol.systems.light.controller.LightRequest;
 import es.acperez.domocontrol.systems.light.controller.Scene;
 import es.acperez.domocontrol.systems.light.controller.LightDbHelper;
 
@@ -105,5 +106,12 @@ public class LightSystem extends DomoSystem implements LightManagerListener {
 
 	public void deleteScene(Scene scene) {
 		mDbHelper.deleteScene(scene);
+	}
+
+	public void remoteSwitch(boolean state) {
+		Map<String, PHLight> lights = getLights();
+		ArrayList<String> ids = new ArrayList<String>(lights.keySet());
+		
+		updateLights(new LightRequest(ids, state));
 	}
 }
