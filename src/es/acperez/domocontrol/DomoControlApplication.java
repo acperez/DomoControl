@@ -13,7 +13,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import es.acperez.domocontrol.systems.DomoSystems;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
+import es.acperez.domocontrol.systems.light.LightSystem;
+import es.acperez.domocontrol.systems.light.controller.LightManager;
+import es.acperez.domocontrol.systems.light.controller.LightRequest;
 
 public class DomoControlApplication extends Application {
 	
@@ -32,6 +36,7 @@ public class DomoControlApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		try {
+			System.out.println("======== APPLICATION ===========");
 			mContext = this;
 			mSystemsData = new DomoSystems(this);
 		} catch (Exception e) {
@@ -125,5 +130,9 @@ public class DomoControlApplication extends Application {
 			public void onAnimationRepeat(Animator animation) {}
 		});
 		return animatorSet;
+	}
+	
+	public static void switchLight(boolean state) {
+		((LightSystem) mSystemsData.getSystem(DomoSystem.TYPE_LIGHT)).remoteSwitch(state);
 	}
 }

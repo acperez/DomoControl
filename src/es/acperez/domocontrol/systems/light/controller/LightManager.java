@@ -71,7 +71,7 @@ public class LightManager extends SystemManager {
 		switch (request) {
 			case CONNECT:
 				connect();
-				break;
+				break;	
 		}
 	}
 	

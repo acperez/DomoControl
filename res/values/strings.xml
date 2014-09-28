@@ -83,6 +83,11 @@
     
     <string name="delete">Delete</string>
     
+    <string name="widget_light_title">DomoControl</string>
+    <string name="widget_light_desc">Lights</string>
+    <string name="widget_light_on">ON</string>
+    <string name="widget_light_off">OFF</string>
+    
 	<string-array name="systems_array">
 		<item>Power</item>
 		<item>Light</item>

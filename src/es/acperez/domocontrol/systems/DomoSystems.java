@@ -73,4 +73,8 @@ public class DomoSystems {
 			domoSystems[i].addSystemListener(listener);
 		}
 	}
+	
+	public DomoSystem getSystem(int type) {
+		return domoSystems[type];
+	}
 }

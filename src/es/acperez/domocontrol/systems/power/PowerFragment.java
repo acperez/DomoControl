@@ -37,6 +37,9 @@ public class PowerFragment extends SystemFragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+		if (mView != null)
+			return mView;
+		
         mView = inflater.inflate(R.layout.power_monitor, container, false);
         mLoadingView = mView.findViewById(R.id.power_loading_panel);
         mOnlineView = mView.findViewById(R.id.power_online_panel);
