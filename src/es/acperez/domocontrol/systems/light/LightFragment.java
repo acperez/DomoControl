@@ -68,6 +68,9 @@ public class LightFragment extends SystemFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 		
+		if (mView != null)
+			return mView;
+		
         mView = inflater.inflate(R.layout.light_monitor, container, false);
         mLoadingView = mView.findViewById(R.id.light_loading_panel);
         mOnlineView = mView.findViewById(R.id.light_online_panel);
