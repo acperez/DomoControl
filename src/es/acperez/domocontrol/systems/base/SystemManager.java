@@ -1,8 +1,5 @@
 package es.acperez.domocontrol.systems.base;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -10,24 +7,17 @@ public abstract class SystemManager {
 
 	private int status = DomoSystem.STATUS_OFFLINE;
 	private int error;
-	private ArrayList<DomoSystemStatusListener> statusListeners;
-	protected int systemType;
+	private DomoSystemStatusListener statusListener;
+	private DomoSystem mSystem;
 
 	public interface DomoSystemStatusListener {
-	    public void onSystemStatusChange(int systemType, int status);
+		public void onSystemStatusChange(DomoSystem system, int status);
 	}
 	
-	public SystemManager() {
+	public SystemManager(DomoSystem system, DomoSystemStatusListener listener) {
 		error = DomoSystem.ERROR_NONE;
-		statusListeners = new ArrayList<DomoSystemStatusListener>();
-	}
-	
-	public void addSystemListener(DomoSystemStatusListener listener) {
-		statusListeners.add(listener);
-	}
-
-	public void removeSystemListener(DomoSystemStatusListener listener) {
-		statusListeners.remove(listener);
+		mSystem = system;
+		statusListener = listener;
 	}
 	
 	public void setStatus(int status) {
@@ -35,10 +25,7 @@ public abstract class SystemManager {
 		this.status = status;
 		
 		if (notify) {
-			Iterator<DomoSystemStatusListener> iterator = statusListeners.iterator();
-			while (iterator.hasNext()) {
-				iterator.next().onSystemStatusChange(this.systemType, this.status);
-			}
+			statusListener.onSystemStatusChange(mSystem, status);
 		}
 	}
 	

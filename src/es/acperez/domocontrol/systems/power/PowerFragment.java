@@ -34,6 +34,11 @@ public class PowerFragment extends SystemFragment {
 	private View mSettingsContent;
 	private View mSelectedTab;
 	
+	public PowerFragment(PowerSystem system) {
+		mSystem =  system;
+		mData = system.mData;
+	}
+	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -321,12 +326,6 @@ public class PowerFragment extends SystemFragment {
 			((EditText) mView.findViewById(R.id.power_settings_socket4)).setText("");	
 		}
 	};
-
-	@Override
-	public void setSystem(DomoSystem system) {
-		this.mSystem = (PowerSystem)system;
-		this.mData = mSystem.mData;
-	}
 
 	@Override
 	public void updateContent(int what, Object obj) {

@@ -2,6 +2,7 @@ package es.acperez.domocontrol.mainList;
 
 import java.util.HashMap;
 
+import es.acperez.domocontrol.DomoControlActivity;
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
@@ -58,10 +59,10 @@ public class SystemListFragment extends ListFragment {
 			mDualFragments = true;
 
 		if (savedInstanceState != null) {
-			mCurPosition = savedInstanceState.getInt(DomoControlApplication.SYSTEM_SELECTION);
+			mCurPosition = savedInstanceState.getInt(DomoControlActivity.SYSTEM_SELECTION);
 		}
 
-		setListAdapter(new SystemListAdapter(getActivity(), DomoControlApplication.getSystemsName(), mCurPosition, this));
+		setListAdapter(new SystemListAdapter(getActivity(), DomoControlActivity.getSystemsName(), mCurPosition, this));
 
 		ListView lv = getListView();
 		lv.setCacheColorHint(Color.TRANSPARENT); // Improves scrolling
@@ -164,6 +165,6 @@ public class SystemListFragment extends ListFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(DomoControlApplication.SYSTEM_SELECTION, mCurPosition);
+		outState.putInt(DomoControlActivity.SYSTEM_SELECTION, mCurPosition);
 	}
 }

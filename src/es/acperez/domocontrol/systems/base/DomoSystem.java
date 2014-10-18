@@ -5,12 +5,9 @@ import java.lang.ref.WeakReference;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import es.acperez.domocontrol.mainList.ContentFragment;
-import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 
-public abstract class DomoSystem implements DomoSystemStatusListener {
+public abstract class DomoSystem {
 	public String name;
-	private String fragmentClass;
 	public int type;
 	
 	protected SystemFragment mFragment;
@@ -18,7 +15,6 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 	
 	final public static int TYPE_POWER = 0;
 	final public static int TYPE_LIGHT = 1;
-	final public static int TYPE_EMPTY = 2;
 	
 	final public static int STATUS_ONLINE = 0;
 	final public static int STATUS_OFFLINE = 1;
@@ -34,34 +30,17 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 	final public static String POWER_SETTINGS_NAME = "power_settings";
 	final public static String LIGHT_SETTINGS_NAME = "light_settings";
 		
-	public DomoSystem(String name, String fragmentClass, int type) {
+	public DomoSystem(String name, int type) {
 		this.name = name;
-		this.fragmentClass = fragmentClass;
 		this.type = type;
 	}
 	
 	public SystemFragment getFragment() {
 		if (mFragment == null) {
-			try {
-				Class<?> claz = ContentFragment.class.getClassLoader().loadClass(fragmentClass);
-				mFragment = (SystemFragment)claz.newInstance();
-				mFragment.setSystem(this);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
+			mFragment = createFragment();
 		}
 		
 		return mFragment;
-	}
-
-	public void addSystemListener(DomoSystemStatusListener listener) {
-		if (mManager != null)
-			mManager.addSystemListener(listener);
-	}
-	
-	public void removeSystemListener(DomoSystemStatusListener listener) {
-		mManager.removeSystemListener(listener);
 	}
 
 	public void sendRequest(int request, Bundle params, boolean showLoading) {
@@ -94,15 +73,15 @@ public abstract class DomoSystem implements DomoSystemStatusListener {
 
 	private WeakRefHandler managerHandler = new WeakRefHandler(this);
 
-	@Override
-	public void onSystemStatusChange(int systemType, int status) {
-		this.getFragment().updateStatus();		
-	}
-
 	public abstract void settingsUpdate();
 	public abstract Bundle getSettings();
 	public abstract void requestResponse(Message msg);
+	protected abstract SystemFragment createFragment();
 
+	public void updateStatus() {
+		getFragment().updateStatus();
+	}
+	
 	public int getStatus() {
 		return mManager.getStatus();
 	}

@@ -41,12 +41,12 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         if (ACTION_LIGHT_ON.equals(intent.getAction())) {
-            DomoControlApplication.switchLight(true);
+            WidgetHelper.switchLight(true, context);
             return;
         }
         
         if (ACTION_LIGHT_OFF.equals(intent.getAction())) {
-            DomoControlApplication.switchLight(false);
+            WidgetHelper.switchLight(false, context);
         }
     }
 }
