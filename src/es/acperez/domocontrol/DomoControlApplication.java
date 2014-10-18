@@ -7,22 +7,13 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Application;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import es.acperez.domocontrol.systems.DomoSystems;
-import es.acperez.domocontrol.systems.base.DomoSystem;
-import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
-import es.acperez.domocontrol.systems.light.LightSystem;
-import es.acperez.domocontrol.systems.light.controller.LightManager;
-import es.acperez.domocontrol.systems.light.controller.LightRequest;
 
 public class DomoControlApplication extends Application {
 	
-    public static final String SYSTEM_SELECTION = "selected_system";
-    private static DomoSystems mSystemsData = null;
     private static Context mContext = null;
 	
 	static {
@@ -35,13 +26,7 @@ public class DomoControlApplication extends Application {
     @Override
 	public void onCreate() {
 		super.onCreate();
-		try {
-			System.out.println("======== APPLICATION ===========");
-			mContext = this;
-			mSystemsData = new DomoSystems(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		mContext = this;
 	}
     
 	public static void savePreferences(Bundle settings, String prefName) {
@@ -64,23 +49,6 @@ public class DomoControlApplication extends Application {
 		}
 		
 		return settings;
-	}
-	
-	// Systems related methods
-	public static void addSystemListener(DomoSystemStatusListener listener) {
-		mSystemsData.addSystemListener(listener);
-	}
-	
-	public static Fragment getSystemFragment(int position) {
-		return mSystemsData.getFragment(position);
-	}
-	
-	public static String[] getSystemsName() {
-		return mSystemsData.getSystemsName();
-	}
-	
-	public static int getSystemStatus(int type) {
-		return mSystemsData.getStatus(type);
 	}
 	
 	public static String byteArrayToHexString(byte[] bytes) {
@@ -130,9 +98,5 @@ public class DomoControlApplication extends Application {
 			public void onAnimationRepeat(Animator animation) {}
 		});
 		return animatorSet;
-	}
-	
-	public static void switchLight(boolean state) {
-		((LightSystem) mSystemsData.getSystem(DomoSystem.TYPE_LIGHT)).remoteSwitch(state);
 	}
 }

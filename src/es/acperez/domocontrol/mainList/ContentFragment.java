@@ -1,6 +1,6 @@
 package es.acperez.domocontrol.mainList;
 
-import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.DomoControlActivity;
 import es.acperez.domocontrol.R;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -18,10 +18,10 @@ public class ContentFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mContentView = inflater.inflate(R.layout.content_fragment, null);
+		mContentView = inflater.inflate(R.layout.content_fragment, container);
 		
 		if (savedInstanceState != null) {
-			mCurPosition = savedInstanceState.getInt(DomoControlApplication.SYSTEM_SELECTION);
+			mCurPosition = savedInstanceState.getInt(DomoControlActivity.SYSTEM_SELECTION);
 		}
 		
 		return mContentView;
@@ -41,7 +41,7 @@ public class ContentFragment extends Fragment {
 		if (savedInstanceState != null) {
 			if (mDualFragments) {
 				mCurPosition = savedInstanceState
-						.getInt(DomoControlApplication.SYSTEM_SELECTION);
+						.getInt(DomoControlActivity.SYSTEM_SELECTION);
 			}
 		}
 	}
@@ -49,7 +49,7 @@ public class ContentFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(DomoControlApplication.SYSTEM_SELECTION, mCurPosition);
+		outState.putInt(DomoControlActivity.SYSTEM_SELECTION, mCurPosition);
 	}
 
 	public void updateControlPanel(int position) {
@@ -58,7 +58,7 @@ public class ContentFragment extends Fragment {
 	}
 
 	private void loadContent() {
-		Fragment fragment = DomoControlApplication.getSystemFragment(mCurPosition);
+		Fragment fragment = DomoControlActivity.getSystemFragment(mCurPosition);
 		FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 		transaction.replace(R.id.content_fragment_container, fragment).commit();
 	}

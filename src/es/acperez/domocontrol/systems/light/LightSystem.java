@@ -11,7 +11,10 @@ import android.os.Message;
 import com.philips.lighting.model.PHLight;
 
 import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
+import es.acperez.domocontrol.systems.base.SystemFragment;
+import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 import es.acperez.domocontrol.systems.light.controller.LightManager;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerListener;
 import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
@@ -23,23 +26,29 @@ public class LightSystem extends DomoSystem implements LightManagerListener {
 	public static final int UPDATE_BRIDGE = 0;
 	public static final int UPDATE_LIGHTS = 1;
 	public static final int REMOTE_UPDATE_LIGHTS = 2;
-	
-	public String mServer;
-	public String mUsername;
+	public static final int UPDATE_SETTINGS = 3;
 	
 	LightDbHelper mDbHelper;
+	
+	public LightData mData;
+	private boolean mWidgetContext = false;
 
-	public LightSystem(String systemName, String fragmentClass, Bundle settings, Context context) {
-		super(systemName, fragmentClass, DomoSystem.TYPE_POWER);
+	public LightSystem(Context context, Bundle settings, DomoSystemStatusListener listener, boolean widgetContext) {
+		super(context.getResources().getString(R.string.system_name_light), DomoSystem.TYPE_LIGHT);
 
-		importSettings(settings);
+		mWidgetContext = widgetContext;
+		mData = new LightData(settings);
 		
-		this.mManager = new LightManager(this);
-		this.mManager.addSystemListener(this);
+		this.mManager = new LightManager(this, mData, listener);
 		
 		sendRequest(LightManager.CONNECT, null, true);
 		
 		mDbHelper = new LightDbHelper(context);
+	}
+
+	@Override
+	protected SystemFragment createFragment() {
+		return new LightFragment(this);
 	}
 	
 	@Override
@@ -49,33 +58,22 @@ public class LightSystem extends DomoSystem implements LightManagerListener {
 
 	@Override
 	public Bundle getSettings() {
-		return exportSettings();
+		return mData.exportSettings();
 	}
 
 	@Override
 	public void requestResponse(Message msg) {
-		mFragment.updateContent(msg.arg1, null);
+		if (msg.arg1 == LightSystem.UPDATE_SETTINGS) {
+			connected();
+			msg.arg1 = LightSystem.UPDATE_BRIDGE;
+		}
+		
+		if (!mWidgetContext)
+			mFragment.updateContent(msg.arg1, null);
 	}
 	
-	public void importSettings(Bundle settings) {
-		mServer = settings.getString(LightManager.SERVER);
-	    mUsername = settings.getString(LightManager.USERNAME);
-	}
-
-	public Bundle exportSettings() {
-		Bundle settings = new Bundle();
-		settings.putString(LightManager.SERVER, mServer);
-		return settings;
-	}
-	
-	public void connected(String server, String username) {
-		if (server == mServer || username == mUsername)
-			return;
-		
-		mServer = server;
-		mUsername = username;
-		
-		Bundle settings = exportSettings();
+	public void connected() {
+		Bundle settings = mData.exportSettings();
 		DomoControlApplication.savePreferences(settings, DomoSystem.LIGHT_SETTINGS_NAME);
 	}
 	
@@ -93,7 +91,12 @@ public class LightSystem extends DomoSystem implements LightManagerListener {
 	
 	@Override
 	public void onLightRequestDone(int type, ArrayList<String> lightIds) {
-		mFragment.updateContent(type, lightIds);
+		if (!mWidgetContext) {
+			mFragment.updateContent(type, lightIds);
+			return;
+		}
+		
+		sendRequest(LightManager.DISCONNECT, null, false);
 	}
 	
 	public ArrayList<Scene> getScenes() {
@@ -108,10 +111,9 @@ public class LightSystem extends DomoSystem implements LightManagerListener {
 		mDbHelper.deleteScene(scene);
 	}
 
-	public void remoteSwitch(boolean state) {
+	public void widgetSwitch(boolean state) {
 		Map<String, PHLight> lights = getLights();
 		ArrayList<String> ids = new ArrayList<String>(lights.keySet());
-		
 		updateLights(new LightRequest(ids, state));
 	}
 }

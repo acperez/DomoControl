@@ -24,12 +24,14 @@ import com.philips.lighting.model.PHLight;
 
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager;
+import es.acperez.domocontrol.systems.light.LightData;
 import es.acperez.domocontrol.systems.light.LightSystem;
 
 public class LightManager extends SystemManager {
 	
 	public static final int CONNECT = 0;
 	public static final int GET_CONFIG = 1;
+	public static final int DISCONNECT = 2;
 	
 	public static final String SERVER = "light.host";
 	public static final String USERNAME = "light.username";
@@ -38,7 +40,7 @@ public class LightManager extends SystemManager {
 	
 	private boolean mIsConnected = false;
 	
-	private LightSystem mSystem;
+	private LightData mData;
 	private PHHueSDK phHueSDK;
 	private PHBridge mBridge;
 	private Handler handler;
@@ -53,14 +55,14 @@ public class LightManager extends SystemManager {
 		void run(PHBridge bridge, Handler handler);
 	}
 
-	public LightManager(LightSystem system) {
-		this.systemType = DomoSystem.TYPE_LIGHT;
+	public LightManager(LightSystem system, LightData data, DomoSystemStatusListener listener) {
+		super(system, listener);
 		
 		phHueSDK = PHHueSDK.create();
 		
         phHueSDK.setDeviceName("DomoControl");
-		phHueSDK.getNotificationManager().registerSDKListener(listener);
-		mSystem = system;
+		phHueSDK.getNotificationManager().registerSDKListener(sdkListener);
+		mData = data;
 		mListener = system;
 	}
 
@@ -71,15 +73,19 @@ public class LightManager extends SystemManager {
 		switch (request) {
 			case CONNECT:
 				connect();
-				break;	
+				break;
+				
+			case DISCONNECT:
+				close();
+				break;
 		}
 	}
 	
 	public void connect() {
-		if (mSystem.mServer != null && mSystem.mServer.length() > 0) {
+		if (mData.mServer != null && mData.mServer.length() > 0) {
 			mFind = false;
 			PHAccessPoint accessPoint = new PHAccessPoint();
-	        accessPoint.setIpAddress(mSystem.mServer);
+	        accessPoint.setIpAddress(mData.mServer);
 	        accessPoint.setUsername(hardUsername);
 	       
 	        if (!phHueSDK.isAccessPointConnected(accessPoint)) {
@@ -103,10 +109,11 @@ public class LightManager extends SystemManager {
             }
             
             phHueSDK.disconnect(bridge);
+            phHueSDK.getNotificationManager().unregisterSDKListener(sdkListener);
         }
 	}
 	
-	private PHSDKListener listener = new PHSDKListener() {
+	private PHSDKListener sdkListener = new PHSDKListener() {
 
 		@Override
         public void onAccessPointsFound(List<PHAccessPoint> accessPoints) {
@@ -133,26 +140,31 @@ public class LightManager extends SystemManager {
 
         @Override
         public void onBridgeConnected(PHBridge b) {
+        	System.out.println("CONNECTED");
         	System.out.println("On bridge connected");
             phHueSDK.setSelectedBridge(b);
             phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
             phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration() .getIpAddress(), System.currentTimeMillis());
             mBridge = b;
             
-            if (mFind) {
-            	PHBridgeConfiguration config = b.getResourceCache().getBridgeConfiguration();
-            	mSystem.connected(config.getIpAddress(), hardUsername);
-//            	mDevice.connected(config.getIpAddress(), config.getUsername());
+            int result = LightSystem.UPDATE_BRIDGE;
+            
+            PHBridgeConfiguration config = b.getResourceCache().getBridgeConfiguration();
+            if (mFind && (mData.mServer != config.getIpAddress() || mData.mUsername != config.getUsername())) {
+            	mData.mServer = config.getIpAddress();
+            	mData.mUsername = config.getUsername();
+            	result = LightSystem.UPDATE_SETTINGS;
             }
             
             mIsConnected = true;
             
-    		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
+    		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, result);
     		handler.sendMessage(message);
         }
 
         @Override
         public void onAuthenticationRequired(PHAccessPoint accessPoint) {
+        	System.out.println("AUTH REQ");
             System.out.println("Authentication Required.");
             phHueSDK.startPushlinkAuthentication(accessPoint);
             
@@ -224,7 +236,7 @@ public class LightManager extends SystemManager {
     };
     
     private String getUsername() {
-    	String username = mSystem.mUsername;
+    	String username = mData.mUsername;
     	if (username == null || username.length() == 0) {
             username = PHBridgeInternal.generateUniqueKey();
     	}

@@ -64,6 +64,10 @@ public class LightFragment extends SystemFragment {
 	private LightNameList mLightNameList;
 	private RadioGroup mTab;
 	
+	public LightFragment(LightSystem system) {
+		mSystem = system;
+	}
+	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -107,8 +111,8 @@ public class LightFragment extends SystemFragment {
 	    ((Button) mView.findViewById(R.id.light_save_scene)).setOnClickListener(mSaveSceneListener);
              
         // Settings Tab
-		if (((LightSystem)mSystem).mServer != null && ((LightSystem)mSystem).mServer.length() > 0)
-			((EditText) mView.findViewById(R.id.light_address)).setText(((LightSystem)mSystem).mServer);
+		if (((LightSystem)mSystem).mData.mServer != null && ((LightSystem)mSystem).mData.mServer.length() > 0)
+			((EditText) mView.findViewById(R.id.light_address)).setText(((LightSystem)mSystem).mData.mServer);
 		
 		((Button) mView.findViewById(R.id.light_connect_with_address)).setOnClickListener(mSettingsConnectListener);
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
@@ -222,11 +226,6 @@ public class LightFragment extends SystemFragment {
 				break;
 		}
 	}
-	
-	@Override
-	public void setSystem(DomoSystem system) {
-		this.mSystem = (LightSystem)system;
-	}
 
 	@Override
 	public void updateContent(int what, Object obj) {
@@ -339,7 +338,7 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).mServer = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
+			((LightSystem)mSystem).mData.mServer = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
 			mSystem.settingsUpdate();
 		}
 	};
@@ -348,7 +347,7 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).mServer = null;
+			((LightSystem)mSystem).mData.mServer = null;
 			mSystem.settingsUpdate();
 		}
 	};

@@ -1,23 +1,31 @@
 package es.acperez.domocontrol.systems.power;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.systems.base.DomoSystem;
+import es.acperez.domocontrol.systems.base.SystemFragment;
+import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
 import es.acperez.domocontrol.systems.power.controller.PowerManager;
 
 public class PowerSystem extends DomoSystem {
 	public PowerData mData;
 
-	public PowerSystem(String systemName, String fragmentClass, Bundle settings) {
-		super(systemName, fragmentClass, DomoSystem.TYPE_POWER);
+	public PowerSystem(Context context, Bundle settings, DomoSystemStatusListener listener) {
+		super(context.getResources().getString(R.string.system_name_power), DomoSystem.TYPE_POWER);
 
 		this.mData = new PowerData();
 		mData.importSettings(settings);
 		
-		this.mManager = new PowerManager(mData);
-		this.mManager.addSystemListener(this);
+		this.mManager = new PowerManager(this, mData, listener);
 		
 		sendRequest(PowerManager.GET_STATUS, null, true);
+	}
+	
+	@Override
+	protected SystemFragment createFragment() {
+		return new PowerFragment(this);
 	}
 
 	public void requestPlugSwitch(int plug) {

@@ -1,6 +1,6 @@
 package es.acperez.domocontrol.mainList;
 
-import es.acperez.domocontrol.DomoControlApplication;
+import es.acperez.domocontrol.DomoControlActivity;
 import es.acperez.domocontrol.R;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -72,7 +72,7 @@ public class SystemListAdapter extends BaseAdapter {
 			holder = (ViewHolder) view.getTag();
 		}
 
-		int status = DomoControlApplication.getSystemStatus(position);
+		int status = DomoControlActivity.getSystemStatus(position);
 
 		list.updateStatus(position, status);
 		

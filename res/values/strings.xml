@@ -88,23 +88,9 @@
     <string name="widget_light_on">ON</string>
     <string name="widget_light_off">OFF</string>
     
-	<string-array name="systems_array">
-		<item>Power</item>
-		<item>Light</item>
-		<item>Test</item>
-	</string-array>
-	
-	<string-array name="system_fragments_array">
-		<item>es.acperez.domocontrol.systems.power.PowerFragment</item>
-		<item>es.acperez.domocontrol.systems.light.LightFragment</item>
-		<item>es.acperez.domocontrol.systems.empty.UnderConstructionFragment</item>
-	</string-array>
-
- 	<integer-array name="system_types_array">
-	    <item>0</item>
-	    <item>1</item>
-	    <item>2</item>
-	</integer-array>
+    
+    <string name="system_name_power">Power</string>
+    <string name="system_name_light">Light</string>
     
 	<string name="under_construction">Under construction</string>
 	

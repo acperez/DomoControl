@@ -3,9 +3,9 @@ package es.acperez.domocontrol.systems.power.controller;
 import android.os.Bundle;
 import android.os.Handler;
 import es.acperez.domocontrol.common.connectionManager.ConnectionManager;
-import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemManager;
 import es.acperez.domocontrol.systems.power.PowerData;
+import es.acperez.domocontrol.systems.power.PowerSystem;
 
 public class PowerManager extends SystemManager {
 	
@@ -29,8 +29,8 @@ public class PowerManager extends SystemManager {
 	private ConnectionManager connectionManager = null;
 	private PowerData mData;
 
-	public PowerManager(PowerData data) {
-		this.systemType = DomoSystem.TYPE_POWER;
+	public PowerManager(PowerSystem system, PowerData data, DomoSystemStatusListener listener) {
+		super(system, listener);
 		
 		connectionManager = ConnectionManager.getInstance();
 		mData = data;
