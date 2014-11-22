@@ -18,8 +18,21 @@
     <string name="power_apply_settings_btn">Apply</string>
     <string name="power_clear_settings_btn">Clear</string>
     
+    <string name="power_add_event">Add event</string>
+    
     <string name="power_tab_control">Monitor</string>
+    <string name="power_tab_timer">Timer</string>
     <string name="power_tab_config">Setup</string>
+    
+    <string name="power_timer_event_time">Time</string>
+    <string name="power_timer_event_action">Action</string>
+    <string name="power_timer_event_socket">Socket</string>
+    <string name="power_timer_status">Timer status</string>
+    <string name="power_event_status_on">ENABLED</string>
+    <string name="power_event_status_off">DISABLED</string>
+    <string name="power_timer_event_list">List of events</string>
+    <string name="power_event_action_desc">Action</string>
+    <string name="power_event_delete">Delete</string>
     
     <string name="power_settings_status">Status</string>
     <string name="power_settings_status_desc">Disconnected</string>

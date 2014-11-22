@@ -39,7 +39,7 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:orientation="horizontal"
-	        android:weightSum="4"
+	        android:weightSum="5"
 	        android:checkedButton="@+id/power_tab_control" >
 	        
             <TextView
@@ -59,6 +59,17 @@
 	            android:textColor="@color/tab_color"
 	            android:gravity="center" />
 	        
+   	        <RadioButton
+	            android:id="@+id/power_tab_timer"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+				android:layout_weight="1"
+	            android:text="@string/power_tab_timer"
+	            android:background="@drawable/tab_middle_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        	        
 	        <RadioButton
 	            android:id="@+id/power_tab_setup"
 	            android:layout_width="0dp"
@@ -204,7 +215,128 @@
 				</RelativeLayout>	
 				
 		    </LinearLayout>
-	    
+		    
+       	    <LinearLayout
+		        android:id="@+id/power_tab_timer_content"
+		        android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				android:orientation="vertical"
+				android:baselineAligned="false">
+				
+       	        <LinearLayout
+			        android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:baselineAligned="false">
+					
+	       	        <TextView
+				        android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:text="@string/power_timer_status"/>
+	       	        
+		            <Switch
+		                android:id="@+id/power_event_status"
+		                android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+				        android:textOff="@string/power_event_status_off"
+						android:textOn="@string/power_event_status_on"
+						android:layout_gravity="right"/>
+		            
+       	        </LinearLayout>
+       	        
+       	        <View
+				    android:layout_width="match_parent"
+				    android:layout_height="1dp"
+				    android:background="@color/gray"
+   					android:layout_marginTop="20dp"
+					android:layout_marginBottom="20dp"/>
+       	        
+			    <TableLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:stretchColumns="0,1,2">
+					
+			        <TableRow
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:gravity="center">
+			            
+			            <TextView
+					        android:textSize="20sp"
+					        android:layout_gravity="center"
+							android:text="@string/power_timer_event_time"/>
+			            
+			            <TextView
+			                android:textSize="20sp"
+			                android:layout_gravity="center"
+							android:text="@string/power_timer_event_socket"/>
+			            
+			            <TextView
+					        android:textSize="20sp"
+					        android:layout_gravity="center"
+							android:text="@string/power_timer_event_action"/>
+     				</TableRow>
+     				
+			        <TableRow
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content"
+			            android:background="@color/gray">
+			            <TextView
+		   			        android:id="@+id/power_event_time"
+		   			        android:layout_width="0dp"
+					        android:textSize="18sp"
+					        android:layout_gravity="center"
+							android:text="@string/power_timer_event_time"/>
+			            
+						<Spinner
+						    android:id="@+id/power_event_sockets"
+						    android:layout_width="0dp"
+						    android:textSize="18sp"/>
+			            			            
+			            <Switch
+					        android:id="@+id/power_event_action"
+					        android:layout_width="0dp"
+					        android:layout_gravity="center"
+					        android:hint="@null"/>
+		            </TableRow>
+	            </TableLayout>
+			    
+			    <Button
+			        android:id="@+id/power_add_event_button"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:textSize="20sp"
+			        android:text="@string/power_add_event"
+			        android:layout_marginTop="10dp"/>
+				
+       	        <View
+				    android:layout_width="match_parent"
+				    android:layout_height="1dp"
+				    android:background="@color/gray"
+   					android:layout_marginTop="20dp"
+					android:layout_marginBottom="20dp"/>
+			           	        
+	            <TextView
+			        android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+			        android:textSize="20sp"
+					android:text="@string/power_timer_event_list"
+					android:layout_marginBottom="10dp"/>
+  			            
+	   	        <es.acperez.domocontrol.systems.power.customviews.EventList
+    		   	    android:id="@+id/power_list_events"
+			        android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:baselineAligned="false"
+					android:background="@color/gray"
+					android:showDividers="middle"
+					android:divider="@color/gray_dark"/>
+
+       	    </LinearLayout>
+       	    
 			<TableLayout
 			    android:id="@+id/power_tab_settings_content"
 			    android:layout_width="match_parent"

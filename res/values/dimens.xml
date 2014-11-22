@@ -14,4 +14,7 @@
     
     <dimen name="arrow_border">1dp</dimen>
     <dimen name="arrow_corner_radius">4dp</dimen>
+    
+    <dimen name="delete_corner_radius">5dp</dimen>
+    <dimen name="delete_padding">1dp</dimen>
 </resources>

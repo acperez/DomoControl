@@ -40,5 +40,7 @@
 			    android:name="android.appwidget.provider"
 			    android:resource="@xml/widget_info"/>
 		</receiver>
+		
+        <receiver android:name=".systems.power.controller.PowerAlarm"/>
 	</application>
 </manifest>
