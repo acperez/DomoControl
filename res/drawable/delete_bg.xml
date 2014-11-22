@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="false" android:state_pressed="true" >
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/gray_dark"/>
+            		<corners
+                		android:radius="@dimen/delete_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/delete_padding" android:bottom="@dimen/delete_padding" android:left="@dimen/delete_padding" android:right="@dimen/delete_padding">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/gray_light"
+                		android:startColor="@color/gray"
+                		android:angle="270" />
+       				<corners
+                		android:radius="@dimen/delete_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/delete_padding" android:bottom="@dimen/delete_padding" android:left="@dimen/delete_padding" android:right="@dimen/delete_padding">
+        		<shape>
+        		    <solid
+                		android:color="@color/blue_selection" />
+        			<corners
+                		android:radius="@dimen/delete_corner_radius" />
+        		</shape>
+    		</item>
+		</layer-list>
+    </item>
+    
+    <item>
+		<layer-list>
+    		<item>
+        		<shape>
+        		    <solid android:color="@color/gray_dark"/>
+            		<corners
+            		    android:radius="@dimen/delete_corner_radius" />
+        		</shape>
+    		</item>
+    		<item android:top="@dimen/delete_padding" android:bottom="@dimen/delete_padding" android:left="@dimen/delete_padding" android:right="@dimen/delete_padding">
+        		<shape>
+        			<gradient
+                		android:endColor="@color/tab_unselected_end"
+                		android:startColor="@color/tab_unselected_start"
+                		android:angle="90" />
+        			<corners
+                		android:radius="@dimen/delete_corner_radius" />
+        		</shape>
+    		</item>
+		</layer-list>
+    </item>
+
+</selector>

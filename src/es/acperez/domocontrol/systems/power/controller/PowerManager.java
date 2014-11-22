@@ -12,10 +12,12 @@ public class PowerManager extends SystemManager {
 	public static final int GET_STATUS = 0;
 	public static final int SET_STATUS = 1;
 	
+	final public static String ALARMS = "power.alarms";
+	
 	final public static String SERVER = "power.host";
 	final public static String SERVER_PORT = "power.port";
 	final public static String PASSWORD = "power.password";
-
+	
 	final public static String SOCKET_NAME_1 = "power.socket.name.1";
 	final public static String SOCKET_NAME_2 = "power.socket.name.2";
 	final public static String SOCKET_NAME_3 = "power.socket.name.3";

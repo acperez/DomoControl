@@ -1,6 +1,14 @@
 package es.acperez.domocontrol.systems.power;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.animation.AnimatorSet;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,19 +17,29 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.CompoundButton;
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.common.customviews.SquareImageView;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
+import es.acperez.domocontrol.systems.power.customviews.CustomTimePicker;
+import es.acperez.domocontrol.systems.power.customviews.EventList;
+import es.acperez.domocontrol.systems.power.customviews.EventList.OnPowerEventListener;
 
 public class PowerFragment extends SystemFragment {
+	
+    protected static final String DATE_PATTERN = "hh:mm a";
 
 	private View mView;
 	private View mLoadingView;
@@ -32,7 +50,13 @@ public class PowerFragment extends SystemFragment {
 	private RadioGroup mTab;
 	private View mPowerContent;
 	private View mSettingsContent;
+	private View mPowerTimerContent;
 	private View mSelectedTab;
+	private EventList mEventList;
+	private TextView mTimeEvent;
+	private Switch mActionEvent;
+	private Spinner mSocketEvent;
+	private ArrayAdapter<String> mSocketAdapter;
 	
 	public PowerFragment(PowerSystem system) {
 		mSystem =  system;
@@ -49,6 +73,7 @@ public class PowerFragment extends SystemFragment {
         mLoadingView = mView.findViewById(R.id.power_loading_panel);
         mOnlineView = mView.findViewById(R.id.power_online_panel);
         mPowerContent = mView.findViewById(R.id.power_tab_monitor_content);
+        mPowerTimerContent = mView.findViewById(R.id.power_tab_timer_content);
 		mSettingsContent = mView.findViewById(R.id.power_tab_settings_content);
         
         // Tab selector
@@ -72,23 +97,38 @@ public class PowerFragment extends SystemFragment {
 		if (mData.mPassword.length() > 0)
 			((EditText) mView.findViewById(R.id.power_password)).setText(mData.mPassword);
 
-		if (mData.mSocketNanes[0] != null && mData.mSocketNanes[0].length() > 0) {
-			((TextView) mView.findViewById(R.id.power_monitor_socket1_text)).setText(mData.mSocketNanes[0]);
-			((EditText) mView.findViewById(R.id.power_settings_socket1)).setHint(mData.mSocketNanes[0]);
-		}
-		if (mData.mSocketNanes[1] != null && mData.mSocketNanes[1].length() > 0) {
-			((TextView) mView.findViewById(R.id.power_monitor_socket2_text)).setText(mData.mSocketNanes[1]);
-			((EditText) mView.findViewById(R.id.power_settings_socket2)).setHint(mData.mSocketNanes[1]);
-		}
-		if (mData.mSocketNanes[2] != null && mData.mSocketNanes[2].length() > 0) {
-			((TextView) mView.findViewById(R.id.power_monitor_socket3_text)).setText(mData.mSocketNanes[2]);
-			((EditText) mView.findViewById(R.id.power_settings_socket3)).setHint(mData.mSocketNanes[2]);
-		}
-		if (mData.mSocketNanes[3] != null && mData.mSocketNanes[3].length() > 0) {
-			((TextView) mView.findViewById(R.id.power_monitor_socket4_text)).setText(mData.mSocketNanes[3]);
-			((EditText) mView.findViewById(R.id.power_settings_socket4)).setHint(mData.mSocketNanes[3]);
-		}
+		((TextView) mView.findViewById(R.id.power_monitor_socket1_text)).setText(mData.mSocketNanes[0]);
+		((EditText) mView.findViewById(R.id.power_settings_socket1)).setHint(mData.mSocketNanes[0]);
+		((TextView) mView.findViewById(R.id.power_monitor_socket2_text)).setText(mData.mSocketNanes[1]);
+		((EditText) mView.findViewById(R.id.power_settings_socket2)).setHint(mData.mSocketNanes[1]);
+		((TextView) mView.findViewById(R.id.power_monitor_socket3_text)).setText(mData.mSocketNanes[2]);
+		((EditText) mView.findViewById(R.id.power_settings_socket3)).setHint(mData.mSocketNanes[2]);
+		((TextView) mView.findViewById(R.id.power_monitor_socket4_text)).setText(mData.mSocketNanes[3]);
+		((EditText) mView.findViewById(R.id.power_settings_socket4)).setHint(mData.mSocketNanes[3]);
 		
+		Switch alarmsEnabled = (Switch)mView.findViewById(R.id.power_event_status);
+		alarmsEnabled.setChecked(mData.mAlarmsEnabled);
+		alarmsEnabled.setOnCheckedChangeListener(alarmsEnabledListener);
+		
+		mTimeEvent = (TextView) mView.findViewById(R.id.power_event_time);
+		DateFormat df = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+		String date = df.format(Calendar.getInstance().getTime());
+		mTimeEvent.setText(date);
+		mTimeEvent.setOnClickListener(mEventTimerListener);
+		
+		mActionEvent = (Switch) mView.findViewById(R.id.power_event_action);
+		
+		mSocketAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_row, mData.mSocketNanes);
+		mSocketEvent = (Spinner) mView.findViewById(R.id.power_event_sockets);
+		mSocketEvent.setAdapter(mSocketAdapter);
+		
+		mEventList = (EventList) mView.findViewById(R.id.power_list_events);
+		mEventList.setData(mData);
+		mEventList.setEventListener(mEventListListener);
+		ArrayList<PowerEvent> events = mSystem.getEvents();
+		mEventList.init(events);
+		((Button) mView.findViewById(R.id.power_add_event_button)).setOnClickListener(mEventAddListener);
+
 		((Button) mView.findViewById(R.id.power_connect_settings)).setOnClickListener(mSettingsConnectListener);
         ((Button) mView.findViewById(R.id.power_apply_settings)).setOnClickListener(mSettingsApplyListener);
         ((Button) mView.findViewById(R.id.power_clear_settings)).setOnClickListener(mSettingsClearListener);
@@ -221,6 +261,16 @@ public class PowerFragment extends SystemFragment {
 					transition(mPowerContent, mSelectedTab, false);
 					mSelectedTab = mPowerContent;
 					break;
+				case R.id.power_tab_timer:
+					if (mSelectedTab == mPowerTimerContent)
+						return;
+					
+					if (mSelectedTab == mPowerContent)
+						transition(mPowerTimerContent, mSelectedTab, true);
+					else
+						transition(mPowerTimerContent, mSelectedTab, false);
+					mSelectedTab = mPowerTimerContent;
+					break;
 				case R.id.power_tab_setup:
 					if (mSelectedTab == mSettingsContent)
 						return;
@@ -272,6 +322,9 @@ public class PowerFragment extends SystemFragment {
 			mData.mPassword = ((EditText) mView.findViewById(R.id.power_password)).getText().toString();
 			
 			mSystem.settingsUpdate();
+			
+			Bundle settings = mSystem.getSettings();
+			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
 		}
 	};
 	
@@ -311,8 +364,12 @@ public class PowerFragment extends SystemFragment {
 				((TextView) mView.findViewById(R.id.power_monitor_socket4_text)).setText(name);
 			}
 			
+			mEventList.updateData();
+			
 			Bundle settings = mSystem.getSettings();
 			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
+			
+			mSocketAdapter.notifyDataSetChanged();
 		}
 	};
 	
@@ -344,4 +401,60 @@ public class PowerFragment extends SystemFragment {
         socket = (SquareImageView) mView.findViewById(R.id.power_monitor_socket4_img);
         updatePlugStatus(3, socket);
 	}
+	
+	private OnClickListener mEventTimerListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		    DialogFragment newFragment = new CustomTimePicker(mTimePickerListener);
+		    newFragment.show(getChildFragmentManager(), "timePicker");
+		}
+	};
+	
+	private OnTimeSetListener mTimePickerListener =  new OnTimeSetListener() {
+
+		@Override
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			cal.set(Calendar.MINUTE,minute);
+			
+			DateFormat df = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+			String date = df.format(cal.getTime());
+			mTimeEvent.setText(date);
+		}
+	};
+
+	private OnClickListener mEventAddListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			int socket = mSocketEvent.getSelectedItemPosition();
+			PowerEvent event = new PowerEvent(0, mTimeEvent.getText().toString(),
+		            			mActionEvent.isChecked(), socket);
+			
+			int index = mSystem.addEvent(event);
+			mEventList.addEvent(event, index);
+		}
+	};
+	
+	private OnPowerEventListener mEventListListener = new OnPowerEventListener() {
+		
+		@Override
+		public void onPowerEventRemoved(PowerEvent event) {
+			mSystem.deleteEvent(event);
+		}
+	};
+
+	private android.widget.CompoundButton.OnCheckedChangeListener alarmsEnabledListener = new android.widget.CompoundButton.OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			mData.mAlarmsEnabled = isChecked;
+			Bundle settings = mSystem.getSettings();
+			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
+			
+			mSystem.enableAlarms(isChecked);
+		}
+	};
 }
