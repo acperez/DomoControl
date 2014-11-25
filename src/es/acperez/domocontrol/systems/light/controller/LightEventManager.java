@@ -1,21 +1,21 @@
-package es.acperez.domocontrol.systems.power.controller;
+package es.acperez.domocontrol.systems.light.controller;
 
 import java.util.ArrayList;
 
 import android.content.Context;
 import es.acperez.domocontrol.database.EventDbHelper;
-import es.acperez.domocontrol.systems.power.PowerData;
-import es.acperez.domocontrol.systems.power.PowerEvent;
+import es.acperez.domocontrol.systems.light.LightData;
+import es.acperez.domocontrol.systems.light.LightEvent;
 
-public class PowerEventManager {
+public class LightEventManager {
 	private Context mContext;
 	private EventDbHelper mDbHelper;
-	private PowerData mData;
-	private ArrayList<PowerEvent> mEvents;
+	private LightData mData;
+	private ArrayList<LightEvent> mEvents;
 	
-	public PowerEventManager(Context context, PowerData data) {
+	public LightEventManager(Context context, LightData data) {
 		mDbHelper = new EventDbHelper(context);
-		mEvents = mDbHelper.getPowerEvents();
+		mEvents = mDbHelper.getLightEvents();
 		
 		mContext = context;
 		mData = data;
@@ -24,11 +24,11 @@ public class PowerEventManager {
 			enableAlarms(true);
 	}
 	
-	public ArrayList<PowerEvent> getAllEvents() {
+	public ArrayList<LightEvent> getAllEvents() {
 		return mEvents;
 	}
 
-	public int addEvent(PowerEvent event) {
+	public int addEvent(LightEvent event) {
 		long id = mDbHelper.insertEvent(event);
 		event.setId(id);
 		
@@ -50,7 +50,7 @@ public class PowerEventManager {
 		return index;
 	}
 	
-	public void deleteEvent(PowerEvent event) {
+	public void deleteEvent(LightEvent event) {
 		mDbHelper.deleteEvent(event.getId());
 		
 		long id = event.getId();

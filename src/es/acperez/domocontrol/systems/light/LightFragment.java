@@ -1,11 +1,17 @@
 package es.acperez.domocontrol.systems.light;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import android.animation.AnimatorSet;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,11 +25,14 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
+import android.widget.TimePicker;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
@@ -35,25 +44,33 @@ import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker;
 import es.acperez.domocontrol.common.customviews.colorpicker.ColorPicker.OnColorChangeListener;
 import es.acperez.domocontrol.database.SceneAdapter;
 import es.acperez.domocontrol.systems.base.DomoSystem;
+import es.acperez.domocontrol.systems.base.DomoEvent;
 import es.acperez.domocontrol.systems.base.SystemFragment;
 import es.acperez.domocontrol.systems.light.controller.LightRequest;
 import es.acperez.domocontrol.systems.light.controller.LightUtils;
 import es.acperez.domocontrol.systems.light.controller.NameRequest;
 import es.acperez.domocontrol.systems.light.controller.Scene;
 import es.acperez.domocontrol.systems.light.controller.SceneRequest;
+import es.acperez.domocontrol.systems.light.customviews.EventList;
+import es.acperez.domocontrol.systems.light.customviews.EventList.OnLightEventListener;
 import es.acperez.domocontrol.systems.light.customviews.LightList;
 import es.acperez.domocontrol.systems.light.customviews.LightList.OnLightSelectedListener;
 import es.acperez.domocontrol.systems.light.customviews.LightNameList;
+import es.acperez.domocontrol.systems.light.service.LightServiceData;
+import es.acperez.domocontrol.systems.light.service.ServiceData;
+import es.acperez.domocontrol.systems.power.customviews.CustomTimePicker;
 
 public class LightFragment extends SystemFragment {
 
 	private View mView;
 	private View mLoadingView;
 	private View mOnlineView;
+	private LightData mData;
 	private LightSystem mSystem;
 	private AnimatorSet animation;
 	private ColorPicker mColorPanel;
 	private View mScenesContent;
+	private View mTimersContent;
 	private View mSettingsContent;
 	private View mLightsContent;
 	private View mSelectedTab;
@@ -63,9 +80,13 @@ public class LightFragment extends SystemFragment {
 	private LightList mLightList;
 	private LightNameList mLightNameList;
 	private RadioGroup mTab;
+	private EventList mEventList;
+	private TextView mTimeEvent;
+	private Switch mActionEvent;
 	
 	public LightFragment(LightSystem system) {
 		mSystem = system;
+		mData = system.mData;
 	}
 	
 	@Override
@@ -79,6 +100,7 @@ public class LightFragment extends SystemFragment {
         mLoadingView = mView.findViewById(R.id.light_loading_panel);
         mOnlineView = mView.findViewById(R.id.light_online_panel);
         mScenesContent = mView.findViewById(R.id.light_tab_scenes_content);
+        mTimersContent = mView.findViewById(R.id.light_tab_timer_content);
         mLightsContent = mView.findViewById(R.id.light_tab_lights_content);
 		mSettingsContent = mView.findViewById(R.id.light_tab_settings_content);
         
@@ -98,6 +120,25 @@ public class LightFragment extends SystemFragment {
 			((View)mView.findViewById(R.id.light_settings_names_panel)).setVisibility(View.VISIBLE);
         }
         
+        // Timers Tab
+        Switch alarmsEnabled = (Switch)mView.findViewById(R.id.light_event_status);
+		alarmsEnabled.setChecked(mData.mAlarmsEnabled);
+		alarmsEnabled.setOnCheckedChangeListener(alarmsEnabledListener);
+		
+		mTimeEvent = (TextView) mView.findViewById(R.id.light_event_time);
+		DateFormat df = new SimpleDateFormat(DomoEvent.DATE_PATTERN, Locale.getDefault());
+		String date = df.format(Calendar.getInstance().getTime());
+		mTimeEvent.setText(date);
+		mTimeEvent.setOnClickListener(mEventTimerListener);
+		
+		mActionEvent = (Switch) mView.findViewById(R.id.light_event_action);
+		
+		mEventList = (EventList) mView.findViewById(R.id.light_list_events);
+		mEventList.setEventListener(mEventListListener);
+		ArrayList<LightEvent> events = mSystem.getEvents();
+		mEventList.init(events);
+		((Button) mView.findViewById(R.id.light_add_event_button)).setOnClickListener(mEventAddListener);
+        
         // Scenes Tab
         mSceneAdapter = new SceneAdapter(getActivity(), mSystem.getScenes());
         mSceneGrid = (GridView) mView.findViewById(R.id.light_tab_scenes_grid);
@@ -111,9 +152,6 @@ public class LightFragment extends SystemFragment {
 	    ((Button) mView.findViewById(R.id.light_save_scene)).setOnClickListener(mSaveSceneListener);
              
         // Settings Tab
-		if (((LightSystem)mSystem).mData.mServer != null && ((LightSystem)mSystem).mData.mServer.length() > 0)
-			((EditText) mView.findViewById(R.id.light_address)).setText(((LightSystem)mSystem).mData.mServer);
-		
 		((Button) mView.findViewById(R.id.light_connect_with_address)).setOnClickListener(mSettingsConnectListener);
 		((Button) mView.findViewById(R.id.light_find)).setOnClickListener(mSettingsFindListener);
 		
@@ -134,6 +172,7 @@ public class LightFragment extends SystemFragment {
         ((Button) mView.findViewById(R.id.light_switch_on)).setOnClickListener(mSwitchOnListener);
         ((Button) mView.findViewById(R.id.light_switch_off)).setOnClickListener(mSwitchOffListener);
 		
+        updateStatus();
         return mView;
     }
 
@@ -265,11 +304,21 @@ public class LightFragment extends SystemFragment {
 					transition(mScenesContent, mSelectedTab, false);
 					mSelectedTab = mScenesContent;
 					break;
+				case R.id.light_tab_timer:
+					if (mSelectedTab == mTimersContent)
+						return;
+					
+					if (mSelectedTab == mScenesContent)
+						transition(mTimersContent, mSelectedTab, true);
+					else
+						transition(mTimersContent, mSelectedTab, false);
+					mSelectedTab = mTimersContent;
+					break;
 				case R.id.light_tab_lights:
 					if (mSelectedTab == mLightsContent)
 						return;
 					
-					if (mSelectedTab == mScenesContent)
+					if (mSelectedTab == mScenesContent || mSelectedTab == mTimersContent)
 						transition(mLightsContent, mSelectedTab, true);
 					else
 						transition(mLightsContent, mSelectedTab, false);
@@ -322,7 +371,7 @@ public class LightFragment extends SystemFragment {
 		@Override
 		public void onClick(View v) {
 			Map<String, String> names = mLightNameList.getNames();
-			((LightSystem)mSystem).updateLights(new NameRequest(names, mSystem.getLights()));
+			mSystem.updateLights(new NameRequest(names, mSystem.getLights()));
 		}
 	};
 	
@@ -338,8 +387,8 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).mData.mServer = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
-			mSystem.settingsUpdate();
+			String server = ((EditText) mView.findViewById(R.id.light_address)).getText().toString();
+			mSystem.connect(server);
 		}
 	};
 	
@@ -347,8 +396,7 @@ public class LightFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {
-			((LightSystem)mSystem).mData.mServer = null;
-			mSystem.settingsUpdate();
+			mSystem.connect(null);
 		}
 	};
 	
@@ -375,7 +423,7 @@ public class LightFragment extends SystemFragment {
 			if (mLightIdList.size() == 0)
 				return;
 			
-			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, color));
+			mSystem.updateLights(new LightRequest(mLightIdList, color));
 		}
 	};
 	
@@ -386,7 +434,7 @@ public class LightFragment extends SystemFragment {
 			if (mLightIdList.size() == 0)
 				return;
 			
-			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, true));
+			mSystem.updateLights(new LightRequest(mLightIdList, true));
 		}
 	};
 	
@@ -397,7 +445,7 @@ public class LightFragment extends SystemFragment {
 			if (mLightIdList.size() == 0)
 				return;
 			
-			((LightSystem)mSystem).updateLights(new LightRequest(mLightIdList, false));
+			mSystem.updateLights(new LightRequest(mLightIdList, false));
 		}
 	};
 	
@@ -416,7 +464,7 @@ public class LightFragment extends SystemFragment {
 				lights.add(mLightList.getLightId(i));
 			}
 			
-			((LightSystem)mSystem).updateLights(new LightRequest(lights, state));
+			mSystem.updateLights(new LightRequest(lights, state));
 		}
 	};
 	
@@ -456,7 +504,7 @@ public class LightFragment extends SystemFragment {
 	}
 	
 	private void saveScene(String name) {
-		List<PHLight> lights = ((LightSystem)mSystem).getAllLights();
+		List<PHLight> lights = mSystem.getAllLights();
 		int[] colors = new int[lights.size()];
 		for (int i = 0; i < lights.size(); i++) {
 			colors[i] = LightUtils.getColor(lights.get(i));
@@ -472,7 +520,7 @@ public class LightFragment extends SystemFragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,	long id) {
 			Scene scene = (Scene)mSceneGrid.getItemAtPosition(position);
-			((LightSystem)mSystem).updateLights(new SceneRequest(scene));
+			mSystem.updateLights(new SceneRequest(scene));
 		}
 	};
 	
@@ -509,4 +557,66 @@ public class LightFragment extends SystemFragment {
 			return true;
 		}
 	};
+	
+	private OnClickListener mEventTimerListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		    DialogFragment newFragment = new CustomTimePicker(mTimePickerListener);
+		    newFragment.show(getChildFragmentManager(), "timePicker");
+		}
+	};
+	
+	private OnTimeSetListener mTimePickerListener =  new OnTimeSetListener() {
+
+		@Override
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			cal.set(Calendar.MINUTE,minute);
+			
+			DateFormat df = new SimpleDateFormat(DomoEvent.DATE_PATTERN, Locale.getDefault());
+			String date = df.format(cal.getTime());
+			mTimeEvent.setText(date);
+		}
+	};
+
+	private OnClickListener mEventAddListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			LightEvent event = new LightEvent(0, mTimeEvent.getText().toString(),
+		            			mActionEvent.isChecked());
+			
+			int index = mSystem.addEvent(event);
+			mEventList.addEvent(event, index);
+		}
+	};
+	
+	private OnLightEventListener mEventListListener = new OnLightEventListener() {
+		
+		@Override
+		public void onLightEventRemoved(LightEvent event) {
+			mSystem.deleteEvent(event);
+		}
+	};
+
+	private android.widget.CompoundButton.OnCheckedChangeListener alarmsEnabledListener = new android.widget.CompoundButton.OnCheckedChangeListener() {
+		
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+			mData.mAlarmsEnabled = isChecked;
+			mData.exportSettings();
+			
+			mSystem.enableAlarms(isChecked);
+		}
+	};
+	
+	@Override
+	public void updateServiceSettings(ServiceData settings) {
+		LightServiceData conf = (LightServiceData)settings;
+		
+		if (conf.mServer != null && conf.mServer.length() > 0)
+			((EditText) mView.findViewById(R.id.light_address)).setText(conf.mServer);
+	}
 }

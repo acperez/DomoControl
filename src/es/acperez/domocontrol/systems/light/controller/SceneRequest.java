@@ -9,9 +9,9 @@ import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 
 import es.acperez.domocontrol.systems.light.LightSystem;
-import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
+import es.acperez.domocontrol.systems.light.service.LightService.LightSystemRequest;
 
-public class SceneRequest implements LightManagerRequest {
+public class SceneRequest implements LightSystemRequest {
 
 	private Scene mScene;
 	

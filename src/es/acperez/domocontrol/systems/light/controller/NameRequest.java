@@ -8,9 +8,9 @@ import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLight;
 
 import es.acperez.domocontrol.systems.light.LightSystem;
-import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
+import es.acperez.domocontrol.systems.light.service.LightService.LightSystemRequest;
 
-public class NameRequest implements LightManagerRequest {
+public class NameRequest implements LightSystemRequest {
 
 	private Map<String, String> mNames;
 	private Map<String, PHLight> mLights;

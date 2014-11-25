@@ -31,16 +31,16 @@ import android.widget.CompoundButton;
 import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import es.acperez.domocontrol.common.customviews.SquareImageView;
+import es.acperez.domocontrol.systems.base.DomoEvent;
 import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.SystemFragment;
+import es.acperez.domocontrol.systems.light.service.ServiceData;
 import es.acperez.domocontrol.systems.power.customviews.CustomTimePicker;
 import es.acperez.domocontrol.systems.power.customviews.EventList;
 import es.acperez.domocontrol.systems.power.customviews.EventList.OnPowerEventListener;
+import es.acperez.domocontrol.systems.power.service.PowerServiceData;
 
 public class PowerFragment extends SystemFragment {
-	
-    protected static final String DATE_PATTERN = "hh:mm a";
-
 	private View mView;
 	private View mLoadingView;
 	private View mOnlineView;
@@ -87,15 +87,6 @@ public class PowerFragment extends SystemFragment {
             mPowerContent.setVisibility(View.VISIBLE);
 			updateOfflineMessage(DomoSystem.ERROR_NONE);
         }
-        
-		if (mData.mServer != null && mData.mServer.length() > 0)
-			((EditText) mView.findViewById(R.id.power_address)).setText(mData.mServer);
-		
-		if (mData.mPort != 0)
-			((EditText) mView.findViewById(R.id.power_address_port)).setText(String.valueOf(mData.mPort));
-		
-		if (mData.mPassword.length() > 0)
-			((EditText) mView.findViewById(R.id.power_password)).setText(mData.mPassword);
 
 		((TextView) mView.findViewById(R.id.power_monitor_socket1_text)).setText(mData.mSocketNanes[0]);
 		((EditText) mView.findViewById(R.id.power_settings_socket1)).setHint(mData.mSocketNanes[0]);
@@ -111,7 +102,7 @@ public class PowerFragment extends SystemFragment {
 		alarmsEnabled.setOnCheckedChangeListener(alarmsEnabledListener);
 		
 		mTimeEvent = (TextView) mView.findViewById(R.id.power_event_time);
-		DateFormat df = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+		DateFormat df = new SimpleDateFormat(DomoEvent.DATE_PATTERN, Locale.getDefault());
 		String date = df.format(Calendar.getInstance().getTime());
 		mTimeEvent.setText(date);
 		mTimeEvent.setOnClickListener(mEventTimerListener);
@@ -188,7 +179,7 @@ public class PowerFragment extends SystemFragment {
 		
 		if (mLoadingView == null || mOnlineView == null)
 			return;
-		
+
 		switch(mSystem.getStatus()) {
 			case DomoSystem.STATUS_LOADING:
 				mOnlineView.setVisibility(View.GONE);
@@ -317,14 +308,11 @@ public class PowerFragment extends SystemFragment {
 		
 		@Override
 		public void onClick(View v) {			
-			mData.mServer = ((EditText) mView.findViewById(R.id.power_address)).getText().toString();
-			mData.mPort = Integer.valueOf(((EditText) mView.findViewById(R.id.power_address_port)).getText().toString());
-			mData.mPassword = ((EditText) mView.findViewById(R.id.power_password)).getText().toString();
+			String server = ((EditText) mView.findViewById(R.id.power_address)).getText().toString();
+			int port = Integer.valueOf(((EditText) mView.findViewById(R.id.power_address_port)).getText().toString());
+			String password = ((EditText) mView.findViewById(R.id.power_password)).getText().toString();
 			
-			mSystem.settingsUpdate();
-			
-			Bundle settings = mSystem.getSettings();
-			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
+			mSystem.connect(server, port, password);
 		}
 	};
 	
@@ -366,8 +354,7 @@ public class PowerFragment extends SystemFragment {
 			
 			mEventList.updateData();
 			
-			Bundle settings = mSystem.getSettings();
-			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
+			mData.exportSettings();
 			
 			mSocketAdapter.notifyDataSetChanged();
 		}
@@ -419,7 +406,7 @@ public class PowerFragment extends SystemFragment {
 			cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			cal.set(Calendar.MINUTE,minute);
 			
-			DateFormat df = new SimpleDateFormat(DATE_PATTERN, Locale.getDefault());
+			DateFormat df = new SimpleDateFormat(DomoEvent.DATE_PATTERN, Locale.getDefault());
 			String date = df.format(cal.getTime());
 			mTimeEvent.setText(date);
 		}
@@ -451,10 +438,24 @@ public class PowerFragment extends SystemFragment {
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 			mData.mAlarmsEnabled = isChecked;
-			Bundle settings = mSystem.getSettings();
-			DomoControlApplication.savePreferences(settings, DomoSystem.POWER_SETTINGS_NAME);
+			mData.exportSettings();
 			
 			mSystem.enableAlarms(isChecked);
 		}
 	};
+	
+
+	@Override
+	public void updateServiceSettings(ServiceData settings) {
+		PowerServiceData conf = (PowerServiceData) settings;
+		
+		if (conf.mServer != null && conf.mServer.length() > 0)
+			((EditText) mView.findViewById(R.id.power_address)).setText(conf.mServer);
+		
+		if (conf.mPort != 0)
+			((EditText) mView.findViewById(R.id.power_address_port)).setText(String.valueOf(conf.mPort));
+		
+		if (conf.mPassword.length() > 0)
+			((EditText) mView.findViewById(R.id.power_password)).setText(conf.mPassword);		
+	}
 }

@@ -6,10 +6,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import es.acperez.domocontrol.common.connectionManager.ConnectionManagerTask;
-import es.acperez.domocontrol.systems.base.DomoSystem;
 import android.os.Handler;
 import android.os.Message;
+import es.acperez.domocontrol.common.connectionManager.ConnectionManagerTask;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 
 public class PowerManagerTask extends ConnectionManagerTask {
 	private Socket socket;
@@ -20,37 +20,37 @@ public class PowerManagerTask extends ConnectionManagerTask {
 	protected static final int GET = 0;
 	protected static final int SET = 1;
 		
-	private Handler handler;
-	private int request;
-	private int plug;
-	private boolean value;
+	private Handler mHandler;
+	private int mRequest;
+	private int mPlug;
+	private boolean mValue;
 	private String mHost;
 	private int mPort;
 	private String mPassword;
 	
 	public PowerManagerTask(Handler handler, String host, int port, String password) {
-		this.handler = handler;
-		this.mHost = host;
-		this.mPort = port;
-		this.mPassword = password;
-		this.request = GET;
+		mHandler = handler;
+		mHost = host;
+		mPort = port;
+		mPassword = password;
+		mRequest = GET;
 	}
 
 	public PowerManagerTask(Handler handler, String host, int port, String password, int plug, boolean value) {
-		this.handler = handler;
-		this.mHost = host;
-		this.mPort = port;
-		this.mPassword = password;
-		this.request = SET;
-		this.plug = plug;
-		this.value = value;
+		mHandler = handler;
+		mHost = host;
+		mPort = port;
+		mPassword = password;
+		mRequest = SET;
+		mPlug = plug;
+		mValue = value;
 	}
 	
 	@Override
 	public void doRun() {
     	int result = DomoSystem.ERROR_NONE;
     	powerDevice = new PowerDevice(mPassword);
-    	boolean status[] = null;
+    	boolean plugsStatus[] = null;
     	
     	try {
 			InetAddress serverAddr = InetAddress.getByName(mHost);
@@ -60,7 +60,7 @@ public class PowerManagerTask extends ConnectionManagerTask {
 			is = socket.getInputStream();
 			os = socket.getOutputStream();
     	
-			switch (request) {
+			switch (mRequest) {
 			case GET:
 				result = doGetStatus();
 				break;
@@ -80,14 +80,13 @@ public class PowerManagerTask extends ConnectionManagerTask {
     	}
 
     	if (result == DomoSystem.ERROR_NONE) {
-    		status = powerDevice.status;
+    		plugsStatus = powerDevice.plugsStatus;
     	}
     	
-    	if (handler != null) {
-    		Message message = Message.obtain(handler, result, status);
-    		handler.sendMessage(message);
+    	if (mHandler != null) {
+    		Message message = Message.obtain(mHandler, result, plugsStatus);
+    		mHandler.sendMessage(message);
     	}
-    	
 	}
     
     private int doSetStatus() throws IOException {
@@ -98,7 +97,7 @@ public class PowerManagerTask extends ConnectionManagerTask {
 			return result;
 		}
 
-		byte[] message = powerDevice.setStatus(this.plug, this.value);
+		byte[] message = powerDevice.setStatus(mPlug, mValue);
 		os.write(message);
 		is.read(buffer);
 

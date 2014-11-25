@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import es.acperez.domocontrol.systems.power.controller.PowerManagerTask;
 
-
 public class ConnectionManager {
     
     public static final int MAX_CONNECTIONS = 1;

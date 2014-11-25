@@ -4,7 +4,7 @@ public class PowerDevice {
 	private byte key[];
 	public byte token[];
 	public byte tokenResponse[];
-	public boolean status[];
+	public boolean plugsStatus[];
 	
 	private int unsignedKey[];
 	private int unsignedToken[];
@@ -40,19 +40,19 @@ public class PowerDevice {
 
 	public void addStatus(byte[] encryptedStatus) {
 		int[] unsignedEncryptedStatus = byte2int(encryptedStatus);
-		status = new boolean[encryptedStatus.length];
+		plugsStatus = new boolean[encryptedStatus.length];
 		
 		for (int i = 0; i < encryptedStatus.length; i++) {
 			byte state = (byte) ((((unsignedEncryptedStatus[i] - unsignedKey[1]) ^ unsignedKey[0]) - unsignedToken[3]) ^ unsignedToken[2] & 0xFF);
-			status[status.length - 1 - i] = state == POWER_ON;
+			plugsStatus[plugsStatus.length - 1 - i] = state == POWER_ON;
 		}
 	}
 	
 	public byte[] setStatus(int plug, boolean value) {
-		byte[] ctrl = new byte[status.length];
-		byte[] ctrlEncrypted = new byte[status.length];
+		byte[] ctrl = new byte[plugsStatus.length];
+		byte[] ctrlEncrypted = new byte[plugsStatus.length];
 
-		for (int i = 0; i < status.length; i++) {
+		for (int i = 0; i < plugsStatus.length; i++) {
 			ctrl[i] = SWITCH_NONE;
 			
 			if (i == plug) {
@@ -64,8 +64,8 @@ public class PowerDevice {
 			}
 		}
 		
-		for (int i = 0; i < status.length; i++) {
-			ctrlEncrypted[i] = (byte) ((((ctrl[status.length - 1 - i] ^ unsignedToken[2]) + unsignedToken[3]) ^ unsignedKey[0]) + unsignedKey[1] & 0xFF);
+		for (int i = 0; i < plugsStatus.length; i++) {
+			ctrlEncrypted[i] = (byte) ((((ctrl[plugsStatus.length - 1 - i] ^ unsignedToken[2]) + unsignedToken[3]) ^ unsignedKey[0]) + unsignedKey[1] & 0xFF);
 		}
 		
 		return ctrlEncrypted;

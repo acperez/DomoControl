@@ -2,16 +2,18 @@ package es.acperez.domocontrol.systems.base;
 
 import java.lang.ref.WeakReference;
 
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
 public abstract class DomoSystem {
-	public String name;
-	public int type;
+	public String mName;
+	public int mType;
+	
+	private int mStatus;
+	private int mError;
+	private DomoSystemStatusListener mStatusListener;
 	
 	protected SystemFragment mFragment;
-	protected SystemManager mManager;
 	
 	final public static int TYPE_POWER = 0;
 	final public static int TYPE_LIGHT = 1;
@@ -28,11 +30,20 @@ public abstract class DomoSystem {
 	public static final int ERROR_PARAMS = 4;
 	
 	final public static String POWER_SETTINGS_NAME = "power_settings";
+	final public static String POWER_SERVICE_SETTINGS_NAME = "power_service_settings";
 	final public static String LIGHT_SETTINGS_NAME = "light_settings";
-		
-	public DomoSystem(String name, int type) {
-		this.name = name;
-		this.type = type;
+	final public static String LIGHT_SERVICE_SETTINGS_NAME = "light_service_settings";
+	
+	public interface DomoSystemStatusListener {
+		public void onSystemStatusChange(DomoSystem system, int status);
+	}
+	
+	public DomoSystem(String name, int type, DomoSystemStatusListener listener) {
+		mName = name;
+		mType = type;
+		mStatus = DomoSystem.STATUS_LOADING;
+		mError = DomoSystem.ERROR_NONE;
+		mStatusListener = listener;
 	}
 	
 	public SystemFragment getFragment() {
@@ -42,9 +53,32 @@ public abstract class DomoSystem {
 		
 		return mFragment;
 	}
+	
+	protected void setStatus(int status) {
+		if (mStatus != status) {
+			mStatus = status;
+			updateStatus();
+			mStatusListener.onSystemStatusChange(this, status);
+		}
+	}
 
-	public void sendRequest(int request, Bundle params, boolean showLoading) {
-		mManager.sendRequest(managerHandler, request, params, showLoading);
+	public int getStatus() {
+		return mStatus;
+	}
+
+//	protected void setError(int error) {
+//		mError = error;
+//	}
+	
+	public int getError() {
+		return mError;
+	}
+	
+	public abstract void requestResponse(Message msg);
+	protected abstract SystemFragment createFragment();
+
+	private void updateStatus() {
+		getFragment().updateStatus();
 	}
 	
 	private static class WeakRefHandler extends Handler {
@@ -57,36 +91,24 @@ public abstract class DomoSystem {
 		@Override
 		public void handleMessage(Message msg) {
 			DomoSystem system = ref.get();
-			system.mManager.setError(msg.what);
 			
+			system.mError = msg.what;
+			
+			int error = msg.what;
 			int status = DomoSystem.STATUS_OFFLINE;
-			if (msg.what == DomoSystem.ERROR_NONE) {
+
+			if (error == DomoSystem.ERROR_NONE) {
 				status = DomoSystem.STATUS_ONLINE;
-			} else if (msg.what == DomoSystem.ERROR_NOTIFY) {
+			} else if (error == DomoSystem.ERROR_NOTIFY) {
 				status = DomoSystem.STATUS_WARNING;
 			}
-
-			system.mManager.setStatus(status);
+			
+			system.mError = error;
+			system.setStatus(status);
+			
 			system.requestResponse(msg);
 		}
 	};
 
-	private WeakRefHandler managerHandler = new WeakRefHandler(this);
-
-	public abstract void settingsUpdate();
-	public abstract Bundle getSettings();
-	public abstract void requestResponse(Message msg);
-	protected abstract SystemFragment createFragment();
-
-	public void updateStatus() {
-		getFragment().updateStatus();
-	}
-	
-	public int getStatus() {
-		return mManager.getStatus();
-	}
-	
-	public int getError() {
-		return mManager.getError();
-	}
+	protected WeakRefHandler mRequestListener = new WeakRefHandler(this);
 }

@@ -8,9 +8,9 @@ import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHLightState;
 
 import es.acperez.domocontrol.systems.light.LightSystem;
-import es.acperez.domocontrol.systems.light.controller.LightManager.LightManagerRequest;
+import es.acperez.domocontrol.systems.light.service.LightService.LightSystemRequest;
 
-public class LightRequest implements LightManagerRequest {
+public class LightRequest implements LightSystemRequest {
 
 	private ArrayList<String> mLights;
 	private PHLightState mState;

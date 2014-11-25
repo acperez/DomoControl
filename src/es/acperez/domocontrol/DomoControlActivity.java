@@ -9,9 +9,8 @@ import es.acperez.domocontrol.mainList.ContentFragment;
 import es.acperez.domocontrol.mainList.SystemListFragment;
 import es.acperez.domocontrol.mainList.SystemListFragment.OnItemSelectedListener;
 import es.acperez.domocontrol.systems.base.DomoSystem;
-import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
+import es.acperez.domocontrol.systems.base.DomoSystem.DomoSystemStatusListener;
 import es.acperez.domocontrol.systems.light.LightSystem;
-import es.acperez.domocontrol.systems.light.controller.LightManager;
 import es.acperez.domocontrol.systems.power.PowerSystem;
 
 public class DomoControlActivity extends Activity implements OnItemSelectedListener, DomoSystemStatusListener {
@@ -29,26 +28,14 @@ public class DomoControlActivity extends Activity implements OnItemSelectedListe
 	private void initSystems() {
 		domoSystems = new ArrayList<DomoSystem>();
 		
-		Bundle powerSettings = DomoControlApplication.restorePreferences(DomoSystem.POWER_SETTINGS_NAME);
-		domoSystems.add(new PowerSystem(this, powerSettings, this));
-
-		Bundle lightSettings = DomoControlApplication.restorePreferences(DomoSystem.LIGHT_SETTINGS_NAME);
-		domoSystems.add(new LightSystem(this, lightSettings, this, false));
+		domoSystems.add(new PowerSystem(this, this));
+		domoSystems.add(new LightSystem(this, this));
 	}
 
 	@Override
 	public void onItemSelected(int position) {
 		ContentFragment frag = (ContentFragment) getFragmentManager().findFragmentById(R.id.controlFragment);
 		frag.updateControlPanel(position);
-	}
-
-	@Override
-	public void onSystemStatusChange(DomoSystem system, int status) {
-		// Update status in list item
-        SystemListFragment fragment = (SystemListFragment)getFragmentManager().findFragmentById(R.id.system_list_fragment);
-        fragment.updateStatus(system.type, status);
-        
-        system.updateStatus();
 	}
 	
 	public static Fragment getSystemFragment(int position) {
@@ -61,7 +48,7 @@ public class DomoControlActivity extends Activity implements OnItemSelectedListe
 	public static String[] getSystemsName() {
 		String[] names = new String[domoSystems.size()];
 		for (int i = 0; i < names.length; i++) {
-			names[i] = domoSystems.get(i).name;
+			names[i] = domoSystems.get(i).mName;
 		}
 		
 		return names;
@@ -73,7 +60,14 @@ public class DomoControlActivity extends Activity implements OnItemSelectedListe
 
 	@Override
 	protected void onStop() {
-		domoSystems.get(DomoSystem.TYPE_LIGHT).sendRequest(LightManager.DISCONNECT, null, false);
+		((LightSystem) domoSystems.get(DomoSystem.TYPE_LIGHT)).disconnect();
 		super.onStop();
+	}
+
+	@Override
+	public void onSystemStatusChange(DomoSystem system, int status) {
+		// Update status in list item
+        SystemListFragment fragment = (SystemListFragment)getFragmentManager().findFragmentById(R.id.system_list_fragment);
+        fragment.updateStatus(system.mType, status);
 	}
 }

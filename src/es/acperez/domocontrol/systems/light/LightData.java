@@ -1,22 +1,28 @@
 package es.acperez.domocontrol.systems.light;
 
-import android.os.Bundle;
-import es.acperez.domocontrol.systems.light.controller.LightManager;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import es.acperez.domocontrol.systems.base.DomoSystem;
 
 public class LightData {
+	private SharedPreferences mSettings;
 
-	public String mServer;
-	public int mPort;
-	public String mUsername;
+	public boolean mAlarmsEnabled;
 	
-	public LightData(Bundle settings) {
-		mServer = settings.getString(LightManager.SERVER);
-	    mUsername = settings.getString(LightManager.USERNAME);
+	public LightData(Context context) {
+		mSettings = context.getSharedPreferences(DomoSystem.LIGHT_SETTINGS_NAME, Context.MODE_PRIVATE);
+	}
+
+	public void importSettings() {
+		mAlarmsEnabled = mSettings.getBoolean(LightSystem.ALARMS, false);
 	}
 	
-	public Bundle exportSettings() {
-		Bundle settings = new Bundle();
-		settings.putString(LightManager.SERVER, mServer);
-		return settings;
+	public void exportSettings() {
+		Editor editor = mSettings.edit();
+		
+		editor.putBoolean(LightSystem.ALARMS, mAlarmsEnabled);
+		
+		editor.commit();
 	}
 }

@@ -1,10 +1,10 @@
-package es.acperez.domocontrol.systems.light.controller;
+package es.acperez.domocontrol.database;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-import es.acperez.domocontrol.database.SqlHelper;
+import es.acperez.domocontrol.systems.light.controller.Scene;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,28 +20,11 @@ public class LightDbHelper extends SqlHelper {
 	public LightDbHelper(Context context) {
 		super(context);
 	}
-
-	@Override
-	protected void onDbCreated(SQLiteDatabase db) {
-		int elements = defNames.length;
-		ArrayList<Scene> scenes = new ArrayList<Scene>();
-		for (int i = 0; i < elements; i++) {
-			scenes.add(new Scene(defNames[i], defColours[i]));
-		}
-		
-		insertScenes(db, scenes);
-	}
 	
 	public void insertScene(Scene scene) {
 		SQLiteDatabase db = getWritableDatabase();
 		addScene(db, scene);
 		db.close();
-	}
-	
-	private void insertScenes(SQLiteDatabase db, ArrayList<Scene> scenes) {
-		for (Scene scene : scenes) {
-			addScene(db, scene);
-		}		 
 	}
 	
 	private void addScene(SQLiteDatabase db, Scene scene) {
@@ -91,7 +74,7 @@ public class LightDbHelper extends SqlHelper {
 		db.close();
 	}
 	
-	private byte[] intToByteArray(int value) {
+	private static byte[] intToByteArray(int value) {
 	    return new byte[] { (byte)((value >> 24) & 0xFF),
 	    					(byte)((value >> 16) & 0xFF),
 	    					(byte)((value >> 8) & 0xFF),
@@ -104,8 +87,6 @@ public class LightDbHelper extends SqlHelper {
 	            (b[1] & 0xFF) << 16 |
 	            (b[0] & 0xFF) << 24;
 	}
-	
-	
 	
 	private static final String[] defNames = {"Blue", "Orange", "Red", "Green", "Sea", "Peach", "Fire", "Forest",
 		"Blue", "Orange", "Red", "Green", "Sea", "Peach", "Fire", "Forest"};
@@ -120,4 +101,23 @@ public class LightDbHelper extends SqlHelper {
 												{0xFFFFA800, 0xFFFF9600, 0xFFFFC600},
 												{0xFFFF0000, 0xFFFF4545, 0xFFFF1E00},
 												{0xFF1B8F00, 0xFF30FF00, 0xFF86FF6A}};
+	
+	public static void initDb(SQLiteDatabase db) {
+		int elements = defNames.length;
+		for (int i = 0; i < elements; i++) {
+			Scene scene = new Scene(defNames[i], defColours[i]);
+			
+			ByteArrayOutputStream blob = new ByteArrayOutputStream();
+			
+			for (int x = 0; x < scene.colors.length; x++) {
+				byte[] buffer = intToByteArray(scene.colors[x]);
+				blob.write(buffer,0,buffer.length);
+			}
+			
+			ContentValues values = new ContentValues();
+			values.put(FIELD_NAME, scene.name);
+			values.put(FIELD_COLORS, blob.toByteArray());
+			db.insert(SQL_TABLE_LIGHT_SCENES, null, values);
+		}
+	}
 }
