@@ -1,6 +1,5 @@
 package es.acperez.domocontrol.widget;
 
-import es.acperez.domocontrol.DomoControlApplication;
 import es.acperez.domocontrol.R;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

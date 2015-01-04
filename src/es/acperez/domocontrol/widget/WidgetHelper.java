@@ -1,23 +1,21 @@
 package es.acperez.domocontrol.widget;
 
 import android.content.Context;
-import android.os.Bundle;
-import es.acperez.domocontrol.DomoControlApplication;
-import es.acperez.domocontrol.systems.base.DomoSystem;
-import es.acperez.domocontrol.systems.base.SystemManager.DomoSystemStatusListener;
-import es.acperez.domocontrol.systems.light.LightSystem;
+import android.content.Intent;
+import es.acperez.domocontrol.systems.light.service.LightService;
+import es.acperez.domocontrol.systems.power.controller.PowerAlarm;
+import es.acperez.domocontrol.systems.wemo.service.WemoService;
 
 public class WidgetHelper {
 	
 	public static void switchLight(final boolean state, Context context) {
-		Bundle lightSettings = DomoControlApplication.restorePreferences(DomoSystem.LIGHT_SETTINGS_NAME);
 		
-		new LightSystem(context, lightSettings, new DomoSystemStatusListener() {
-			@Override
-			public void onSystemStatusChange(DomoSystem system, int status) {
-				if (status == DomoSystem.STATUS_ONLINE)
-					((LightSystem)system).widgetSwitch(state);
-			}
-		}, true);
+		Intent intent = new Intent(context, LightService.class);
+		intent.putExtra(PowerAlarm.ALARM_ACTION, state);
+        context.startService(intent);
+        
+		Intent power = new Intent(context, WemoService.class);
+		power.putExtra(PowerAlarm.ALARM_ACTION, state);
+        context.startService(power);
 	}
 }

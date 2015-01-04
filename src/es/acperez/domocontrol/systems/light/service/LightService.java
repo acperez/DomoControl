@@ -1,14 +1,10 @@
-package es.acperez.domocontrol.systems.light.controller;
+package es.acperez.domocontrol.systems.light.service;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
@@ -22,95 +18,66 @@ import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
 import com.philips.lighting.model.PHLight;
 
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import es.acperez.domocontrol.systems.base.DomoSystem;
-import es.acperez.domocontrol.systems.base.SystemManager;
-import es.acperez.domocontrol.systems.light.LightData;
 import es.acperez.domocontrol.systems.light.LightSystem;
+import es.acperez.domocontrol.systems.light.controller.LightRequest;
+import es.acperez.domocontrol.systems.power.controller.PowerAlarm;
 
-public class LightManager extends SystemManager {
+public class LightService extends Service {
 	
-	public static final int CONNECT = 0;
-	public static final int GET_CONFIG = 1;
-	public static final int DISCONNECT = 2;
+	public static final int GET_STATUS = 0;
+	public static final int SET_STATUS = 1;
 	
-	public static final String SERVER = "light.host";
-	public static final String USERNAME = "light.username";
+	private final IBinder mBinder = new LightBinder();
 	
-	public static final String hardUsername = "DomoControl";
-	
-	private boolean mIsConnected = false;
-	
-	private LightData mData;
+	private LightServiceData mData;
 	private PHHueSDK phHueSDK;
 	private PHBridge mBridge;
-	private Handler handler;
+	private Handler mHandler;
 	private boolean mFind = false;
-	private LightManagerListener mListener;
+	private boolean mIsConnected = false;
+	private LightUpdateListener mListener;
+	public static final String hardUsername = "DomoControl";
 	
-	public interface LightManagerListener {
+	public interface LightUpdateListener {
 		void onLightRequestDone(int type, ArrayList<String> lightIds);
 	}
 	
-	public interface LightManagerRequest {
+	public interface LightSystemRequest {
 		void run(PHBridge bridge, Handler handler);
 	}
 
-	public LightManager(LightSystem system, LightData data, DomoSystemStatusListener listener) {
-		super(system, listener);
+	@Override
+	public IBinder onBind(Intent intent) {
+		return mBinder;
+	}
+	
+	public class LightBinder extends Binder {
+		public LightService getService() {
+            return LightService.this;
+        }
+    }
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+
+		mData = new LightServiceData(this);
+		mData.importSettings();
 		
 		phHueSDK = PHHueSDK.create();
-		
         phHueSDK.setDeviceName("DomoControl");
-		phHueSDK.getNotificationManager().registerSDKListener(sdkListener);
-		mData = data;
-		mListener = system;
 	}
 
-	@Override
-	public void processRequest(Handler handler, int request, Bundle params) {
-		this.handler = handler;
-
-		switch (request) {
-			case CONNECT:
-				connect();
-				break;
-				
-			case DISCONNECT:
-				close();
-				break;
-		}
-	}
-	
-	public void connect() {
-		if (mData.mServer != null && mData.mServer.length() > 0) {
-			mFind = false;
-			PHAccessPoint accessPoint = new PHAccessPoint();
-	        accessPoint.setIpAddress(mData.mServer);
-	        accessPoint.setUsername(hardUsername);
-	       
-	        if (!phHueSDK.isAccessPointConnected(accessPoint)) {
-	           phHueSDK.connect(accessPoint);
-	           return;
-	        }
-		} else {
-			mFind = true;
-			PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
-			sm.search(true, true);
-		}
-	}
-	
-	public void close() {
-        PHBridge bridge = phHueSDK.getSelectedBridge();
-        
-        if (bridge != null) {
-            
-            if (phHueSDK.isHeartbeatEnabled(bridge)) {
-                phHueSDK.disableHeartbeat(bridge);
-            }
-            
-            phHueSDK.disconnect(bridge);
-            phHueSDK.getNotificationManager().unregisterSDKListener(sdkListener);
-        }
+	public LightServiceData getSettings() {
+		return mData;
 	}
 	
 	private PHSDKListener sdkListener = new PHSDKListener() {
@@ -153,13 +120,14 @@ public class LightManager extends SystemManager {
             if (mFind && (mData.mServer != config.getIpAddress() || mData.mUsername != config.getUsername())) {
             	mData.mServer = config.getIpAddress();
             	mData.mUsername = config.getUsername();
+            	mData.exportSettings();
             	result = LightSystem.UPDATE_SETTINGS;
             }
             
             mIsConnected = true;
             
-    		Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, result);
-    		handler.sendMessage(message);
+    		Message message = Message.obtain(mHandler, DomoSystem.ERROR_NONE, result);
+    		mHandler.sendMessage(message);
         }
 
         @Override
@@ -168,8 +136,8 @@ public class LightManager extends SystemManager {
             System.out.println("Authentication Required.");
             phHueSDK.startPushlinkAuthentication(accessPoint);
             
-            Message message = Message.obtain(handler, DomoSystem.ERROR_NOTIFY);
-    		handler.sendMessage(message);
+            Message message = Message.obtain(mHandler, DomoSystem.ERROR_NOTIFY);
+            mHandler.sendMessage(message);
         }
 
         @Override
@@ -185,8 +153,8 @@ public class LightManager extends SystemManager {
             
             if (mIsConnected == false) {
             	mIsConnected = true;
-            	Message message = Message.obtain(handler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
-            	handler.sendMessage(message);
+            	Message message = Message.obtain(mHandler, DomoSystem.ERROR_NONE, LightSystem.UPDATE_BRIDGE);
+            	mHandler.sendMessage(message);
             }
         }
 
@@ -216,16 +184,16 @@ public class LightManager extends SystemManager {
             		return;
             }
 
-            Message msg = Message.obtain(handler, DomoSystem.ERROR_NETWORK, code);
-    		handler.sendMessage(msg);
+            Message msg = Message.obtain(mHandler, DomoSystem.ERROR_NETWORK, code);
+            mHandler.sendMessage(msg);
         }
         
 		@Override
 		public void onCacheUpdated(List<Integer> flags, PHBridge bridge) {
 			System.out.println("On CacheUpdated " + flags.get(0));
 			if (!running) {
-				Message message = Message.obtain(handler, DomoSystem.STATUS_ONLINE, LightSystem.REMOTE_UPDATE_LIGHTS);
-	    		handler.sendMessage(message);
+				Message message = Message.obtain(mHandler, DomoSystem.STATUS_ONLINE, LightSystem.REMOTE_UPDATE_LIGHTS);
+				mHandler.sendMessage(message);
 			}
 		}
 
@@ -234,7 +202,7 @@ public class LightManager extends SystemManager {
 			System.out.println("On parsing errors");
 		}
     };
-    
+
     private String getUsername() {
     	String username = mData.mUsername;
     	if (username == null || username.length() == 0) {
@@ -244,6 +212,42 @@ public class LightManager extends SystemManager {
     	return username;
     }
     
+    public void connect(Handler handler) {
+    	mHandler = handler;
+    	if (mData.mServer != null && mData.mServer.length() > 0) {
+			mFind = false;
+			PHAccessPoint accessPoint = new PHAccessPoint();
+	        accessPoint.setIpAddress(mData.mServer);
+	        accessPoint.setUsername(hardUsername);
+	       
+	        if (!phHueSDK.isAccessPointConnected(accessPoint)) {
+	        	phHueSDK.getNotificationManager().registerSDKListener(sdkListener);
+	        	phHueSDK.connect(accessPoint);
+	        	return;
+	        }
+		} else {
+			mFind = true;
+			phHueSDK.getNotificationManager().unregisterSDKListener(sdkListener);
+			phHueSDK.getNotificationManager().registerSDKListener(sdkListener);
+			PHBridgeSearchManager sm = (PHBridgeSearchManager) phHueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+			sm.search(true, true);
+		}
+    }
+    
+    public void disconnect() {
+        PHBridge bridge = phHueSDK.getSelectedBridge();
+        
+        if (bridge != null) {
+            
+            if (phHueSDK.isHeartbeatEnabled(bridge)) {
+                phHueSDK.disableHeartbeat(bridge);
+            }
+            
+            phHueSDK.disconnect(bridge);
+            phHueSDK.getNotificationManager().unregisterSDKListener(sdkListener);
+        }
+	}
+	
     public List<PHLight> getAllLights() {
     	try {
     		return mBridge.getResourceCache().getAllLights();
@@ -260,19 +264,23 @@ public class LightManager extends SystemManager {
     	}
 	}
     
-	public void updateLights(LightManagerRequest request) {
+	public void updateLights(LightSystemRequest request) {
 		mRequest.set(request);
 		doRequest();
 	}
-    
-    private final AtomicReference<LightManagerRequest> mRequest = new AtomicReference<LightManagerRequest>();
+	
+	public void setUpdateListener(LightUpdateListener listener) {
+		mListener = listener;
+	}
+	
+	private final AtomicReference<LightSystemRequest> mRequest = new AtomicReference<LightSystemRequest>();
 	private boolean running = false;
 	
 	private void doRequest() {
 		if (running)
 			return;
 		
-		LightManagerRequest request = mRequest.getAndSet(null);
+		LightSystemRequest request = mRequest.getAndSet(null);
 		if (request == null)
 			return;
 		
@@ -291,4 +299,56 @@ public class LightManager extends SystemManager {
 			mListener.onLightRequestDone(msg.what, (ArrayList<String>) msg.obj);
         }
     };
+    
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		boolean action = intent.getBooleanExtra(PowerAlarm.ALARM_ACTION, false);
+		
+		PHAccessPoint accessPoint = new PHAccessPoint();
+        accessPoint.setIpAddress(mData.mServer);
+        accessPoint.setUsername(hardUsername);
+        
+        if (!phHueSDK.isAccessPointConnected(accessPoint)) {
+    		phHueSDK.getNotificationManager().registerSDKListener(sdkListener);
+    		mHandler = new WeakRefHandler(this, action);
+            phHueSDK.connect(accessPoint);
+        } else {
+			Map<String, PHLight> lights = getLights();
+			ArrayList<String> ids = new ArrayList<String>(lights.keySet());
+			updateLights(new LightRequest(ids, action));
+        }
+		
+		stopSelf();
+		
+		return super.onStartCommand(intent, flags, startId);
+	}
+	
+	private static class WeakRefHandler extends Handler {
+		private WeakReference<LightService> ref;
+		private boolean action;
+
+		public WeakRefHandler(LightService service, boolean action) {
+			this.ref = new WeakReference<LightService>(service);
+			this.action = action;
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			final LightService service = ref.get();
+			
+			if (msg.what == DomoSystem.ERROR_NONE) {
+				service.mListener = new LightUpdateListener() {
+					
+					@Override
+					public void onLightRequestDone(int type, ArrayList<String> lightIds) {
+						service.disconnect();
+					}
+				};
+				
+				Map<String, PHLight> lights = service.getLights();
+				ArrayList<String> ids = new ArrayList<String>(lights.keySet());
+				service.updateLights(new LightRequest(ids, action));
+			}
+		}
+	};
 }
