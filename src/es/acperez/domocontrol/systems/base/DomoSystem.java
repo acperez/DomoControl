@@ -17,6 +17,7 @@ public abstract class DomoSystem {
 	
 	final public static int TYPE_POWER = 0;
 	final public static int TYPE_LIGHT = 1;
+	final public static int TYPE_WEMO = 2;
 	
 	final public static int STATUS_ONLINE = 0;
 	final public static int STATUS_OFFLINE = 1;
@@ -28,11 +29,13 @@ public abstract class DomoSystem {
 	public static final int ERROR_NETWORK = 2;
 	public static final int ERROR_NOTIFY = 3;
 	public static final int ERROR_PARAMS = 4;
+	public static final int ERROR_FIND = 5;
 	
 	final public static String POWER_SETTINGS_NAME = "power_settings";
 	final public static String POWER_SERVICE_SETTINGS_NAME = "power_service_settings";
 	final public static String LIGHT_SETTINGS_NAME = "light_settings";
 	final public static String LIGHT_SERVICE_SETTINGS_NAME = "light_service_settings";
+	final public static String WEMO_SETTINGS_NAME = "wemo_settings";
 	
 	public interface DomoSystemStatusListener {
 		public void onSystemStatusChange(DomoSystem system, int status);

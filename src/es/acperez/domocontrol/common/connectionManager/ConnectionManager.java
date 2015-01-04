@@ -2,8 +2,6 @@ package es.acperez.domocontrol.common.connectionManager;
 
 import java.util.ArrayList;
 
-import es.acperez.domocontrol.systems.power.controller.PowerManagerTask;
-
 public class ConnectionManager {
     
     public static final int MAX_CONNECTIONS = 1;
@@ -27,7 +25,7 @@ public class ConnectionManager {
          return instance;
     }
     
-    public void push(PowerManagerTask task) {
+    public void push(ConnectionManagerTask task) {
     	queue.add(task);
     	if (active.size() < MAX_CONNECTIONS)
     		startNext();

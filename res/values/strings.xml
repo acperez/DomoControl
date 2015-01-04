@@ -91,6 +91,11 @@
     <string name="light_settings_status_desc">Disconnected</string>
     <string name="light_settings_status_ok">Connected</string>
     
+    <string name="wemo_default_name">Socket</string>
+	<string name="searching_message">Searching devices</string>
+	<string name="find_error">Could not find devices</string>
+    <string name="wemo_settings_devices">Devices</string>
+    
     <string name="arrow_up">Up</string>
     <string name="arrow_down">Down</string>
     
@@ -104,6 +109,7 @@
     
     <string name="system_name_power">Power</string>
     <string name="system_name_light">Light</string>
+    <string name="system_name_wemo">Wemo</string>
     
 	<string name="under_construction">Under construction</string>
 	

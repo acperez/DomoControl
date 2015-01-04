@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ 	android:id="@+id/wemo_monitor_panel"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+			
+    <LinearLayout
+        android:id="@+id/wemo_loading_panel"
+        android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:gravity="center">
+    
+    	<ProgressBar
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:indeterminate="true"/>
+    	
+        <TextView
+            android:id="@+id/wemo_loading_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/searching_message"/>
+    </LinearLayout>
+    
+   	<LinearLayout
+        android:id="@+id/wemo_online_panel"
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:orientation="vertical"
+		android:weightSum="4"
+		android:baselineAligned="false">
+	
+   	    <RadioGroup
+	        android:id="@+id/wemo_tab"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="5"
+	        android:checkedButton="@+id/wemo_tab_control" >
+	        
+            <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	        
+	        <RadioButton
+	            android:id="@id/wemo_tab_control"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/power_tab_control"
+	            android:background="@drawable/tab_left_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        	        
+	        <RadioButton
+	            android:id="@+id/wemo_tab_setup"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/power_tab_config"
+	            android:background="@drawable/tab_right_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" 
+	            android:checked="true" />
+	        
+	        <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	    </RadioGroup>
+	    
+       	<FrameLayout
+	        android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal"
+			android:layout_marginTop="20dp">
+	        
+       	    <LinearLayout
+		        android:id="@+id/wemo_tab_monitor_content"
+		        android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				android:orientation="horizontal"
+				android:weightSum="4"
+				android:baselineAligned="false">
+			
+		   	    <RelativeLayout
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:layout_weight="1"
+		        	android:padding="4dp">
+		    
+				 	<es.acperez.domocontrol.common.customviews.SquareImageView
+				 	    xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+						android:id="@+id/wemo_monitor_socket_img"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:contentDescription="@string/power_socket1_name_desc"
+						android:src="@drawable/on"
+						custom:stretchVertical="true"/>
+							 	
+				 	<TextView
+						android:id="@+id/wemo_monitor_socket_text"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_alignLeft="@id/wemo_monitor_socket_img"
+						android:layout_alignRight="@id/wemo_monitor_socket_img"
+						android:layout_below="@id/wemo_monitor_socket_img"
+						android:gravity="center"
+						android:text="@string/power_socket1_name_desc"/>
+				</RelativeLayout>
+
+		    </LinearLayout>
+
+			<TableLayout
+			    android:id="@+id/wemo_tab_settings_content"
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
+			    android:stretchColumns="1"
+			    android:background="@color/gray_light">
+			    
+			    <TableRow android:weightSum="2">
+				    <TextView 
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+						android:text="@string/power_settings_status"
+				        android:layout_weight="1"/>
+				    
+			   	    <TextView
+			   	        android:id="@+id/wemo_settings_status"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/power_settings_status_desc"
+				        android:layout_weight="1"
+  				        android:textColor="@color/gray"/>
+				        
+			    </TableRow>			    
+			    
+			    <TableRow android:weightSum="2">
+				    <TextView 
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:text="@string/wemo_settings_devices"
+				        android:layout_weight="2"/>
+
+			    </TableRow>
+
+			    <TableRow android:weightSum="2">
+				    <TextView
+				        android:id="@+id/wemo_device_address"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"
+				        android:layout_weight="1"/>
+				    
+				    <EditText 
+				        android:id="@+id/wemo_device_name"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:hint="@string/wemo_default_name"
+				        android:textSize="20sp"
+				        android:maxLength="30"
+				        android:singleLine="true"
+				        android:layout_weight="1"/>
+			    </TableRow>
+			    
+				<TableRow android:weightSum="2">
+				    <Button
+				        android:id="@+id/wemo_apply_settings"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/power_apply_settings_btn"
+				        android:layout_weight="1"/>
+				    
+				    <Button
+				        android:id="@+id/wemo_clear_settings"
+				        android:layout_width="0dp"
+				        android:layout_height="wrap_content"
+				        android:text="@string/power_clear_settings_btn"
+				        android:layout_weight="1"/>
+			    </TableRow>
+		    </TableLayout>
+	    </FrameLayout>
+	</LinearLayout>
+</LinearLayout>

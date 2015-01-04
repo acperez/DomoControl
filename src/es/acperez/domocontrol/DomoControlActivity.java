@@ -12,6 +12,7 @@ import es.acperez.domocontrol.systems.base.DomoSystem;
 import es.acperez.domocontrol.systems.base.DomoSystem.DomoSystemStatusListener;
 import es.acperez.domocontrol.systems.light.LightSystem;
 import es.acperez.domocontrol.systems.power.PowerSystem;
+import es.acperez.domocontrol.systems.wemo.WemoSystem;
 
 public class DomoControlActivity extends Activity implements OnItemSelectedListener, DomoSystemStatusListener {
 	public static final String SYSTEM_SELECTION = "selected_system";
@@ -30,6 +31,7 @@ public class DomoControlActivity extends Activity implements OnItemSelectedListe
 		
 		domoSystems.add(new PowerSystem(this, this));
 		domoSystems.add(new LightSystem(this, this));
+		domoSystems.add(new WemoSystem(this, this));
 	}
 
 	@Override
