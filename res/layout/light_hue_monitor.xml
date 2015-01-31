@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	
+    <RelativeLayout
+        android:id="@+id/light_hue_unavailable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        
+        <TextView
+            android:id="@+id/light_hue_unavailable_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/light_hue_unavailable_mesage"
+			android:layout_centerInParent="true"/>
+        
+    </RelativeLayout>
+
+	<LinearLayout
+	    android:id="@+id/light_hue_monitor"
+	    android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone">
+	
+	    <RadioGroup
+	        android:id="@+id/light_hue_tab"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:weightSum="4"
+	        android:checkedButton="@+id/light_hue_tab_scenes" >
+	        
+			<TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	        
+	        <RadioButton
+	            android:id="@id/light_hue_tab_scenes"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:text="@string/light_tab_scenes"
+	            android:background="@drawable/tab_left_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        <RadioButton
+	            android:id="@+id/light_hue_tab_lights"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+				android:layout_weight="1"
+	            android:text="@string/light_tab_lights"
+	            android:background="@drawable/tab_right_button"
+	            android:button="@android:color/transparent"
+	            android:textColor="@color/tab_color"
+	            android:gravity="center" />
+	        
+	        <TextView
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:visibility="invisible" />
+	    </RadioGroup>
+	
+	   	<FrameLayout
+	        android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal"
+			android:layout_marginTop="20dp">
+	        
+		   	<RelativeLayout
+	   			android:id="@+id/light_hue_tab_scenes_content"
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
+			    android:visibility="visible" >
+	
+			   	<GridView
+	    			android:id="@+id/light_hue_tab_scenes_grid"
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent"
+	    			android:numColumns="auto_fit"
+	    			android:columnWidth="100dp"
+	    			android:gravity="center"
+				    android:stretchMode="columnWidth"
+				    android:layout_above="@+id/light_hue_scenes_switch" />		   	
+		   	
+	       		<LinearLayout
+	       		    android:id="@id/light_hue_scenes_switch" 
+	       		    android:layout_width="match_parent"
+				    android:layout_height="wrap_content"
+				    android:orientation="horizontal"
+				    android:layout_alignParentBottom="true"
+				    android:weightSum="4"
+				    android:gravity="center">
+	       		    <Button
+		   		        android:id="@+id/light_hue_scenes_switch_on"
+		   		        android:layout_width="0dp"
+				    	android:layout_height="wrap_content"
+				    	android:text="@string/light_switch_on"
+				    	android:layout_weight="1"/>
+		   		    <Button
+		   		        android:id="@+id/light_hue_scenes_switch_off"
+		   		        android:layout_width="0dp"
+				    	android:layout_height="wrap_content"
+				    	android:text="@string/light_switch_off"
+				    	android:layout_weight="1"/>
+	       		</LinearLayout>
+			</RelativeLayout>
+			
+		   	<LinearLayout
+		   	    android:id="@+id/light_hue_tab_lights_content"
+		        android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="horizontal"
+				android:weightSum="3"
+				android:visibility="gone"
+				android:baselineAligned="false">
+		   	    
+		   	    <RelativeLayout
+			        android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="2">
+							        
+			   	    <ScrollView
+			   	        android:layout_width="match_parent"
+			   	        android:layout_height="match_parent">
+	   	    
+			   	        <es.acperez.domocontrol.modules.monitors.light.list.LightList
+	   	    		   	    android:id="@+id/light_hue_list_lights"
+					        android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:orientation="vertical"
+							android:baselineAligned="false"
+							android:background="@color/gray"
+							android:showDividers="middle"
+							android:divider="@color/gray_dark"/>
+  	    		   	</ScrollView>
+			   	    
+			   	    <Button 
+					    android:id="@+id/light_hue_save_scene"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+	   					android:layout_marginTop="20dp"
+					    android:layout_alignParentBottom="true"
+					    android:layout_centerInParent="true"
+					    android:text="@string/light_save_scenes_btn"/>
+		   	    </RelativeLayout>
+			   	    
+		   	    <RelativeLayout
+			        android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_marginLeft="20dp"
+					android:layout_weight="1">
+		   	        
+	           		<es.acperez.domocontrol.common.ui.colorpicker.ColorPicker
+	   		   	        android:id="@+id/light_hue_color_panel"
+	   		   	        android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:layout_above="@+id/light_hue_switch"/>
+	
+	           		<LinearLayout
+	           		    android:id="@id/light_hue_switch" 
+	           		    android:layout_width="match_parent"
+					    android:layout_height="wrap_content"
+					    android:orientation="horizontal"
+					    android:layout_alignParentBottom="true"
+					    android:weightSum="4"
+					    android:gravity="center">
+	           		    <Button
+	           		        android:id="@+id/light_hue_switch_on"
+	           		        android:layout_width="0dp"
+					    	android:layout_height="wrap_content"
+					    	android:text="@string/light_switch_on"
+					    	android:layout_weight="1"/>
+	           		    <Button
+	           		        android:id="@+id/light_hue_switch_off"
+	           		        android:layout_width="0dp"
+					    	android:layout_height="wrap_content"
+					    	android:text="@string/light_switch_off"
+					    	android:layout_weight="1"/>
+	           		</LinearLayout>
+			   	   	
+		    	</RelativeLayout>
+		    </LinearLayout>
+		</FrameLayout>
+	</LinearLayout>
+</FrameLayout>

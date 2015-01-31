@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:padding="5dp" >
     
-    <es.acperez.domocontrol.common.customviews.SquareUnsizedImageView
+    <es.acperez.domocontrol.common.ui.SquareUnsizedImageView
         android:id="@+id/light_list_color"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,7 +24,7 @@
         android:ellipsize="end"
         android:layout_marginRight="5dp"/>
 
-	<CheckBox
+ 	<CheckBox
         android:id="@id/light_list_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

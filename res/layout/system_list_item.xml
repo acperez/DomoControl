@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/system_list_item"
-	android:layout_width="wrap_content"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
 	android:background="@drawable/list_shadow">
     
-    <es.acperez.domocontrol.common.customviews.SquareProgressBar
+    <es.acperez.domocontrol.common.ui.SquareProgressBar
         android:id="@+id/system_list_item_loading"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:indeterminate="true"
 		android:adjustViewBounds="true"
+		android:visibility="gone"
 		android:padding="4dp"/>
     
-	<es.acperez.domocontrol.common.customviews.SquareImageView
-		android:id="@+id/system_list_item_status"
+	<es.acperez.domocontrol.common.ui.SquareImageView
+	    android:id="@+id/system_list_item_status"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 		android:contentDescription="@string/system_list_item_status_description"
 		android:adjustViewBounds="true"
 		android:src="@drawable/status_offline"
+		android:visibility="gone"
 		android:padding="8dp"/>
 	
-	<es.acperez.domocontrol.common.customviews.SquareImageView
-		android:id="@+id/system_list_item_warning"
+	<es.acperez.domocontrol.common.ui.SquareImageView
+	    android:id="@+id/system_list_item_warning"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 		android:contentDescription="@string/system_list_item_status_description"
 		android:adjustViewBounds="true"
 		android:src="@drawable/status_warning"
+		android:visibility="gone"
 		android:padding="6dp"/>
 
 	<TextView

@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-import es.acperez.domocontrol.systems.light.controller.Scene;
+import es.acperez.domocontrol.modules.monitors.light.Scene;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

@@ -21,7 +21,7 @@
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
        
     <application
-        android:name=".DomoControlApplication"
+        android:name="es.acperez.domocontrol.DomoControlApplication"
         android:allowBackup="true"
         android:icon="@drawable/home"
         android:label="@string/app_name"
@@ -38,17 +38,17 @@
         </activity>
 
 		<service
-			android:name="es.acperez.domocontrol.systems.power.service.PowerService"
+			android:name="es.acperez.domocontrol.services.gembird.PowerService"
 			android:label="@string/app_name"/>
 		
 		<service
-			android:name="es.acperez.domocontrol.systems.light.service.LightService"
+			android:name="es.acperez.domocontrol.services.philips.hue.LightService"
 			android:label="@string/app_name"/>
 		
 		<service
-			android:name="es.acperez.domocontrol.systems.wemo.service.WemoService"
+			android:name="es.acperez.domocontrol.services.wemo.WemoService"
 			android:label="@string/app_name"/>
-
+		
         <receiver
             android:icon="@drawable/home"
 			android:label="@string/app_name"
@@ -62,10 +62,10 @@
 			    android:resource="@xml/widget_info"/>
 		</receiver>
 		
-        <receiver android:name=".systems.power.controller.PowerAlarm"/>
+        <receiver android:name="es.acperez.domocontrol.modules.actions.events.DomoAlarm"/>
         
         <receiver
-            android:name=".common.BootLoader">
+            android:name="es.acperez.domocontrol.common.services.BootLoader">
     		<intent-filter>
         		<action android:name="android.intent.action.BOOT_COMPLETED"></action>
     		</intent-filter>

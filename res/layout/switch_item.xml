@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="4dp" >
+    
+ 	<es.acperez.domocontrol.common.ui.SquareImageView
+	    xmlns:custom="http://schemas.android.com/apk/res/es.acperez.domocontrol"
+		android:id="@+id/switch_item_img"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/switch_name_desc"
+		android:src="@drawable/on"
+		custom:stretchVertical="true"/>
+	
+ 	<TextView
+		android:id="@+id/switch_item_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/switch_item_img"
+		android:gravity="center"
+		android:text="@string/switch_name_desc"/>
+
+</RelativeLayout>
+

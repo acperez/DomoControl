@@ -6,13 +6,13 @@
 	android:orientation="horizontal"
 	android:baselineAligned="false">
 
-	<fragment class="es.acperez.domocontrol.mainList.SystemListFragment"
+	<fragment class="es.acperez.domocontrol.mainlist.SystemListFragment"
 		android:id="@+id/system_list_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_weight="0.8"/>
 
-	<fragment class="es.acperez.domocontrol.mainList.ContentFragment"
+	<fragment class="es.acperez.domocontrol.mainlist.ContentFragment"
 		android:id="@+id/controlFragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

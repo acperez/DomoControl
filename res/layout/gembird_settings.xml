@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1"
+    android:background="@color/gray_light">	    
+    
+    <TableRow android:weightSum="2">
+	    <TextView 
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+	        android:text="@string/power_ip"
+	        android:layout_weight="1"/>
+	    
+   	    <TextView 
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+	        android:text="@string/power_port"
+	        android:layout_weight="1"/>
+    </TableRow>
+    <TableRow android:weightSum="2">
+	    <EditText 
+	        android:id="@+id/gembird_settings_address"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:hint="@string/power_ip_desc"
+	        android:textSize="20sp"
+	        android:maxLength="30"
+	        android:singleLine="true"
+	        android:layout_weight="1"/>
+	    
+	    <EditText 
+	        android:id="@+id/gembird_settings_address_port"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:hint="@string/power_port_desc"
+	        android:textSize="20sp"
+	        android:maxLength="30"
+	        android:inputType="number"
+	        android:singleLine="true"
+	        android:layout_weight="1"/>
+    </TableRow>
+    <TableRow android:weightSum="2">
+	    <TextView
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+	        android:text="@string/power_password"
+	        android:layout_weight="1"/>
+    </TableRow>
+  	    <TableRow android:weightSum="2">
+	    <EditText
+	        android:id="@+id/gembird_settings_password"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+			android:inputType="textPassword"
+			android:hint="@string/power_password_desc"
+			android:maxLength="30"
+	        android:singleLine="true"
+	        android:layout_weight="1"/>
+    </TableRow>
+	<TableRow android:weightSum="2">
+	    <Button
+	        android:id="@+id/gembird_settings_connect"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:text="@string/power_connect_settings_btn"
+	        android:layout_weight="1"/>
+    </TableRow>    
+</TableLayout>

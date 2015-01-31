@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import es.acperez.domocontrol.R;
-import es.acperez.domocontrol.systems.light.controller.Scene;
+import es.acperez.domocontrol.modules.monitors.light.Scene;
 
 public class SceneAdapter extends BaseAdapter {
 	private Context mContext;

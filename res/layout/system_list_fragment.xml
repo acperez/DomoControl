@@ -10,11 +10,63 @@
 		android:layout_width="match_parent"
 		android:background="@drawable/list_shadow"
 		android:layout_alignParentRight="true"/>
-
+	
+	<TextView 
+   		android:id="@+id/system_list_fragment_title_system"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/system_list_title_system"
+   		android:textColor="@color/gray_light"
+		android:textSize="@dimen/list_text_size_big_title"
+		android:paddingLeft="5dp"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"/>
+	
 	<ListView
-		android:id="@id/android:list"
+		android:id="@+id/system_monitor_list"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_below="@id/system_list_fragment_title_system"
+		android:drawSelectorOnTop="true"
+		android:listSelector="@android:color/transparent"/>
+		
+	<TextView 
+   		android:id="@+id/system_list_fragment_title_action"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/system_monitor_list"
+	    android:text="@string/system_list_title_action"
+   		android:textColor="@color/gray_light"
+		android:textSize="@dimen/list_text_size_big_title"
+		android:paddingLeft="5dp"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"/>
+	
+	<ListView
+		android:id="@+id/system_action_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/system_list_fragment_title_action"
+		android:drawSelectorOnTop="true"
+		android:listSelector="@android:color/transparent"/>
+	
+	<TextView
+	    android:id="@+id/system_list_fragment_title_settings" 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/system_action_list"
+	    android:text="@string/system_list_title_settings"
+	    android:textColor="@color/gray_light"
+		android:textSize="@dimen/list_text_size_big_title"
+		android:paddingLeft="5dp"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"/>
+	
+	<ListView
+		android:id="@+id/system_settings_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/system_list_fragment_title_settings"
 		android:drawSelectorOnTop="true"
 		android:listSelector="@android:color/transparent"/>
 

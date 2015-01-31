@@ -16,12 +16,13 @@ public abstract class SqlHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_EVENTS = 
 									"CREATE TABLE " + EventDbHelper.SQL_TABLE_EVENTS + " ( " +
-									EventDbHelper.FIELD_TYPE + " INTEGER, " +
 									EventDbHelper.FIELD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 									EventDbHelper.FIELD_TIMEMILLIS + " INTEGER, " +
 									EventDbHelper.FIELD_TIMESTAMP + " TEXT, " +
 									EventDbHelper.FIELD_ACTION + " INTEGER, " +
-									EventDbHelper.FIELD_EXTRA + " INTEGER)";
+									EventDbHelper.FIELD_SWITCH_ID + " INTEGER, " +
+									EventDbHelper.FIELD_SWITCH_NAME + " INTEGER, " +
+									EventDbHelper.FIELD_SERVICE_ID + " INTEGER)";
     
 	public SqlHelper(Context context) {
 		super(context, SQL_DB_NAME, null, SQL_DB_VERSION);

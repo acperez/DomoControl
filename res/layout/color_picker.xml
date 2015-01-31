@@ -32,7 +32,7 @@
 		android:paddingTop="2dp"
 		android:paddingBottom="2dp"/>
     
-	<es.acperez.domocontrol.common.customviews.colorpicker.HueBar
+	<es.acperez.domocontrol.common.ui.colorpicker.HueBar
         android:layout_width="30dip"
 		android:layout_height="match_parent"
 		android:layout_alignParentLeft="true"
@@ -77,7 +77,7 @@
 		android:paddingTop="2dp"
 		android:paddingBottom="2dp"/>
 	
-   	<es.acperez.domocontrol.common.customviews.colorpicker.SaturationBar
+   	<es.acperez.domocontrol.common.ui.colorpicker.SaturationBar
         android:layout_width="30dip"
 		android:layout_height="match_parent"
 		android:layout_centerInParent="true"
@@ -123,7 +123,7 @@
 		android:paddingTop="2dp"
 		android:paddingBottom="2dp"/>
     
-    <es.acperez.domocontrol.common.customviews.colorpicker.BrightnessBar
+    <es.acperez.domocontrol.common.ui.colorpicker.BrightnessBar
         android:layout_width="30dip"
 		android:layout_height="match_parent"
 		android:layout_alignParentRight="true"

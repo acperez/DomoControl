@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+			
+    <LinearLayout
+        android:id="@+id/settings_loading_panel"
+        android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:gravity="center">
+    
+    	<ProgressBar
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:indeterminate="true"/>
+    	
+        <TextView
+            android:id="@+id/settings_loading_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/searching_message"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/settings_warning_panel"
+        android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:gravity="center">
+
+   	    <FrameLayout 
+   	        android:id="@+id/settings_warning_content"
+   	        android:layout_width="match_parent"
+    		android:layout_height="wrap_content"/>
+    	
+        <TextView
+            android:id="@+id/settings_warning_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+    </LinearLayout>
+   	    
+	<LinearLayout
+	    android:id="@+id/settings_content_panel"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@color/gray_light"
+	    android:orientation="vertical"
+	    android:visibility="gone">
+	    
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+			android:text="@string/power_settings_status"/>
+		    
+   	    <TextView
+   	        android:id="@+id/settings_status_text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp"
+	        android:text="@string/power_settings_status_desc"
+	        android:textColor="@color/gray"/>
+   	    
+   	    <FrameLayout 
+   	        android:id="@+id/settings_content"
+   	        android:layout_width="match_parent"
+    		android:layout_height="wrap_content"/>
+	    
+    </LinearLayout>
+</LinearLayout>
